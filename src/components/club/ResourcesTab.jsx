@@ -1,6 +1,7 @@
 import { supabase } from '../../lib/supabase.js'
 import { useResources } from '../../hooks/useResources.js'
 import { formatFileSize, formatChatTime } from '../../lib/format.js'
+import Icon from '../common/Icon.jsx'
 
 export default function ResourcesTab({ clubId }) {
   const { resources, loading } = useResources(clubId)
@@ -9,7 +10,7 @@ export default function ResourcesTab({ clubId }) {
   if (resources.length === 0) {
     return (
       <div className="side-note center">
-        No resources yet — attach 📎 files or images in the club chat and they'll show up here.
+        No resources yet — files and images attached in the club chat will show up here.
       </div>
     )
   }
@@ -24,7 +25,9 @@ export default function ResourcesTab({ clubId }) {
             {isImage ? (
               <img className="resource-thumb" src={url} alt={r.attachment_name} loading="lazy" />
             ) : (
-              <span className="resource-icon">📄</span>
+              <span className="resource-icon">
+                <Icon name="file" size={26} strokeWidth={1.6} />
+              </span>
             )}
             <span className="picker-grow">
               <span className="picker-name">{r.attachment_name}</span>
@@ -33,7 +36,9 @@ export default function ResourcesTab({ clubId }) {
                 {formatChatTime(r.created_at)}
               </span>
             </span>
-            <span className="file-download">⬇</span>
+            <span className="file-download">
+              <Icon name="download" size={16} />
+            </span>
           </a>
         )
       })}

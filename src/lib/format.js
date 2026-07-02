@@ -1,5 +1,23 @@
 import { format, isToday, isYesterday, isThisYear } from 'date-fns'
 
+// Muted, earthy avatar palette (overrides the bright colors stored in the DB)
+const AVATAR_COLORS = [
+  '#BF3B1B', // rust
+  '#26332E', // dark green
+  '#6B705C', // olive
+  '#A98467', // tan
+  '#7D8CA3', // slate
+  '#8C5E58', // clay
+  '#5F7161', // sage
+  '#B08968', // camel
+]
+
+export function colorFor(name = '') {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+}
+
 export function initials(name = '') {
   return name
     .split(/\s+/)

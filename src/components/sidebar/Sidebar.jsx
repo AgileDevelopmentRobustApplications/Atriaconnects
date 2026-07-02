@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
 import Avatar from '../common/Avatar.jsx'
+import Icon from '../common/Icon.jsx'
 import ChatListItem from './ChatListItem.jsx'
 import NewDmModal from './NewDmModal.jsx'
 import NewClubModal from './NewClubModal.jsx'
@@ -17,28 +18,29 @@ export default function Sidebar() {
 
   return (
     <div className="sidebar">
+      <div className="sidebar-brand">ClubConnect</div>
       <div className="sidebar-header">
-        <Avatar name={profile?.full_name} color={profile?.avatar_color} size={40} />
+        <Avatar name={profile?.full_name} size={38} />
         <span className="sidebar-me">{profile?.full_name}</span>
         <div className="sidebar-actions">
           <button className="icon-btn" title="New direct message" onClick={() => setModal('dm')}>
-            💬
+            <Icon name="chat" />
           </button>
           <button className="icon-btn" title="Browse clubs" onClick={() => setModal('browse')}>
-            🧭
+            <Icon name="compass" />
           </button>
           <button className="icon-btn" title="Create club" onClick={() => setModal('club')}>
-            ➕
+            <Icon name="plus" />
           </button>
           <button className="icon-btn" title="Log out" onClick={signOut}>
-            ⏻
+            <Icon name="logout" />
           </button>
         </div>
       </div>
 
       <div className="sidebar-search">
         <input
-          placeholder="Search or start a new chat"
+          placeholder="Search chats"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -48,9 +50,8 @@ export default function Sidebar() {
         {chatsLoading && <div className="side-note">Loading chats…</div>}
         {!chatsLoading && filtered.length === 0 && (
           <div className="side-note">
-            No chats yet.
-            <br />
-            Create a club ➕, browse clubs 🧭 or message someone 💬
+            No chats yet. Create a club, browse clubs or start a direct message from the buttons
+            above.
           </div>
         )}
         {filtered.map((chat) => (

@@ -61,7 +61,7 @@ export default function BrowseClubsModal({ onClose }) {
       />
       <div className="picker-list">
         {filtered.length === 0 && (
-          <div className="side-note">No clubs yet — create the first one! ➕</div>
+          <div className="side-note">No clubs yet — create the first one.</div>
         )}
         {filtered.map((club) => {
           const memberCount = club.memberships?.[0]?.count ?? 0
@@ -77,7 +77,7 @@ export default function BrowseClubsModal({ onClose }) {
                 </div>
               </div>
               {joined ? (
-                <span className="joined-tag">Joined ✓</span>
+                <span className="joined-tag">Joined</span>
               ) : (
                 <button
                   className="btn-small"

@@ -4,6 +4,7 @@ import { useMessages, usePeerRead } from '../../hooks/useMessages.js'
 import { useTyping } from '../../hooks/useTyping.js'
 import { useClub } from '../../hooks/useClub.js'
 import Avatar from '../common/Avatar.jsx'
+import Icon from '../common/Icon.jsx'
 import MessageList from './MessageList.jsx'
 import MessageInput from './MessageInput.jsx'
 
@@ -40,7 +41,7 @@ export default function ChatWindow({ openPanel }) {
   } else if (isDm) {
     subtitle = online ? <span className="online-text">online</span> : 'offline'
   } else if (isAnnouncements) {
-    subtitle = 'Announcements · only admins can post'
+    subtitle = 'Announcements — only admins can post'
   } else {
     subtitle = `${members.length} member${members.length === 1 ? '' : 's'}`
   }
@@ -52,10 +53,9 @@ export default function ChatWindow({ openPanel }) {
       <div className="chat-header">
         <Avatar
           name={activeChat.title}
-          color={activeChat.avatar_color}
           size={40}
           online={online}
-          icon={isAnnouncements ? '📢' : undefined}
+          icon={isAnnouncements ? <Icon name="megaphone" size={17} /> : undefined}
         />
         <div
           className="chat-header-text"
@@ -63,7 +63,7 @@ export default function ChatWindow({ openPanel }) {
           style={{ cursor: activeChat.club_id ? 'pointer' : 'default' }}
         >
           <div className="chat-header-title">
-            {isAnnouncements ? `${activeChat.title} · Announcements` : activeChat.title}
+            {isAnnouncements ? `${activeChat.title} — Announcements` : activeChat.title}
           </div>
           <div className="chat-header-sub">{subtitle}</div>
         </div>
@@ -75,7 +75,7 @@ export default function ChatWindow({ openPanel }) {
                 title={isAnnouncements ? 'Back to club chat' : 'Announcements'}
                 onClick={() => openConversation(sibling.conversation_id)}
               >
-                {isAnnouncements ? '💬' : '📢'}
+                <Icon name={isAnnouncements ? 'chat' : 'megaphone'} />
               </button>
             )}
             <button
@@ -83,14 +83,14 @@ export default function ChatWindow({ openPanel }) {
               title="Events"
               onClick={() => openPanel(activeChat.club_id, 'events')}
             >
-              📅
+              <Icon name="calendar" />
             </button>
             <button
               className="icon-btn"
               title="Club info"
               onClick={() => openPanel(activeChat.club_id, 'members')}
             >
-              ℹ️
+              <Icon name="info" />
             </button>
           </div>
         )}
@@ -110,7 +110,9 @@ export default function ChatWindow({ openPanel }) {
           onTyping={sendTyping}
         />
       ) : (
-        <div className="input-locked">🔒 Only club admins can post announcements</div>
+        <div className="input-locked">
+          <Icon name="lock" size={14} /> Only club admins can post announcements
+        </div>
       )}
     </div>
   )

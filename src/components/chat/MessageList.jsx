@@ -15,7 +15,7 @@ export default function MessageList({ messages, loading, isGroup, peerReadAt }) 
     <div className="message-list">
       {loading && <div className="side-note center">Loading messages…</div>}
       {!loading && messages.length === 0 && (
-        <div className="side-note center">No messages yet — start the conversation 👋</div>
+        <div className="side-note center">No messages yet — start the conversation.</div>
       )}
       {messages.map((msg, i) => {
         const prev = messages[i - 1]

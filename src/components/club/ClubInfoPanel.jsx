@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useClub } from '../../hooks/useClub.js'
 import { useChat } from '../../context/ChatContext.jsx'
 import Avatar from '../common/Avatar.jsx'
+import Icon from '../common/Icon.jsx'
 import MembersTab from './MembersTab.jsx'
 import EventsTab from './EventsTab.jsx'
 import ResourcesTab from './ResourcesTab.jsx'
@@ -30,7 +31,7 @@ export default function ClubInfoPanel({ clubId, initialTab = 'members', onClose 
     <div className="club-panel">
       <div className="club-panel-header">
         <button className="icon-btn" onClick={onClose} title="Close">
-          ✕
+          <Icon name="x" />
         </button>
         <span>Club info</span>
       </div>

@@ -3,6 +3,7 @@ import { usePresence } from '../../context/PresenceContext.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { formatChatTime } from '../../lib/format.js'
 import Avatar from '../common/Avatar.jsx'
+import Icon from '../common/Icon.jsx'
 
 export default function ChatListItem({ chat }) {
   const { activeId, openConversation } = useChat()
@@ -13,15 +14,13 @@ export default function ChatListItem({ chat }) {
   const isAnn = chat.type === 'club_announcements'
   const online = isDm && onlineIds.has(chat.other_user_id)
 
-  let preview = ''
+  let previewText = ''
   if (chat.last_message_at) {
     const who = chat.last_sender_id === user.id ? 'You' : chat.last_sender_name?.split(' ')[0]
-    const body = chat.last_has_attachment
-      ? `📎 ${chat.last_message || 'Attachment'}`
-      : chat.last_message
-    preview = isDm && chat.last_sender_id !== user.id ? body : `${who}: ${body}`
+    const body = chat.last_message || (chat.last_has_attachment ? 'Attachment' : '')
+    previewText = isDm && chat.last_sender_id !== user.id ? body : `${who}: ${body}`
   } else {
-    preview = isAnn ? 'Club announcements' : isDm ? 'Say hi 👋' : 'You joined this club'
+    previewText = isAnn ? 'Club announcements' : isDm ? 'Start the conversation' : 'You joined this club'
   }
 
   return (
@@ -31,15 +30,14 @@ export default function ChatListItem({ chat }) {
     >
       <Avatar
         name={chat.title}
-        color={chat.avatar_color}
-        size={48}
+        size={44}
         online={online}
-        icon={isAnn ? '📢' : chat.type === 'club_chat' ? undefined : undefined}
+        icon={isAnn ? <Icon name="megaphone" size={18} /> : undefined}
       />
       <div className="chat-item-body">
         <div className="chat-item-top">
           <span className="chat-item-title">
-            {isAnn ? `${chat.title} · Announcements` : chat.title}
+            {isAnn ? `${chat.title} — Announcements` : chat.title}
           </span>
           {chat.last_message_at && (
             <span className={`chat-item-time${chat.unread_count > 0 ? ' unread' : ''}`}>
@@ -48,7 +46,12 @@ export default function ChatListItem({ chat }) {
           )}
         </div>
         <div className="chat-item-bottom">
-          <span className="chat-item-preview">{preview}</span>
+          <span className="chat-item-preview">
+            {chat.last_message_at && chat.last_has_attachment && (
+              <Icon name="paperclip" size={12} className="preview-clip" />
+            )}
+            {previewText}
+          </span>
           {chat.unread_count > 0 && <span className="unread-badge">{chat.unread_count}</span>}
         </div>
       </div>

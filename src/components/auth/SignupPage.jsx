@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
+import Icon from '../common/Icon.jsx'
 
 export default function SignupPage() {
   const { signUp } = useAuth()
@@ -31,7 +32,10 @@ export default function SignupPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <span className="auth-logo-mark">💬</span> ClubConnect
+          <span className="auth-logo-mark">
+            <Icon name="chat" size={26} strokeWidth={2.2} />
+          </span>
+          ClubConnect
         </div>
         <p className="auth-tagline">Join your college clubs</p>
         <form onSubmit={handleSubmit}>

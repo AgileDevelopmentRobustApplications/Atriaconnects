@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
+import Icon from '../common/Icon.jsx'
 
 const MAX_FILE_MB = 10
 
@@ -67,7 +68,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
         disabled={uploading}
         onClick={() => fileInputRef.current?.click()}
       >
-        📎
+        <Icon name="paperclip" size={20} />
       </button>
       <input
         className="message-text"
@@ -80,7 +81,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
         }}
       />
       <button type="submit" className="icon-btn send-btn" title="Send" disabled={uploading || !text.trim()}>
-        ➤
+        <Icon name="send" size={20} />
       </button>
     </form>
   )

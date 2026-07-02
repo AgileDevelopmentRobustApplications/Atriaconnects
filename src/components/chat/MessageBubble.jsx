@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase.js'
-import { formatTime, formatFileSize } from '../../lib/format.js'
+import { formatTime, formatFileSize, colorFor } from '../../lib/format.js'
+import Icon from '../common/Icon.jsx'
 
 function Ticks({ msg, peerReadAt }) {
   if (peerReadAt === undefined || peerReadAt === null) {
@@ -24,12 +25,16 @@ function Attachment({ msg }) {
   }
   return (
     <a className="file-card" href={url} target="_blank" rel="noreferrer" download={msg.attachment_name}>
-      <span className="file-icon">📄</span>
+      <span className="file-icon">
+        <Icon name="file" size={24} strokeWidth={1.6} />
+      </span>
       <span className="file-meta">
         <span className="file-name">{msg.attachment_name}</span>
         <span className="file-size">{formatFileSize(msg.attachment_size)}</span>
       </span>
-      <span className="file-download">⬇</span>
+      <span className="file-download">
+        <Icon name="download" size={16} />
+      </span>
     </a>
   )
 }
@@ -39,7 +44,7 @@ export default function MessageBubble({ msg, own, showSender, peerReadAt }) {
     <div className={`bubble-row${own ? ' own' : ''}`}>
       <div className={`bubble${own ? ' bubble-out' : ' bubble-in'}`}>
         {showSender && msg.sender && (
-          <div className="bubble-sender" style={{ color: msg.sender.avatar_color }}>
+          <div className="bubble-sender" style={{ color: colorFor(msg.sender.full_name) }}>
             {msg.sender.full_name}
           </div>
         )}
