@@ -5,6 +5,7 @@ import { PresenceProvider } from './context/PresenceContext.jsx'
 import LoginPage from './components/auth/LoginPage.jsx'
 import SignupPage from './components/auth/SignupPage.jsx'
 import AppLayout from './components/layout/AppLayout.jsx'
+import AdminPage from './components/admin/AdminPage.jsx'
 
 function Protected({ children }) {
   const { session, loading } = useAuth()
@@ -16,6 +17,12 @@ function Protected({ children }) {
     )
   }
   if (!session) return <Navigate to="/login" replace />
+  return children
+}
+
+function EmployeeOnly({ children }) {
+  const { isEmployee } = useAuth()
+  if (!isEmployee) return <Navigate to="/" replace />
   return children
 }
 
@@ -34,6 +41,16 @@ export default function App() {
                 <AppLayout />
               </PresenceProvider>
             </ChatProvider>
+          </Protected>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <Protected>
+            <EmployeeOnly>
+              <AdminPage />
+            </EmployeeOnly>
           </Protected>
         }
       />

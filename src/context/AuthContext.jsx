@@ -6,6 +6,7 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [employee, setEmployee] = useState(null) // { role: 'teacher'|'hod', department } or null
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -17,10 +18,24 @@ export function AuthProvider({ children }) {
     return () => sub.subscription.unsubscribe()
   }, [])
 
+  async function refreshEmployee(uid) {
+    if (!uid) {
+      setEmployee(null)
+      return
+    }
+    const { data } = await supabase
+      .from('employees')
+      .select('role, department')
+      .eq('user_id', uid)
+      .maybeSingle()
+    setEmployee(data ?? null)
+  }
+
   useEffect(() => {
     const uid = session?.user?.id
     if (!uid) {
       setProfile(null)
+      setEmployee(null)
       return
     }
     supabase
@@ -29,6 +44,7 @@ export function AuthProvider({ children }) {
       .eq('id', uid)
       .single()
       .then(({ data }) => setProfile(data))
+    refreshEmployee(uid)
   }, [session?.user?.id])
 
   async function signUp(fullName, email, password) {
@@ -59,6 +75,10 @@ export function AuthProvider({ children }) {
     session,
     user: session?.user ?? null,
     profile,
+    employee,
+    isEmployee: !!employee,
+    isHod: employee?.role === 'hod',
+    refreshEmployee: () => refreshEmployee(session?.user?.id),
     loading,
     signUp,
     signIn,

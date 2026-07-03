@@ -1,13 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
 
 export default function SignupPage() {
-  const { signUp } = useAuth()
+  const { signUp, refreshEmployee } = useAuth()
+  const [accountType, setAccountType] = useState('student') // 'student' | 'faculty'
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [staffCode, setStaffCode] = useState('')
+  const [department, setDepartment] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -18,12 +22,29 @@ export default function SignupPage() {
       setError('Password must be at least 6 characters')
       return
     }
+    if (accountType === 'faculty' && !staffCode.trim()) {
+      setError('Staff access code is required for faculty accounts')
+      return
+    }
     setBusy(true)
     try {
       await signUp(fullName.trim(), email.trim(), password)
+      if (accountType === 'faculty') {
+        const { error: rpcError } = await supabase.rpc('register_employee', {
+          _code: staffCode.trim(),
+          _department: department.trim(),
+        })
+        if (rpcError) {
+          setError(
+            `Account created, but faculty registration failed: ${rpcError.message}. You are signed in as a student — contact your HOD.`
+          )
+          setBusy(false)
+          return
+        }
+        await refreshEmployee()
+      }
     } catch (err) {
       setError(err.message ?? 'Sign up failed')
-    } finally {
       setBusy(false)
     }
   }
@@ -38,6 +59,24 @@ export default function SignupPage() {
           AdraConnects
         </div>
         <p className="auth-tagline">Agile Development · Robust Automations</p>
+
+        <div className="account-toggle">
+          <button
+            type="button"
+            className={accountType === 'student' ? 'active' : ''}
+            onClick={() => setAccountType('student')}
+          >
+            Student
+          </button>
+          <button
+            type="button"
+            className={accountType === 'faculty' ? 'active' : ''}
+            onClick={() => setAccountType('faculty')}
+          >
+            Faculty
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -61,9 +100,26 @@ export default function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          {accountType === 'faculty' && (
+            <>
+              <input
+                type="password"
+                placeholder="Staff access code"
+                value={staffCode}
+                onChange={(e) => setStaffCode(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Department (e.g. Computer Science)"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+              />
+            </>
+          )}
           {error && <div className="auth-error">{error}</div>}
           <button type="submit" className="btn-primary" disabled={busy}>
-            {busy ? 'Creating account…' : 'Sign up'}
+            {busy ? 'Creating account…' : `Sign up as ${accountType}`}
           </button>
         </form>
         <p className="auth-switch">

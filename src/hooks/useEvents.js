@@ -11,7 +11,9 @@ export function useEvents(clubId) {
     if (!clubId) return
     const { data } = await supabase
       .from('events')
-      .select('*, rsvps:event_rsvps(user_id, status)')
+      .select(
+        '*, rsvps:event_rsvps(user_id, status, profile:profiles(full_name)), attendance:event_attendance(user_id, present)'
+      )
       .eq('club_id', clubId)
       .order('starts_at')
     setEvents(data ?? [])

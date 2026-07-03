@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
 import Avatar from '../common/Avatar.jsx'
@@ -9,8 +10,9 @@ import NewClubModal from './NewClubModal.jsx'
 import BrowseClubsModal from './BrowseClubsModal.jsx'
 
 export default function Sidebar() {
-  const { profile, signOut } = useAuth()
+  const { profile, signOut, isEmployee } = useAuth()
   const { chats, chatsLoading } = useChat()
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse'
 
@@ -23,6 +25,11 @@ export default function Sidebar() {
         <Avatar name={profile?.full_name} size={38} />
         <span className="sidebar-me">{profile?.full_name}</span>
         <div className="sidebar-actions">
+          {isEmployee && (
+            <button className="icon-btn" title="Admin panel" onClick={() => navigate('/admin')}>
+              <Icon name="shield" />
+            </button>
+          )}
           <button className="icon-btn" title="New direct message" onClick={() => setModal('dm')}>
             <Icon name="chat" />
           </button>

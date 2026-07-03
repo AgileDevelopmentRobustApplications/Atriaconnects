@@ -18,6 +18,8 @@
 - **Direct messages** — 1:1 chats with online status, typing indicator, and WhatsApp-style ✓✓ read receipts that turn blue live
 - **Announcements** — every club gets a 📢 channel; only admins can post (enforced by Row Level Security in the database, not just the UI)
 - **Events** — admins schedule events (title, date/time, location, details); members RSVP Going/Maybe/Can't with live counts; upcoming & past sections
+- **Attendance** — every event shows who will be present (RSVP names); faculty (or the club admin) mark actual attendance per member, and everyone sees the "X of Y present" summary
+- **Faculty & admin panel** — teachers/HODs are stored in an `employees` table (sign up as Faculty with a staff access code, or get promoted by an HOD). Employees get a shield button opening `/admin`: overview stats, all students with club memberships (removable), all clubs with member management, all events with attendance marking, and faculty management (HOD-only: promote/demote/remove). Private chats and DMs stay invisible to the admin panel by design.
 - **Resources** — attach 📎 images/files in any chat (stored in Supabase Storage); images render inline; every club has a Resources tab listing all shared files
 - **Unread badges** — per-chat unread counts computed server-side in one RPC call
 
@@ -30,7 +32,9 @@ npm run dev
 
 Open http://localhost:5173. To test realtime with two users, open a second window in incognito and sign up a second account.
 
-Test accounts already seeded: `alice@test.com`, `bob@test.com`, `carol@test.com` (password `test1234`).
+Test accounts already seeded: `alice@test.com`, `bob@test.com`, `carol@test.com`, and faculty `teacher@test.com` (password `test1234`).
+
+**Staff access codes** (for Faculty signup; defined in `register_employee` in the DB — change them before real use): `FACULTY-2026` registers a teacher, `HOD-2026` registers an HOD. HODs can also promote existing users from the admin panel's Faculty tab.
 
 ## Architecture notes
 
