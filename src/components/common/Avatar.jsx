@@ -1,6 +1,7 @@
 import { initials, colorFor } from '../../lib/format.js'
+import { statusById } from '../../lib/status.js'
 
-export default function Avatar({ name, size = 40, online = false, icon = null }) {
+export default function Avatar({ name, size = 40, online = false, status = 'active', icon = null }) {
   return (
     <div className="avatar-wrap" style={{ width: size, height: size }}>
       <div
@@ -9,7 +10,7 @@ export default function Avatar({ name, size = 40, online = false, icon = null })
       >
         {icon ?? initials(name)}
       </div>
-      {online && <span className="online-dot" />}
+      {online && <span className="online-dot" style={{ background: statusById(status).color }} />}
     </div>
   )
 }

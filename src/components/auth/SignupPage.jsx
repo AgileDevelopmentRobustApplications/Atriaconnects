@@ -3,32 +3,27 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
 
-export default function LoginPage() {
-  const { signIn, signInWithGoogle } = useAuth()
+// Email signup = full "adra" member account (can request to join communities)
+export default function SignupPage() {
+  const { signUp } = useAuth()
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  async function handleEmailLogin(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-    setBusy(true)
-    try {
-      await signIn(email.trim(), password)
-    } catch (err) {
-      setError(err.message ?? 'Login failed')
-      setBusy(false)
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
     }
-  }
-
-  async function handleGoogle() {
-    setError('')
     setBusy(true)
     try {
-      await signInWithGoogle('/')
+      await signUp(fullName.trim(), email.trim(), password)
     } catch (err) {
-      setError(err.message ?? 'Sign in failed')
+      setError(err.message ?? 'Sign up failed')
       setBusy(false)
     }
   }
@@ -42,46 +37,41 @@ export default function LoginPage() {
           </span>
           AdraConnects
         </div>
-        <p className="auth-tagline">Agile Development · Robust Automations</p>
+        <p className="auth-tagline">Create your member account</p>
 
-        <form onSubmit={handleEmailLogin}>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Full name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+            autoFocus
+          />
           <input
             type="email"
             placeholder="College email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            autoFocus
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Password (min 6 characters)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           {error && <div className="auth-error">{error}</div>}
           <button type="submit" className="btn-primary" disabled={busy}>
-            {busy ? 'Signing in…' : 'Log in'}
+            {busy ? 'Creating account…' : 'Sign up'}
           </button>
         </form>
-
-        <div className="auth-divider">
-          <span>or</span>
-        </div>
-
-        <button className="btn-google" onClick={handleGoogle} disabled={busy}>
-          <Icon name="google" size={18} />
-          Continue with Google — guest
-        </button>
         <p className="auth-note">
-          Guest access lets you browse communities and message the Admissions Office.
+          Member accounts can request to join communities and chat across the organization.
         </p>
-
         <p className="auth-switch">
-          New student or staff? <Link to="/signup">Create an account</Link>
-          <br />
-          Teacher or HOD? <Link to="/faculty">Faculty gateway</Link>
+          Already have an account? <Link to="/login">Log in</Link>
         </p>
       </div>
     </div>

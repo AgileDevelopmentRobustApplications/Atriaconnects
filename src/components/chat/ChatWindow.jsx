@@ -1,15 +1,20 @@
+import { useEffect } from 'react'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
 import { usePresence } from '../../context/PresenceContext.jsx'
 import { useMessages, usePeerRead } from '../../hooks/useMessages.js'
 import { useTyping } from '../../hooks/useTyping.js'
 import { useClub } from '../../hooks/useClub.js'
+import { statusById } from '../../lib/status.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
 import MessageList from './MessageList.jsx'
 import MessageInput from './MessageInput.jsx'
 
 export default function ChatWindow({ openPanel }) {
-  const { activeChat, chats, openConversation, closeConversation } = useChat()
+  const { isGuest, isEmployee } = useAuth()
+  const { activeChat, chats, openConversation, closeConversation, statuses, ensureStatus } =
+    useChat()
   const { onlineIds } = usePresence()
 
   const conversationId = activeChat.conversation_id
@@ -21,15 +26,19 @@ export default function ChatWindow({ openPanel }) {
   const peerReadAt = usePeerRead(isDm ? conversationId : null, activeChat.other_user_id)
   const { members, myRole } = useClub(activeChat.club_id)
 
+  useEffect(() => {
+    if (isDm) ensureStatus(activeChat.other_user_id)
+  }, [isDm, activeChat.other_user_id, ensureStatus])
+
   // The other conversation of the same club (chat <-> announcements toggle)
   const sibling = activeChat.club_id
     ? chats.find(
-        (c) =>
-          c.club_id === activeChat.club_id && c.conversation_id !== conversationId
+        (c) => c.club_id === activeChat.club_id && c.conversation_id !== conversationId
       )
     : null
 
   const online = isDm && onlineIds.has(activeChat.other_user_id)
+  const peerStatus = statusById(statuses[activeChat.other_user_id])
 
   let subtitle
   if (typingNames.length > 0) {
@@ -39,14 +48,26 @@ export default function ChatWindow({ openPanel }) {
       </span>
     )
   } else if (isDm) {
-    subtitle = online ? <span className="online-text">online</span> : 'offline'
+    subtitle = online ? (
+      <span style={{ color: peerStatus.color, fontWeight: 600 }}>{peerStatus.label}</span>
+    ) : (
+      'offline'
+    )
   } else if (isAnnouncements) {
     subtitle = 'Announcements — only admins can post'
+  } else if (activeChat.is_admission) {
+    subtitle = 'Admissions department — open to everyone'
   } else {
     subtitle = `${members.length} member${members.length === 1 ? '' : 's'}`
   }
 
-  const canPost = !isAnnouncements || myRole === 'admin'
+  const canPost = isGuest
+    ? Boolean(activeChat.is_admission) && activeChat.type === 'club_chat'
+    : !isAnnouncements || myRole === 'admin' || isEmployee
+
+  const lockMessage = isGuest
+    ? 'Guests can only message the Admissions Office'
+    : 'Only club admins can post announcements'
 
   return (
     <div className="chat-window">
@@ -58,19 +79,26 @@ export default function ChatWindow({ openPanel }) {
           name={activeChat.title}
           size={40}
           online={online}
-          icon={isAnnouncements ? <Icon name="megaphone" size={17} /> : undefined}
+          status={statuses[activeChat.other_user_id]}
+          icon={
+            isAnnouncements ? (
+              <Icon name="megaphone" size={17} />
+            ) : activeChat.is_admission ? (
+              <Icon name="users" size={17} />
+            ) : undefined
+          }
         />
         <div
           className="chat-header-text"
-          onClick={() => activeChat.club_id && openPanel(activeChat.club_id, 'members')}
-          style={{ cursor: activeChat.club_id ? 'pointer' : 'default' }}
+          onClick={() => activeChat.club_id && !isGuest && openPanel(activeChat.club_id, 'members')}
+          style={{ cursor: activeChat.club_id && !isGuest ? 'pointer' : 'default' }}
         >
           <div className="chat-header-title">
             {isAnnouncements ? `${activeChat.title} — Announcements` : activeChat.title}
           </div>
           <div className="chat-header-sub">{subtitle}</div>
         </div>
-        {activeChat.club_id && (
+        {activeChat.club_id && !isGuest && (
           <div className="chat-header-actions">
             {sibling && (
               <button
@@ -114,7 +142,7 @@ export default function ChatWindow({ openPanel }) {
         />
       ) : (
         <div className="input-locked">
-          <Icon name="lock" size={14} /> Only club admins can post announcements
+          <Icon name="lock" size={14} /> {lockMessage}
         </div>
       )}
     </div>

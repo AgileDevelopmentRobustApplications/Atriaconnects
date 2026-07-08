@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useClub } from '../../hooks/useClub.js'
 import { useChat } from '../../context/ChatContext.jsx'
 import Avatar from '../common/Avatar.jsx'
@@ -6,18 +7,22 @@ import Icon from '../common/Icon.jsx'
 import MembersTab from './MembersTab.jsx'
 import EventsTab from './EventsTab.jsx'
 import ResourcesTab from './ResourcesTab.jsx'
-
-const TABS = [
-  { id: 'members', label: 'Members' },
-  { id: 'events', label: 'Events' },
-  { id: 'resources', label: 'Resources' },
-]
+import RequestsTab from './RequestsTab.jsx'
 
 export default function ClubInfoPanel({ clubId, initialTab = 'members', onClose }) {
   const [tab, setTab] = useState(initialTab)
+  const { isEmployee } = useAuth()
   const clubState = useClub(clubId)
   const { club, members, myRole, leaveClub } = clubState
   const { refreshChats, closeConversation } = useChat()
+
+  const canModerate = myRole === 'admin' || isEmployee
+  const TABS = [
+    { id: 'members', label: 'Members' },
+    { id: 'events', label: 'Events' },
+    { id: 'resources', label: 'Resources' },
+    ...(canModerate ? [{ id: 'requests', label: 'Requests' }] : []),
+  ]
 
   async function handleLeave() {
     if (!confirm(`Leave ${club?.name}?`)) return
@@ -60,8 +65,11 @@ export default function ClubInfoPanel({ clubId, initialTab = 'members', onClose 
 
       <div className="club-panel-body">
         {tab === 'members' && <MembersTab clubState={clubState} />}
-        {tab === 'events' && <EventsTab clubId={clubId} isAdmin={myRole === 'admin'} />}
+        {tab === 'events' && <EventsTab clubId={clubId} isAdmin={canModerate} />}
         {tab === 'resources' && <ResourcesTab clubId={clubId} />}
+        {tab === 'requests' && (
+          <RequestsTab clubId={clubId} onDecided={() => clubState.refresh()} />
+        )}
       </div>
 
       <div className="club-panel-footer">

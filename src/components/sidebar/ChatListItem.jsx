@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useChat } from '../../context/ChatContext.jsx'
 import { usePresence } from '../../context/PresenceContext.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
@@ -6,7 +7,7 @@ import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
 
 export default function ChatListItem({ chat }) {
-  const { activeId, openConversation } = useChat()
+  const { activeId, openConversation, statuses, ensureStatus } = useChat()
   const { onlineIds } = usePresence()
   const { user } = useAuth()
 
@@ -14,13 +15,19 @@ export default function ChatListItem({ chat }) {
   const isAnn = chat.type === 'club_announcements'
   const online = isDm && onlineIds.has(chat.other_user_id)
 
+  useEffect(() => {
+    if (isDm) ensureStatus(chat.other_user_id)
+  }, [isDm, chat.other_user_id, ensureStatus])
+
   let previewText = ''
   if (chat.last_message_at) {
     const who = chat.last_sender_id === user.id ? 'You' : chat.last_sender_name?.split(' ')[0]
     const body = chat.last_message || (chat.last_has_attachment ? 'Attachment' : '')
     previewText = isDm && chat.last_sender_id !== user.id ? body : `${who}: ${body}`
+  } else if (chat.is_admission) {
+    previewText = isAnn ? 'Official announcements' : 'Ask questions or fix an appointment'
   } else {
-    previewText = isAnn ? 'Club announcements' : isDm ? 'Start the conversation' : 'You joined this club'
+    previewText = isAnn ? 'Club announcements' : isDm ? 'Start the conversation' : 'You joined this community'
   }
 
   return (
@@ -32,7 +39,14 @@ export default function ChatListItem({ chat }) {
         name={chat.title}
         size={44}
         online={online}
-        icon={isAnn ? <Icon name="megaphone" size={18} /> : undefined}
+        status={statuses[chat.other_user_id]}
+        icon={
+          isAnn ? (
+            <Icon name="megaphone" size={18} />
+          ) : chat.is_admission ? (
+            <Icon name="users" size={18} />
+          ) : undefined
+        }
       />
       <div className="chat-item-body">
         <div className="chat-item-top">

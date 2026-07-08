@@ -9,6 +9,7 @@ export function ChatProvider({ children }) {
   const [chats, setChats] = useState([])
   const [chatsLoading, setChatsLoading] = useState(true)
   const [activeId, setActiveId] = useState(null)
+  const [statuses, setStatuses] = useState({}) // user_id -> teams-style status
 
   // Pub/sub so any open chat window reacts to the single db-changes channel
   const messageListeners = useRef(new Set())
@@ -26,9 +27,20 @@ export function ChatProvider({ children }) {
   const getProfile = useCallback(async (id) => {
     if (profileCache.current.has(id)) return profileCache.current.get(id)
     const { data } = await supabase.from('profiles').select('*').eq('id', id).single()
-    if (data) profileCache.current.set(id, data)
+    if (data) {
+      profileCache.current.set(id, data)
+      setStatuses((s) => (s[id] === data.status ? s : { ...s, [id]: data.status }))
+    }
     return data
   }, [])
+
+  // Lazily resolve another user's status (for presence dots)
+  const ensureStatus = useCallback(
+    (id) => {
+      if (id && !profileCache.current.has(id)) getProfile(id)
+    },
+    [getProfile]
+  )
 
   const markRead = useCallback(
     async (conversationId) => {
@@ -73,6 +85,16 @@ export function ChatProvider({ children }) {
           if (payload.new) readListeners.current.forEach((cb) => cb(payload.new))
         }
       )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'profiles' },
+        (payload) => {
+          const p = payload.new
+          if (!p) return
+          if (profileCache.current.has(p.id)) profileCache.current.set(p.id, p)
+          setStatuses((s) => (s[p.id] === p.status ? s : { ...s, [p.id]: p.status }))
+        }
+      )
       .subscribe()
     return () => {
       supabase.removeChannel(channel)
@@ -111,6 +133,8 @@ export function ChatProvider({ children }) {
     onReadChange,
     markRead,
     getProfile,
+    statuses,
+    ensureStatus,
   }
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
 }
