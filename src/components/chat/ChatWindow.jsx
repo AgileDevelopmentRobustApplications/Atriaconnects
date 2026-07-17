@@ -20,6 +20,9 @@ export default function ChatWindow({ openPanel }) {
   const conversationId = activeChat.conversation_id
   const isDm = activeChat.type === 'dm'
   const isAnnouncements = activeChat.type === 'club_announcements'
+  const isAdmission = activeChat.type === 'admission'
+  // Faculty viewing a student's admission thread (owner shown as other_user_id)
+  const adminOfAdmission = isAdmission && Boolean(activeChat.other_user_id)
 
   const { messages, loading, sendMessage } = useMessages(conversationId)
   const { typingNames, sendTyping } = useTyping(conversationId)
@@ -27,8 +30,8 @@ export default function ChatWindow({ openPanel }) {
   const { members, myRole } = useClub(activeChat.club_id)
 
   useEffect(() => {
-    if (isDm) ensureStatus(activeChat.other_user_id)
-  }, [isDm, activeChat.other_user_id, ensureStatus])
+    if (activeChat.other_user_id) ensureStatus(activeChat.other_user_id)
+  }, [activeChat.other_user_id, ensureStatus])
 
   // The other conversation of the same club (chat <-> announcements toggle)
   const sibling = activeChat.club_id
@@ -37,7 +40,7 @@ export default function ChatWindow({ openPanel }) {
       )
     : null
 
-  const online = isDm && onlineIds.has(activeChat.other_user_id)
+  const online = (isDm || adminOfAdmission) && onlineIds.has(activeChat.other_user_id)
   const peerStatus = statusById(statuses[activeChat.other_user_id])
 
   let subtitle
@@ -47,7 +50,7 @@ export default function ChatWindow({ openPanel }) {
         {typingNames.slice(0, 2).join(', ')} {typingNames.length === 1 ? 'is' : 'are'} typing…
       </span>
     )
-  } else if (isDm) {
+  } else if (isDm || adminOfAdmission) {
     subtitle = online ? (
       <span style={{ color: peerStatus.color, fontWeight: 600 }}>{peerStatus.label}</span>
     ) : (
@@ -55,14 +58,17 @@ export default function ChatWindow({ openPanel }) {
     )
   } else if (isAnnouncements) {
     subtitle = 'Announcements — only admins can post'
-  } else if (activeChat.is_admission) {
-    subtitle = 'Admissions department — open to everyone'
+  } else if (isAdmission) {
+    subtitle = 'Private — only you and the admissions staff can see this'
   } else {
     subtitle = `${members.length} member${members.length === 1 ? '' : 's'}`
   }
 
-  const canPost = isGuest
-    ? Boolean(activeChat.is_admission) && activeChat.type === 'club_chat'
+  // Admission threads: the owner (student/guest) and any staff member may post.
+  const canPost = isAdmission
+    ? true
+    : isGuest
+    ? false
     : !isAnnouncements || myRole === 'admin' || isEmployee
 
   const lockMessage = isGuest
@@ -83,7 +89,7 @@ export default function ChatWindow({ openPanel }) {
           icon={
             isAnnouncements ? (
               <Icon name="megaphone" size={17} />
-            ) : activeChat.is_admission ? (
+            ) : isAdmission && !adminOfAdmission ? (
               <Icon name="users" size={17} />
             ) : undefined
           }

@@ -13,19 +13,22 @@ export default function ChatListItem({ chat }) {
 
   const isDm = chat.type === 'dm'
   const isAnn = chat.type === 'club_announcements'
-  const online = isDm && onlineIds.has(chat.other_user_id)
+  const isAdmission = chat.type === 'admission'
+  // Faculty viewing a student's admission thread (owner shown as other_user_id)
+  const adminOfAdmission = isAdmission && Boolean(chat.other_user_id)
+  const online = (isDm || adminOfAdmission) && onlineIds.has(chat.other_user_id)
 
   useEffect(() => {
-    if (isDm) ensureStatus(chat.other_user_id)
-  }, [isDm, chat.other_user_id, ensureStatus])
+    if (chat.other_user_id) ensureStatus(chat.other_user_id)
+  }, [chat.other_user_id, ensureStatus])
 
   let previewText = ''
   if (chat.last_message_at) {
     const who = chat.last_sender_id === user.id ? 'You' : chat.last_sender_name?.split(' ')[0]
     const body = chat.last_message || (chat.last_has_attachment ? 'Attachment' : '')
-    previewText = isDm && chat.last_sender_id !== user.id ? body : `${who}: ${body}`
-  } else if (chat.is_admission) {
-    previewText = isAnn ? 'Official announcements' : 'Ask questions or fix an appointment'
+    previewText = (isDm || adminOfAdmission) && chat.last_sender_id !== user.id ? body : `${who}: ${body}`
+  } else if (isAdmission) {
+    previewText = adminOfAdmission ? 'New enquiry' : 'Message the admissions office privately'
   } else {
     previewText = isAnn ? 'Club announcements' : isDm ? 'Start the conversation' : 'You joined this community'
   }
@@ -43,7 +46,7 @@ export default function ChatListItem({ chat }) {
         icon={
           isAnn ? (
             <Icon name="megaphone" size={18} />
-          ) : chat.is_admission ? (
+          ) : isAdmission && !adminOfAdmission ? (
             <Icon name="users" size={18} />
           ) : undefined
         }
