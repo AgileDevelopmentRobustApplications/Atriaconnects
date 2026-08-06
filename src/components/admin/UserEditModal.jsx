@@ -4,18 +4,41 @@ import { statusById } from '../../lib/status.js'
 import Modal from '../common/Modal.jsx'
 import Icon from '../common/Icon.jsx'
 
-// Edit any user's information (faculty only; user_type changes go through an RPC)
-export default function UserEditModal({ user, membership, clubs, employee, isHod, onSaved, onClose }) {
+const ROLE_LABELS = {
+  management: 'Management',
+  intern: 'Intern',
+  floor_incharge: 'Floor In-Charge',
+  faculty: 'Faculty',
+  itdept: 'IT Dept',
+  principal: 'Principal',
+}
+const ALL_ROLES = Object.keys(ROLE_LABELS)
+
+// Edit any user's information (superadmin or staff).
+// Superadmin-only actions: changing user_roles, user_type flips, password reset flag.
+export default function UserEditModal({
+  user,
+  userRoles = [],
+  membership,
+  clubs,
+  isSuperAdmin,
+  onSaved,
+  onClose,
+}) {
   const [form, setForm] = useState({
     full_name: user.full_name ?? '',
     phone: user.phone ?? '',
     department: user.department ?? '',
     branch: user.branch ?? '',
     year: user.year ?? '',
+    semester: user.semester ?? '',
     admission_code: user.admission_code ?? '',
     dob: user.dob ?? '',
   })
   const [userType, setUserType] = useState(user.user_type)
+  const [roleAssignments, setRoleAssignments] = useState(userRoles)
+  const [newRole, setNewRole] = useState(ALL_ROLES[0] || 'management')
+  const [newDept, setNewDept] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -31,6 +54,7 @@ export default function UserEditModal({ user, membership, clubs, employee, isHod
       department: form.department.trim(),
       branch: form.branch.trim(),
       year: form.year === '' ? null : Number(form.year),
+      semester: form.semester === '' ? null : Number(form.semester),
       admission_code: form.admission_code.trim(),
       dob: form.dob === '' ? null : form.dob,
     }
@@ -40,7 +64,7 @@ export default function UserEditModal({ user, membership, clubs, employee, isHod
       setBusy(false)
       return
     }
-    if (userType !== user.user_type) {
+    if (isSuperAdmin && userType !== user.user_type) {
       const { error: typeErr } = await supabase.rpc('set_user_type', {
         _user: user.id,
         _type: userType,
@@ -66,19 +90,55 @@ export default function UserEditModal({ user, membership, clubs, employee, isHod
     else onSaved()
   }
 
-  async function toggleFaculty() {
-    if (employee) {
-      if (!confirm(`Remove ${user.full_name} from faculty?`)) return
-      const { error: err } = await supabase.from('employees').delete().eq('user_id', user.id)
-      if (err) alert(err.message)
-    } else {
-      const { error: err } = await supabase
-        .from('employees')
-        .insert({ user_id: user.id, role: 'teacher', department: form.department.trim() })
-      if (err) alert(err.message)
+  async function addRoleAssignment() {
+    if (roleAssignments.some((r) => r.role === newRole)) {
+      alert(`${ROLE_LABELS[newRole]} already assigned.`)
+      return
     }
+    const { data, error: err } = await supabase
+      .from('user_roles')
+      .insert({ user_id: user.id, role: newRole, department: newDept.trim() })
+      .select()
+      .single()
+    if (err) {
+      alert(err.message)
+      return
+    }
+    setRoleAssignments((rs) => [...rs, { ...data, profile: user }])
+    setNewDept('')
     onSaved()
-    onClose()
+  }
+
+  async function removeRoleAssignment(role) {
+    if (
+      !confirm(
+        `Remove role "${ROLE_LABELS[role] || role}" from ${user.full_name}?`
+      )
+    )
+      return
+    const { error: err } = await supabase
+      .from('user_roles')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('role', role)
+    if (err) alert(err.message)
+    else {
+      setRoleAssignments((rs) => rs.filter((r) => r.role !== role))
+      onSaved()
+    }
+  }
+
+  async function requirePasswordReset() {
+    if (!confirm(`Force ${user.full_name} to reset their password on next sign-in?`)) return
+    const { error: err } = await supabase
+      .from('profiles')
+      .update({ must_reset_password: true })
+      .eq('id', user.id)
+    if (err) alert(err.message)
+    else {
+      alert('Done — they will be redirected to /welcome next time.')
+      onSaved()
+    }
   }
 
   return (
@@ -120,6 +180,16 @@ export default function UserEditModal({ user, membership, clubs, employee, isHod
           <input type="number" min="1" max="6" value={form.year} onChange={set('year')} />
         </label>
         <label>
+          Semester
+          <input
+            type="number"
+            min="1"
+            max="12"
+            value={form.semester}
+            onChange={set('semester')}
+          />
+        </label>
+        <label>
           Admission code
           <input value={form.admission_code} onChange={set('admission_code')} />
         </label>
@@ -129,12 +199,57 @@ export default function UserEditModal({ user, membership, clubs, employee, isHod
         </label>
         <label>
           Account type
-          <select value={userType} onChange={(e) => setUserType(e.target.value)} disabled={!!employee}>
-            <option value="member">Adra member</option>
+          <select
+            value={userType}
+            onChange={(e) => setUserType(e.target.value)}
+            disabled={!isSuperAdmin}
+          >
+            <option value="member">Student</option>
             <option value="guest">Guest</option>
           </select>
         </label>
       </div>
+
+      {isSuperAdmin && (
+        <>
+          <div className="edit-section">Roles</div>
+          <div className="chip-row">
+            {roleAssignments.length === 0 && (
+              <span className="picker-sub">No roles assigned</span>
+            )}
+            {roleAssignments.map((r) => (
+              <span key={r.role} className="role-chip">
+                {ROLE_LABELS[r.role] || r.role}
+                {r.department ? ` · ${r.department}` : ''}
+                <button
+                  className="chip-remove"
+                  title="Remove role"
+                  onClick={() => removeRoleAssignment(r.role)}
+                >
+                  <Icon name="x" size={11} />
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="faculty-add" style={{ marginTop: 8 }}>
+            <select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
+              {ALL_ROLES.map((r) => (
+                <option key={r} value={r}>
+                  {ROLE_LABELS[r]}
+                </option>
+              ))}
+            </select>
+            <input
+              placeholder="Department (optional)"
+              value={newDept}
+              onChange={(e) => setNewDept(e.target.value)}
+            />
+            <button className="btn-small" onClick={addRoleAssignment}>
+              Assign
+            </button>
+          </div>
+        </>
+      )}
 
       <div className="edit-section">Community memberships</div>
       <div className="chip-row">
@@ -143,34 +258,35 @@ export default function UserEditModal({ user, membership, clubs, employee, isHod
           <span key={m.club_id} className="club-chip">
             {clubName(m.club_id)}
             {m.role === 'admin' ? ' (admin)' : ''}
-            <button className="chip-remove" title="Remove" onClick={() => removeFromClub(m.club_id)}>
+            <button
+              className="chip-remove"
+              title="Remove"
+              onClick={() => removeFromClub(m.club_id)}
+            >
               <Icon name="x" size={11} />
             </button>
           </span>
         ))}
       </div>
 
-      {isHod && (
+      {isSuperAdmin && (
         <>
-          <div className="edit-section">Faculty</div>
+          <div className="edit-section">Security</div>
           <div className="chip-row">
-            {employee ? (
-              <span className="picker-sub">
-                {employee.role === 'hod' ? 'HOD' : 'Teacher'}
-                {employee.department ? ` · ${employee.department}` : ''}
-              </span>
-            ) : (
-              <span className="picker-sub">Not faculty</span>
-            )}
-            <button className="btn-small" onClick={toggleFaculty}>
-              {employee ? 'Remove from faculty' : 'Make teacher'}
+            <button className="btn-small" onClick={requirePasswordReset}>
+              Force password reset
             </button>
           </div>
         </>
       )}
 
       {error && <div className="auth-error">{error}</div>}
-      <button className="btn-primary btn-block" style={{ marginTop: 14 }} onClick={save} disabled={busy}>
+      <button
+        className="btn-primary btn-block"
+        style={{ marginTop: 14 }}
+        onClick={save}
+        disabled={busy}
+      >
         {busy ? 'Saving…' : 'Save changes'}
       </button>
     </Modal>

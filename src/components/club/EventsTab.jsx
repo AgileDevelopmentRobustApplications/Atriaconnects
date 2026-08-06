@@ -3,8 +3,9 @@ import { useEvents } from '../../hooks/useEvents.js'
 import EventCard from './EventCard.jsx'
 import NewEventModal from './NewEventModal.jsx'
 
-export default function EventsTab({ clubId, isAdmin }) {
-  const { events, loading, createEvent, rsvp } = useEvents(clubId)
+// Used for both clubs (clubId) and academic groups (groupId).
+export default function EventsTab({ clubId, groupId, isAdmin }) {
+  const { events, loading, createEvent, rsvp } = useEvents({ clubId, groupId })
   const [showNew, setShowNew] = useState(false)
 
   const now = new Date()
@@ -35,7 +36,7 @@ export default function EventsTab({ clubId, isAdmin }) {
         <EventCard key={e.id} event={e} onRsvp={rsvp} past />
       ))}
 
-      {showNew && <NewEventModal onCreate={createEvent} onClose={() => setShowNew(false)} />}
+      {showNew && <NewEventModal onCreate={createEvent} clubId={clubId} onClose={() => setShowNew(false)} />}
     </div>
   )
 }

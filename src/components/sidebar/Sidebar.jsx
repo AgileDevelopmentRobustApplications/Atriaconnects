@@ -8,18 +8,25 @@ import Icon from '../common/Icon.jsx'
 import ChatListItem from './ChatListItem.jsx'
 import NewDmModal from './NewDmModal.jsx'
 import NewClubModal from './NewClubModal.jsx'
-import BrowseClubsModal from './BrowseClubsModal.jsx'
+import BrowseModal from './BrowseModal.jsx'
+import ProfileSettingsModal from '../auth/ProfileSettingsModal.jsx'
+import CanteenModal from '../canteen/CanteenModal.jsx'
 
 export default function Sidebar() {
   const { profile, signOut, isEmployee, isGuest, updateStatus } = useAuth()
   const { chats, chatsLoading } = useChat()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse'
+  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse' | 'profile' | 'canteen'
   const [statusMenu, setStatusMenu] = useState(false)
 
   const filtered = chats.filter((c) => c.title?.toLowerCase().includes(search.toLowerCase()))
   const myStatus = statusById(profile?.status)
+
+  // Separate chats into sections for better organization
+  const dms = filtered.filter((c) => c.type === 'dm' || c.type === 'admission')
+  const academics = filtered.filter((c) => c.type === 'group_chat' || c.type === 'group_announcements')
+  const communities = filtered.filter((c) => c.type === 'club_chat' || c.type === 'club_announcements')
 
   return (
     <div className="sidebar">
@@ -30,7 +37,7 @@ export default function Sidebar() {
           title="Set your status"
           onClick={() => setStatusMenu((v) => !v)}
         >
-          <Avatar name={profile?.full_name} size={38} online status={profile?.status} />
+          <Avatar name={profile?.full_name} url={profile?.avatar_url} size={38} online status={profile?.status} />
         </button>
         <div className="sidebar-me-wrap" onClick={() => setStatusMenu((v) => !v)}>
           <span className="sidebar-me">
@@ -52,8 +59,11 @@ export default function Sidebar() {
               <Icon name="chat" />
             </button>
           )}
-          <button className="icon-btn" title="Browse communities" onClick={() => setModal('browse')}>
+          <button className="icon-btn" title="Browse" onClick={() => setModal('browse')}>
             <Icon name="compass" />
+          </button>
+          <button className="icon-btn" title="Canteen" onClick={() => setModal('canteen')}>
+            <Icon name="coffee" />
           </button>
           {!isGuest && (
             <button className="icon-btn" title="Create community" onClick={() => setModal('club')}>
@@ -79,6 +89,17 @@ export default function Sidebar() {
                 {s.label}
               </button>
             ))}
+            <div className="menu-divider" />
+            <button
+              className="status-option"
+              onClick={() => {
+                setModal('profile')
+                setStatusMenu(false)
+              }}
+            >
+              <Icon name="smartphone" size={14} style={{ marginRight: 8 }} />
+              Profile settings
+            </button>
           </div>
         )}
       </div>
@@ -93,19 +114,46 @@ export default function Sidebar() {
 
       <div className="chat-list">
         {chatsLoading && <div className="side-note">Loading chats…</div>}
-        {!chatsLoading && filtered.length === 0 && (
-          <div className="side-note">
-            No chats yet. Browse communities or start a direct message from the buttons above.
-          </div>
+        {!chatsLoading && (
+          <>
+            {dms.length > 0 && (
+              <div className="chat-section">
+                <div className="chat-section-header">Direct Messages</div>
+                {dms.map((chat) => (
+                  <ChatListItem key={chat.conversation_id} chat={chat} />
+                ))}
+              </div>
+            )}
+            {academics.length > 0 && (
+              <div className="chat-section">
+                <div className="chat-section-header">Academics</div>
+                {academics.map((chat) => (
+                  <ChatListItem key={chat.conversation_id} chat={chat} />
+                ))}
+              </div>
+            )}
+            {communities.length > 0 && (
+              <div className="chat-section">
+                <div className="chat-section-header">Communities</div>
+                {communities.map((chat) => (
+                  <ChatListItem key={chat.conversation_id} chat={chat} />
+                ))}
+              </div>
+            )}
+            {filtered.length === 0 && (
+              <div className="side-note">
+                No chats found. Browse communities or start a direct message.
+              </div>
+            )}
+          </>
         )}
-        {filtered.map((chat) => (
-          <ChatListItem key={chat.conversation_id} chat={chat} />
-        ))}
       </div>
 
       {modal === 'dm' && <NewDmModal onClose={() => setModal(null)} />}
       {modal === 'club' && <NewClubModal onClose={() => setModal(null)} />}
-      {modal === 'browse' && <BrowseClubsModal onClose={() => setModal(null)} />}
+      {modal === 'browse' && <BrowseModal onClose={() => setModal(null)} />}
+      {modal === 'profile' && <ProfileSettingsModal onClose={() => setModal(null)} />}
+      {modal === 'canteen' && <CanteenModal onClose={() => setModal(null)} />}
     </div>
   )
 }

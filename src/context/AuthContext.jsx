@@ -3,10 +3,21 @@ import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 
+// All role tag values (mirrors CHECK constraint on user_roles.role).
+export const ROLE_TAGS = [
+  { id: 'management', label: 'Management' },
+  { id: 'intern', label: 'Intern' },
+  { id: 'floor_incharge', label: 'Floor In-Charge' },
+  { id: 'faculty', label: 'Faculty' },
+  { id: 'itdept', label: 'IT Dept' },
+  { id: 'principal', label: 'Principal' },
+]
+const SUPERADMIN_ROLES = ['itdept', 'principal']
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
-  const [employee, setEmployee] = useState(null) // { role: 'teacher'|'hod', department } or null
+  const [roles, setRoles] = useState([]) // [{ role, department }, ...]
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -24,56 +35,32 @@ export function AuthProvider({ children }) {
     setProfile(data)
   }
 
-  async function refreshEmployee(uid) {
+  async function refreshRoles(uid) {
     if (!uid) {
-      setEmployee(null)
+      setRoles([])
       return
     }
     const { data } = await supabase
-      .from('employees')
+      .from('user_roles')
       .select('role, department')
       .eq('user_id', uid)
-      .maybeSingle()
-    setEmployee(data ?? null)
+    setRoles(data ?? [])
   }
 
   useEffect(() => {
     const uid = session?.user?.id
     if (!uid) {
       setProfile(null)
-      setEmployee(null)
+      setRoles([])
       return
     }
     refreshProfile(uid)
-    refreshEmployee(uid)
+    refreshRoles(uid)
   }, [session?.user?.id])
 
-  // Google sign-in creates guest accounts (admissions access only)
-  async function signInWithGoogle(returnTo = '/') {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}${returnTo}` },
-    })
-    if (error) throw error
-  }
-
-  // Email accounts are full "adra" members
   async function signIn(email, password) {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
-  }
-
-  async function signUp(fullName, email, password) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    })
-    if (error) throw error
-    if (!data.session) {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-      if (signInError) throw signInError
-    }
   }
 
   async function signOut() {
@@ -86,22 +73,27 @@ export function AuthProvider({ children }) {
     await supabase.from('profiles').update({ status }).eq('id', session.user.id)
   }
 
-  const isGuest = profile?.user_type === 'guest' && !employee
+  // Derived flags. legacy 'employee' kept as a non-superadmin staff member.
+  const roleIds = roles.map((r) => r.role)
+  const isGuest = profile?.user_type === 'guest' && roleIds.length === 0
+  const isEmployee = roleIds.some((r) => r === 'faculty' || SUPERADMIN_ROLES.includes(r))
+  const isSuperAdmin = roleIds.some((r) => SUPERADMIN_ROLES.includes(r))
+  const isFaculty = roleIds.includes('faculty')
 
   const value = {
     session,
     user: session?.user ?? null,
     profile,
-    employee,
-    isEmployee: !!employee,
-    isHod: employee?.role === 'hod',
+    roles,
+    roleIds,
+    isEmployee,
+    isFaculty,
+    isSuperAdmin,
     isGuest,
-    refreshEmployee: () => refreshEmployee(session?.user?.id),
+    refreshRoles: () => refreshRoles(session?.user?.id),
     refreshProfile: () => refreshProfile(session?.user?.id),
     loading,
-    signInWithGoogle,
     signIn,
-    signUp,
     signOut,
     updateStatus,
   }

@@ -62,6 +62,12 @@ export function ChatProvider({ children }) {
 
   useEffect(() => {
     if (!user) return
+
+    // Request notification permission
+    import('../lib/notifications.js').then(({ requestNotificationPermission }) => {
+      requestNotificationPermission()
+    })
+
     refreshChats()
     const channel = supabase
       .channel('db-changes')
@@ -71,6 +77,24 @@ export function ChatProvider({ children }) {
         (payload) => {
           const msg = payload.new
           messageListeners.current.forEach((cb) => cb(msg))
+          
+          // Show browser notification if message is from someone else and chat is not active/focused
+          if (msg.sender_id !== user.id) {
+            const isCurrentChat = msg.conversation_id === activeIdRef.current
+            const shouldNotify = !isCurrentChat || document.hidden || !document.hasFocus()
+            if (shouldNotify) {
+              getProfile(msg.sender_id).then((p) => {
+                if (p) {
+                  const title = p.full_name
+                  const body = msg.content || (msg.attachment_path ? '📎 Attachment' : '')
+                  import('../lib/notifications.js').then(({ showNotification }) => {
+                    showNotification(title, body, msg.conversation_id)
+                  })
+                }
+              })
+            }
+          }
+
           // Reading the open conversation keeps our unread at 0 and the peer's ticks blue
           if (msg.conversation_id === activeIdRef.current && msg.sender_id !== user.id) {
             markRead(msg.conversation_id)

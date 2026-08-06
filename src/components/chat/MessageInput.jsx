@@ -2,6 +2,9 @@ import { useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import Icon from '../common/Icon.jsx'
 
+// 10 MB cap is enforced in storage RLS (migration 006). This client-side check
+// is kept as defense-in-depth so users see a friendly message before the
+// upload starts.
 const MAX_FILE_MB = 10
 
 export default function MessageInput({ conversationId, onSend, onTyping }) {
@@ -26,23 +29,32 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    if (file.size > MAX_FILE_MB * 1024 * 1024) {
-      alert(`File too large — max ${MAX_FILE_MB} MB`)
-      return
-    }
+
     setUploading(true)
     try {
-      const safeName = file.name.replace(/[^\w.\-]+/g, '_')
+      let uploadFile = file
+      if (file.type.startsWith('image/')) {
+        const { compressImage } = await import('../../lib/compress.js')
+        uploadFile = await compressImage(file)
+      }
+
+      if (uploadFile.size > MAX_FILE_MB * 1024 * 1024) {
+        alert(`File too large — max ${MAX_FILE_MB} MB (server enforces this too)`)
+        setUploading(false)
+        return
+      }
+
+      const safeName = uploadFile.name.replace(/[^\w.\-]+/g, '_')
       const path = `${conversationId}/${crypto.randomUUID()}_${safeName}`
-      const { error } = await supabase.storage.from('attachments').upload(path, file)
+      const { error } = await supabase.storage.from('attachments').upload(path, uploadFile)
       if (error) throw error
       await onSend({
         content: text.trim(),
         attachment: {
           attachment_path: path,
-          attachment_name: file.name,
-          attachment_type: file.type || 'application/octet-stream',
-          attachment_size: file.size,
+          attachment_name: uploadFile.name,
+          attachment_type: uploadFile.type || 'application/octet-stream',
+          attachment_size: uploadFile.size,
         },
       })
       setText('')

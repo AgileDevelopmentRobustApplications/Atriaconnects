@@ -5,3 +5,7 @@ dist/
 
 .vercel
 .env*
+
+# Executables and temp files
+agy.exe
+resq-paws-*.html

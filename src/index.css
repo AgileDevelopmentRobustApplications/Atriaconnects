@@ -15,6 +15,8 @@
   --line-green: #3b4c45;
   --on-dark: #eae3d2;
   --on-dark-dim: #a7b0a5;
+  /* Accent color for user names on lists/global. */
+  --c-name-accent: #d4391f;
 }
 
 * {
@@ -1745,3 +1747,270 @@ textarea:focus {
     padding: 28px 22px;
   }
 }
+
+/* ============ Name color accent (global) ============
+ * User names render in --c-name-accent on every list that displays them.
+ * Inline spans/buttons that already use specific colors stay as-is. */
+.picker-name,
+.modal .picker-name,
+.chat-header-title,
+.chat-header-title-name,
+.member-name,
+.sidebar-me,
+.admin-me {
+  color: var(--c-name-accent);
+}
+
+/* ============ Role chip ============ */
+.role-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px 4px 2px 0;
+  background: var(--cream-3);
+  color: var(--green);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+.role-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* ============ PWA install card ============ */
+.pwa-install-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin: 28px auto 0;
+  max-width: 460px;
+  background: var(--cream-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  color: var(--ink);
+}
+.pwa-install-card > .icon {
+  flex-shrink: 0;
+  color: var(--red);
+}
+.pwa-install-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 1px;
+  font-size: 13px;
+}
+.pwa-install-text strong {
+  color: var(--green);
+  font-size: 13px;
+}
+.pwa-install-text span {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+/* ============ Continue as guest link ============ */
+.btn-link-guest {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  background: transparent;
+  color: var(--red);
+  border: 1px dashed var(--red);
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.15s ease;
+}
+.btn-link-guest:hover:not(:disabled) {
+  background: var(--cream-2);
+}
+.btn-link-guest:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Misc */
+.auth-note-success {
+  color: var(--green);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ============ Chat Sections ============ */
+.chat-section {
+  margin-bottom: 12px;
+}
+.chat-section-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  margin-top: 10px;
+  border-bottom: 1px solid var(--cream-3);
+}
+
+/* ============ Profile Settings ============ */
+.profile-settings-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* ============ Canteen Styles ============ */
+.shop-header-banner {
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--cream-3);
+  padding-bottom: 12px;
+}
+.canteen-announcement-banner {
+  background: var(--cream-2);
+  border-left: 4px solid var(--red);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border-radius: 3px;
+  font-size: 13.5px;
+}
+.ann-banner-title {
+  font-weight: bold;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.ann-banner-content {
+  color: var(--ink);
+}
+.canteen-menu-columns {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .canteen-menu-columns {
+    grid-template-columns: 1fr;
+  }
+}
+.canteen-menu-list {
+  background: var(--cream-1);
+  padding: 16px;
+  border-radius: 4px;
+}
+.canteen-cart-card {
+  background: var(--cream-2);
+  padding: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--cream-3);
+  align-self: start;
+}
+.cart-items-review {
+  margin: 12px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.cart-review-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed var(--cream-3);
+  padding-bottom: 4px;
+}
+.cart-review-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: bold;
+  border-top: 1px solid var(--cream-3);
+  padding-top: 8px;
+  margin-bottom: 16px;
+}
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cart-qty {
+  font-weight: bold;
+  min-width: 16px;
+  text-align: center;
+}
+.item-disabled {
+  opacity: 0.6;
+}
+.status-active-text {
+  color: var(--green);
+  font-weight: bold;
+}
+.status-dnd-text {
+  color: var(--red);
+  font-weight: bold;
+}
+
+/* Simulated Payment Portal */
+.payment-portal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.payment-portal-card {
+  background: var(--cream-1);
+  padding: 24px;
+  border-radius: 6px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.payment-portal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--green);
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--cream-3);
+  padding-bottom: 10px;
+}
+.payment-method-selector {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+}
+.payment-method-selector label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.portal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* User Click Highlight */
+.picker-name.clicked {
+  color: #007aff !important;
+}
+

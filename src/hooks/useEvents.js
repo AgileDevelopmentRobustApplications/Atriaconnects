@@ -2,40 +2,53 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
-export function useEvents(clubId) {
+// Hook for events. Either clubId or groupId must be set; the other is null.
+export function useEvents({ clubId, groupId } = {}) {
   const { user } = useAuth()
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(async () => {
-    if (!clubId) return
-    const { data } = await supabase
+    if (!clubId && !groupId) {
+      setEvents([])
+      setLoading(false)
+      return
+    }
+    let q = supabase
       .from('events')
       .select(
         '*, rsvps:event_rsvps(user_id, status, profile:profiles(full_name)), attendance:event_attendance(user_id, present)'
       )
-      .eq('club_id', clubId)
       .order('starts_at')
+    if (clubId) q = q.eq('club_id', clubId)
+    if (groupId) q = q.eq('academic_group_id', groupId)
+    const { data } = await q
     setEvents(data ?? [])
     setLoading(false)
-  }, [clubId])
+  }, [clubId, groupId])
 
   useEffect(() => {
     refresh()
   }, [refresh])
 
   const createEvent = useCallback(
-    async ({ title, description, location, starts_at }) => {
-      const { error } = await supabase
-        .from('events')
-        .insert({ club_id: clubId, title, description, location, starts_at, created_by: user.id })
+    async ({ title, description, location, starts_at, targetClubId = null }) => {
+      const insert = {
+        title,
+        description,
+        location,
+        starts_at,
+        created_by: user.id,
+        club_id: targetClubId ?? clubId ?? null,
+        academic_group_id: groupId ?? null,
+      }
+      const { error } = await supabase.from('events').insert(insert)
       if (error) throw error
       await refresh()
     },
-    [clubId, user, refresh]
+    [clubId, groupId, user, refresh]
   )
 
-  // RSVPs are permanent: one insert per member per event, no updates (DB-enforced)
   const rsvp = useCallback(
     async (eventId, status) => {
       const { error } = await supabase

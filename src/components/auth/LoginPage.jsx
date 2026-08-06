@@ -2,13 +2,15 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
+import GuestNameModal from './GuestNameModal.jsx'
 
 export default function LoginPage() {
-  const { signIn, signInWithGoogle } = useAuth()
+  const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [guestOpen, setGuestOpen] = useState(false)
 
   async function handleEmailLogin(e) {
     e.preventDefault()
@@ -18,17 +20,6 @@ export default function LoginPage() {
       await signIn(email.trim(), password)
     } catch (err) {
       setError(err.message ?? 'Login failed')
-      setBusy(false)
-    }
-  }
-
-  async function handleGoogle() {
-    setError('')
-    setBusy(true)
-    try {
-      await signInWithGoogle('/')
-    } catch (err) {
-      setError(err.message ?? 'Sign in failed')
       setBusy(false)
     }
   }
@@ -70,20 +61,26 @@ export default function LoginPage() {
           <span>or</span>
         </div>
 
-        <button className="btn-google" onClick={handleGoogle} disabled={busy}>
-          <Icon name="google" size={18} />
-          Continue with Google — guest
+        <button
+          type="button"
+          className="btn-link-guest"
+          onClick={() => setGuestOpen(true)}
+          disabled={busy}
+        >
+          Continue as guest
         </button>
         <p className="auth-note">
-          Guest access lets you browse communities and message the Admissions Office.
+          Guest accounts can browse communities and message the Admissions Office.
         </p>
 
         <p className="auth-switch">
-          New student or staff? <Link to="/signup">Create an account</Link>
+          New here? <Link to="/welcome">Set up your account</Link>
           <br />
-          Teacher or HOD? <Link to="/faculty">Faculty gateway</Link>
+          <Link to="/forgot">Forgot password?</Link>
         </p>
       </div>
+
+      {guestOpen && <GuestNameModal onClose={() => setGuestOpen(false)} />}
     </div>
   )
 }

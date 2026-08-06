@@ -83,6 +83,7 @@ export default function ChatWindow({ openPanel }) {
         </button>
         <Avatar
           name={activeChat.title}
+          url={activeChat.avatar_url}
           size={40}
           online={online}
           status={statuses[activeChat.other_user_id]}
@@ -154,3 +155,4 @@ export default function ChatWindow({ openPanel }) {
     </div>
   )
 }
+

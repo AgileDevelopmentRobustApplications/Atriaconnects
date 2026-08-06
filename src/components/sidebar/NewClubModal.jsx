@@ -3,7 +3,10 @@ import { supabase } from '../../lib/supabase.js'
 import { useChat } from '../../context/ChatContext.jsx'
 import Modal from '../common/Modal.jsx'
 
-export default function NewClubModal({ onClose }) {
+// Create a top-level community. Pass parentId prop to create a sub-club under
+// an existing community (the parent must allow members; sub-clubs inherit
+// access via their own memberships table — they don't auto-share members).
+export default function NewClubModal({ onClose, parentId = null, parentName = '' }) {
   const { refreshChats, openConversation } = useChat()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -15,11 +18,23 @@ export default function NewClubModal({ onClose }) {
     setError('')
     setBusy(true)
     try {
-      const { data: clubId, error: rpcError } = await supabase.rpc('create_club', {
-        _name: name.trim(),
-        _description: description.trim(),
-      })
-      if (rpcError) throw rpcError
+      let clubId
+      if (parentId) {
+        const { data, error: rpcError } = await supabase.rpc('create_subclub', {
+          _parent: parentId,
+          _name: name.trim(),
+          _description: description.trim(),
+        })
+        if (rpcError) throw rpcError
+        clubId = data
+      } else {
+        const { data, error: rpcError } = await supabase.rpc('create_club', {
+          _name: name.trim(),
+          _description: description.trim(),
+        })
+        if (rpcError) throw rpcError
+        clubId = data
+      }
       const { data: conv } = await supabase
         .from('conversations')
         .select('id')
@@ -36,10 +51,10 @@ export default function NewClubModal({ onClose }) {
   }
 
   return (
-    <Modal title="Create a club" onClose={onClose}>
+    <Modal title={parentId ? `New sub-group in ${parentName}` : 'Create a club'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <input
-          placeholder="Club name (e.g. Robotics Club)"
+          placeholder={parentId ? 'Sub-group name' : 'Club name (e.g. Robotics Club)'}
           value={name}
           onChange={(e) => setName(e.target.value)}
           maxLength={80}
@@ -47,16 +62,18 @@ export default function NewClubModal({ onClose }) {
           autoFocus
         />
         <textarea
-          placeholder="What is this club about?"
+          placeholder="What is this community about?"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
         />
         {error && <div className="auth-error">{error}</div>}
         <button type="submit" className="btn-primary" disabled={busy || !name.trim()}>
-          {busy ? 'Creating…' : 'Create club'}
+          {busy ? 'Creating…' : parentId ? 'Create sub-group' : 'Create club'}
         </button>
-        <p className="side-note">You'll be the admin — you can post announcements and schedule events.</p>
+        <p className="side-note">
+          You'll be the admin — you can post announcements and schedule events.
+        </p>
       </form>
     </Modal>
   )

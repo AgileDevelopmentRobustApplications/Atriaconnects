@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { useChat } from '../../context/ChatContext.jsx'
 import Sidebar from '../sidebar/Sidebar.jsx'
 import ChatWindow from '../chat/ChatWindow.jsx'
-import ClubInfoPanel from '../club/ClubInfoPanel.jsx'
+import InfoPanel from '../common/InfoPanel.jsx'
+import InstallPwaCard from '../common/InstallPwaCard.jsx'
 import Icon from '../common/Icon.jsx'
 
 export default function AppLayout() {
   const { activeChat } = useChat()
-  // { clubId, tab: 'members' | 'events' | 'resources' } or null
+  // panel: { clubId?, groupId?, tab } | null
   const [panel, setPanel] = useState(null)
 
   return (
@@ -15,10 +16,7 @@ export default function AppLayout() {
       <Sidebar />
       <div className="main-pane">
         {activeChat ? (
-          <ChatWindow
-            key={activeChat.conversation_id}
-            openPanel={(clubId, tab = 'members') => setPanel({ clubId, tab })}
-          />
+          <ChatWindow key={activeChat.conversation_id} openPanel={setPanel} />
         ) : (
           <div className="empty-state">
             <div className="empty-mark">
@@ -32,11 +30,17 @@ export default function AppLayout() {
               events and shared resources — all in one place.
             </p>
             <p className="empty-hint">Select a chat to start messaging</p>
+            <InstallPwaCard />
           </div>
         )}
       </div>
       {panel && (
-        <ClubInfoPanel clubId={panel.clubId} initialTab={panel.tab} onClose={() => setPanel(null)} />
+        <InfoPanel
+          clubId={panel.clubId}
+          groupId={panel.groupId}
+          initialTab={panel.tab}
+          onClose={() => setPanel(null)}
+        />
       )}
     </div>
   )

@@ -17,10 +17,11 @@ const TABS = [
   { id: 'clubs', label: 'Communities' },
   { id: 'events', label: 'Events' },
   { id: 'faculty', label: 'Faculty' },
+  { id: 'groups', label: 'Academics'},
 ]
 
 export default function AdminPage() {
-  const { profile, employee, isHod } = useAuth()
+  const { profile, employee, isHod, isSuperAdmin } = useAuth()
   const navigate = useNavigate()
   const [tab, setTab] = useState('overview')
   const [data, setData] = useState({
@@ -30,28 +31,44 @@ export default function AdminPage() {
     clubs: [],
     events: [],
     requests: [],
+    userRoles: [],
+    academicGroups: [],
+    academicMemberships: [],
   })
   const [loading, setLoading] = useState(true)
 
   const loadAll = useCallback(async () => {
-    const [profilesRes, employeesRes, membershipsRes, clubsRes, eventsRes, requestsRes] =
-      await Promise.all([
-        supabase.from('profiles').select('*').order('full_name'),
-        supabase.from('employees').select('*, profile:profiles(id, full_name, email)').order('created_at'),
-        supabase.from('memberships').select('club_id, user_id, role'),
-        supabase.from('clubs').select('*').order('name'),
-        supabase
-          .from('events')
-          .select(
-            '*, club:clubs(name), rsvps:event_rsvps(user_id, status, profile:profiles(full_name)), attendance:event_attendance(user_id, present)'
-          )
-          .order('starts_at', { ascending: false }),
-        supabase
-          .from('join_requests')
-          .select('id, requested_at, club:clubs(id, name), profile:profiles(id, full_name, email)')
-          .eq('status', 'pending')
-          .order('requested_at'),
-      ])
+    const [
+      profilesRes,
+      employeesRes,
+      membershipsRes,
+      clubsRes,
+      eventsRes,
+      requestsRes,
+      userRolesRes,
+      academicGroupsRes,
+      academicMembershipsRes
+    ] = await Promise.all([
+      supabase.from('profiles').select('*').order('full_name'),
+      supabase.from('employees').select('*, profile:profiles(id, full_name, email)').order('created_at'),
+      supabase.from('memberships').select('club_id, user_id, role'),
+      supabase.from('clubs').select('*').order('name'),
+      supabase
+        .from('events')
+        .select(
+          '*, club:clubs(name), rsvps:event_rsvps(user_id, status, profile:profiles(full_name)), attendance:event_attendance(user_id, present)'
+        )
+        .order('starts_at', { ascending: false }),
+      supabase
+        .from('join_requests')
+        .select('id, requested_at, club:clubs(id, name), profile:profiles(id, full_name, email)')
+        .eq('status', 'pending')
+        .order('requested_at'),
+      supabase.from('user_roles').select('*'),
+      supabase.from('academic_groups').select('*').order('name'),
+      supabase.from('academic_group_memberships').select('*'),
+    ])
+
     setData({
       profiles: profilesRes.data ?? [],
       employees: employeesRes.data ?? [],
@@ -59,6 +76,9 @@ export default function AdminPage() {
       clubs: clubsRes.data ?? [],
       events: eventsRes.data ?? [],
       requests: requestsRes.data ?? [],
+      userRoles: userRolesRes.data ?? [],
+      academicGroups: academicGroupsRes.data ?? [],
+      academicMemberships: academicMembershipsRes.data ?? [],
     })
     setLoading(false)
   }, [])
@@ -108,12 +128,13 @@ export default function AdminPage() {
           <>
             {tab === 'overview' && <OverviewTab data={data} employeeById={employeeById} />}
             {tab === 'users' && (
-              <UsersTab data={data} employeeById={employeeById} isHod={isHod} reload={loadAll} />
+              <UsersTab data={data} employeeById={employeeById} isSuperAdmin={isSuperAdmin} reload={loadAll} />
             )}
             {tab === 'requests' && <RequestsAdminTab requests={data.requests} reload={loadAll} />}
             {tab === 'clubs' && <ClubsTab data={data} isHod={isHod} reload={loadAll} />}
             {tab === 'events' && <EventsAdminTab events={data.events} reload={loadAll} />}
             {tab === 'faculty' && <FacultyTab data={data} isHod={isHod} reload={loadAll} />}
+            {tab === 'groups' && <GroupsTab data={data} isHod={isHod} reload={loadAll} />}
           </>
         )}
       </div>
@@ -127,7 +148,7 @@ function OverviewTab({ data, employeeById }) {
   const guests = data.profiles.filter((p) => p.user_type === 'guest' && !employeeById.has(p.id))
   const members = data.profiles.filter((p) => p.user_type === 'member' && !employeeById.has(p.id))
   const stats = [
-    { label: 'Members', value: members.length },
+    { label: 'Students', value: members.length },
     { label: 'Guests', value: guests.length },
     { label: 'Faculty', value: data.employees.length },
     { label: 'Communities', value: data.clubs.length },
@@ -147,11 +168,21 @@ function OverviewTab({ data, employeeById }) {
 }
 
 /* ===== Users (all users, filter + search by name/email/uuid, edit) ===== */
-function UsersTab({ data, employeeById, isHod, reload }) {
+function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all') // all | guest | member | faculty
   const [editing, setEditing] = useState(null)
   const [adding, setAdding] = useState(false)
+  const [clickedNames, setClickedNames] = useState(new Set())
+
+  const toggleClickedName = (id) => {
+    setClickedNames((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const tierOf = (p) =>
     employeeById.has(p.id) ? 'faculty' : p.user_type === 'guest' ? 'guest' : 'member'
@@ -169,7 +200,7 @@ function UsersTab({ data, employeeById, isHod, reload }) {
 
   const FILTERS = [
     { id: 'all', label: `All (${data.profiles.length})` },
-    { id: 'member', label: 'Members' },
+    { id: 'member', label: 'Students' },
     { id: 'guest', label: 'Guests' },
     { id: 'faculty', label: 'Faculty' },
   ]
@@ -206,16 +237,16 @@ function UsersTab({ data, employeeById, isHod, reload }) {
           const st = statusById(p.status)
           return (
             <div key={p.id} className="picker-item no-click">
-              <Avatar name={p.full_name} size={40} online status={p.status} />
-              <div className="picker-grow">
-                <div className="picker-name">{p.full_name}</div>
+              <Avatar name={p.full_name} url={p.avatar_url} size={40} online status={p.status} />
+              <div className="picker-grow" style={{ cursor: 'pointer' }} onClick={() => toggleClickedName(p.id)}>
+                <div className={`picker-name${clickedNames.has(p.id) ? ' clicked' : ''}`}>{p.full_name}</div>
                 <div className="picker-sub">
                   {p.email} · <span style={{ color: st.color }}>{st.label}</span>
                   {p.department ? ` · ${p.department}` : ''}
                 </div>
               </div>
               <span className={`tier-tag tier-${tier}`}>
-                {tier === 'faculty' ? 'Faculty' : tier === 'guest' ? 'Guest' : 'Member'}
+                {tier === 'faculty' ? 'Faculty' : tier === 'guest' ? 'Guest' : 'Student'}
               </span>
               <button className="btn-small" onClick={() => setEditing(p)}>
                 Edit
@@ -228,10 +259,10 @@ function UsersTab({ data, employeeById, isHod, reload }) {
       {editing && (
         <UserEditModal
           user={editing}
+          userRoles={data.userRoles.filter((ur) => ur.user_id === editing.id)}
           membership={data.memberships.filter((m) => m.user_id === editing.id)}
           clubs={data.clubs}
-          employee={employeeById.get(editing.id) ?? null}
-          isHod={isHod}
+          isSuperAdmin={isSuperAdmin}
           onSaved={reload}
           onClose={() => setEditing(null)}
         />
@@ -536,6 +567,209 @@ function FacultyTab({ data, isHod, reload }) {
             )}
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+/* ===== Academic Groups (Academics Tab) ===== */
+function GroupsTab({ data, isHod, reload }) {
+  const [openGroup, setOpenGroup] = useState(null)
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [parentId, setParentId] = useState('')
+  const [addingUser, setAddingUser] = useState({}) // group_id -> user_id
+  const [creating, setCreating] = useState(false)
+
+  const profileOf = (id) => data.profiles.find((p) => p.id === id)
+
+  async function createGroup(e) {
+    e.preventDefault()
+    if (!name.trim()) return
+    setCreating(true)
+    const { data: gid, error } = await supabase.rpc('create_academic_group', {
+      _name: name.trim(),
+      _description: description.trim(),
+      _parent: parentId === '' ? null : parentId
+    })
+    setCreating(false)
+    if (error) alert(error.message)
+    else {
+      setName('')
+      setDescription('')
+      setParentId('')
+      alert('Academic group created!')
+      reload()
+    }
+  }
+
+  async function deleteGroup(groupId) {
+    if (!confirm('Delete this academic group permanently? This will remove its chats and memberships.')) return
+    const { error } = await supabase.from('academic_groups').delete().eq('id', groupId)
+    if (error) alert(error.message)
+    else reload()
+  }
+
+  async function addMember(groupId) {
+    const userId = addingUser[groupId]
+    if (!userId) return
+    const { error } = await supabase
+      .from('academic_group_memberships')
+      .insert({ group_id: groupId, user_id: userId })
+    if (error) alert(error.message)
+    else {
+      setAddingUser(prev => ({ ...prev, [groupId]: '' }))
+      reload()
+    }
+  }
+
+  async function removeMember(groupId, userId) {
+    const p = profileOf(userId)
+    if (!confirm(`Remove ${p?.full_name} from this academic group?`)) return
+    const { error } = await supabase
+      .from('academic_group_memberships')
+      .delete()
+      .eq('group_id', groupId)
+      .eq('user_id', userId)
+    if (error) alert(error.message)
+    else reload()
+  }
+
+  async function setGroupRole(groupId, userId, role) {
+    const { error } = await supabase
+      .from('academic_group_memberships')
+      .update({ role })
+      .eq('group_id', groupId)
+      .eq('user_id', userId)
+    if (error) alert(error.message)
+    else reload()
+  }
+
+  return (
+    <div>
+      {/* Create Group Form */}
+      <div className="faculty-add" style={{ marginBottom: 20 }}>
+        <form onSubmit={createGroup} style={{ display: 'flex', gap: 8, width: '100%', flexWrap: 'wrap' }}>
+          <input
+            placeholder="Academic group name (e.g. Class of CSE-A)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            style={{ flex: 2, minWidth: 200 }}
+          />
+          <input
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            style={{ flex: 2, minWidth: 200 }}
+          />
+          <select
+            value={parentId}
+            onChange={(e) => setParentId(e.target.value)}
+            style={{ flex: 1, minWidth: 150 }}
+          >
+            <option value="">No parent group (Top-level)</option>
+            {data.academicGroups.filter(g => !g.parent_id).map(g => (
+              <option key={g.id} value={g.id}>Under {g.name}</option>
+            ))}
+          </select>
+          <button className="btn-small" type="submit" disabled={creating}>
+            {creating ? 'Creating…' : 'Create Group'}
+          </button>
+        </form>
+      </div>
+
+      {/* List of Groups */}
+      <div className="picker-list">
+        {data.academicGroups.length === 0 && <div className="side-note">No academic groups created yet.</div>}
+        {data.academicGroups.map((group) => {
+          const members = data.academicMemberships.filter((m) => m.group_id === group.id)
+          const open = openGroup === group.id
+          
+          // Profiles not already in this group
+          const nonMembers = data.profiles.filter(p => !members.some(m => m.user_id === p.id))
+
+          return (
+            <div key={group.id} className="admin-club-card">
+              <div className="picker-item" onClick={() => setOpenGroup(open ? null : group.id)}>
+                <Avatar name={group.name} size={40} />
+                <div className="picker-grow">
+                  <div className="picker-name">{group.name}</div>
+                  <div className="picker-sub">
+                    {members.length} member{members.length === 1 ? '' : 's'}
+                    {group.description ? ` · ${group.description}` : ''}
+                    {group.parent_id ? ' (Sub-group)' : ''}
+                  </div>
+                </div>
+                {isHod && (
+                  <button
+                    className="btn-small danger"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteGroup(group.id)
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+
+              {open && (
+                <div className="admin-club-members">
+                  {/* Add Member inline form */}
+                  <div className="faculty-add" style={{ padding: '8px 12px', background: 'var(--cream-2)', borderBottom: '1px solid var(--cream-3)' }}>
+                    <select
+                      value={addingUser[group.id] || ''}
+                      onChange={(e) => setAddingUser(prev => ({ ...prev, [group.id]: e.target.value }))}
+                      style={{ flex: 1 }}
+                    >
+                      <option value="">Add student/staff to group…</option>
+                      {nonMembers.map(p => (
+                        <option key={p.id} value={p.id}>{p.full_name} ({p.email})</option>
+                      ))}
+                    </select>
+                    <button
+                      className="btn-small"
+                      disabled={!addingUser[group.id]}
+                      onClick={() => addMember(group.id)}
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  {members.length === 0 && <div className="side-note">No members in this group yet</div>}
+                  {members.map((m) => {
+                    const p = profileOf(m.user_id)
+                    return (
+                      <div key={m.user_id} className="picker-item no-click">
+                        <Avatar name={p?.full_name} url={p?.avatar_url} size={32} />
+                        <span className="picker-grow">
+                          <span className="picker-name">{p?.full_name}</span>
+                          <span className="picker-sub">{p?.email}</span>
+                        </span>
+                        {m.role === 'admin' && <span className="admin-tag">Admin</span>}
+                        <button
+                          className="btn-small"
+                          title="Toggle admin role"
+                          onClick={() => setGroupRole(group.id, m.user_id, m.role === 'admin' ? 'member' : 'admin')}
+                        >
+                          {m.role === 'admin' ? 'Demote' : 'Make admin'}
+                        </button>
+                        <button
+                          className="icon-btn"
+                          title="Remove from group"
+                          onClick={() => removeMember(group.id, m.user_id)}
+                        >
+                          <Icon name="trash" size={15} />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

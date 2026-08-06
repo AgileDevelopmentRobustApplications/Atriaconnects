@@ -12,8 +12,9 @@ export default function ChatListItem({ chat }) {
   const { user } = useAuth()
 
   const isDm = chat.type === 'dm'
-  const isAnn = chat.type === 'club_announcements'
+  const isAnn = chat.type === 'club_announcements' || chat.type === 'group_announcements'
   const isAdmission = chat.type === 'admission'
+  const isGroup = chat.type === 'group_chat' || chat.type === 'group_announcements'
   // Faculty viewing a student's admission thread (owner shown as other_user_id)
   const adminOfAdmission = isAdmission && Boolean(chat.other_user_id)
   const online = (isDm || adminOfAdmission) && onlineIds.has(chat.other_user_id)
@@ -30,7 +31,13 @@ export default function ChatListItem({ chat }) {
   } else if (isAdmission) {
     previewText = adminOfAdmission ? 'New enquiry' : 'Message the admissions office privately'
   } else {
-    previewText = isAnn ? 'Club announcements' : isDm ? 'Start the conversation' : 'You joined this community'
+    previewText = isAnn
+      ? 'Group announcements'
+      : isDm
+      ? 'Start the conversation'
+      : isGroup
+      ? 'You joined this group'
+      : 'You joined this community'
   }
 
   return (
@@ -40,6 +47,7 @@ export default function ChatListItem({ chat }) {
     >
       <Avatar
         name={chat.title}
+        url={chat.avatar_url}
         size={44}
         online={online}
         status={statuses[chat.other_user_id]}
@@ -47,6 +55,8 @@ export default function ChatListItem({ chat }) {
           isAnn ? (
             <Icon name="megaphone" size={18} />
           ) : isAdmission && !adminOfAdmission ? (
+            <Icon name="users" size={18} />
+          ) : isGroup ? (
             <Icon name="users" size={18} />
           ) : undefined
         }

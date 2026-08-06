@@ -3,8 +3,7 @@ import { useAuth } from './context/AuthContext.jsx'
 import { ChatProvider } from './context/ChatContext.jsx'
 import { PresenceProvider } from './context/PresenceContext.jsx'
 import LoginPage from './components/auth/LoginPage.jsx'
-import SignupPage from './components/auth/SignupPage.jsx'
-import FacultyGateway from './components/auth/FacultyGateway.jsx'
+import WelcomePage from './components/auth/WelcomePage.jsx'
 import AppLayout from './components/layout/AppLayout.jsx'
 import AdminPage from './components/admin/AdminPage.jsx'
 
@@ -18,6 +17,15 @@ function Protected({ children }) {
     )
   }
   if (!session) return <Navigate to="/login" replace />
+  // Must reset password on first sign-in (admin-invited user with temp creds).
+  const pathname = window.location.pathname
+  if (
+    window.location.search.includes('type=recovery') === false &&
+    pathname !== '/welcome'
+  ) {
+    // profile is fetched asynchronously; the protected route will redirect once
+    // the flag loads. WelcomePage itself handles the recovery link.
+  }
   return children
 }
 
@@ -28,22 +36,24 @@ function EmployeeOnly({ children }) {
 }
 
 export default function App() {
-  const { session, loading } = useAuth()
+  const { session, loading, profile } = useAuth()
+
+  // First-login redirect to /welcome when must_reset_password is true.
+  if (
+    !loading &&
+    session &&
+    profile?.must_reset_password &&
+    window.location.pathname !== '/welcome'
+  ) {
+    return <Navigate to="/welcome" replace />
+  }
+
   return (
     <Routes>
       <Route path="/login" element={session ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/signup" element={session ? <Navigate to="/" replace /> : <SignupPage />} />
       <Route
-        path="/faculty"
-        element={
-          loading ? (
-            <div className="full-center">
-              <div className="spinner" />
-            </div>
-          ) : (
-            <FacultyGateway />
-          )
-        }
+        path="/welcome"
+        element={session ? <WelcomePage /> : <WelcomePage />}
       />
       <Route
         path="/"
