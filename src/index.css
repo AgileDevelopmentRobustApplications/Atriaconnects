@@ -790,6 +790,7 @@ textarea:focus {
   font-size: 15px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+  color: var(--ink);
 }
 
 .modal-header .icon-btn {
