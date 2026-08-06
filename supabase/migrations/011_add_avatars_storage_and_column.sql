@@ -38,6 +38,8 @@ create policy "avatars_delete_own" on storage.objects
     and owner = auth.uid()
   );
 
+drop function if exists public.get_chat_list() cascade;
+
 -- Update get_chat_list to include avatar_url
 create or replace function public.get_chat_list()
 returns table (

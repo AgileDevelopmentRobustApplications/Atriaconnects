@@ -165,6 +165,10 @@ returns boolean language sql stable security definer set search_path = public as
                  where group_id = _g and user_id = auth.uid() and role = 'admin');
 $$;
 
+drop function if exists public.is_conversation_member(uuid) cascade;
+drop function if exists public.can_post_in(uuid) cascade;
+drop function if exists public.get_chat_list() cascade;
+
 -- Extend is_conversation_member to include group_* types.
 create or replace function public.is_conversation_member(_conv uuid)
 returns boolean language sql stable security definer set search_path = public as $$
