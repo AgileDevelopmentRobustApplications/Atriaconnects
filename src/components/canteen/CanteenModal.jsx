@@ -101,6 +101,35 @@ export default function CanteenModal({ onClose }) {
     }
   }, [view, loadDashboardDetails])
 
+  // Realtime subscription for canteen updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('canteen-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'canteen_orders' },
+        () => {
+          loadMyOrders()
+          loadDashboardDetails()
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'canteen_items' },
+        () => {
+          if (selectedShop) {
+            loadShopDetails(selectedShop.id)
+          }
+          loadDashboardDetails()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [loadMyOrders, loadDashboardDetails, loadShopDetails, selectedShop])
+
   // Cart actions
   const addToCart = (itemId) => {
     setCart(c => ({ ...c, [itemId]: (c[itemId] || 0) + 1 }))

@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Modal from '../common/Modal.jsx'
+import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../../lib/supabase.js'
 
 // "Continue as guest" — user picks a display name and a one-time guest account
 // is provisioned in the background. The guest can browse and message the
 // Admissions Office; faculty can promote them to a full member.
 export default function GuestNameModal({ onClose }) {
-  const { profile, session, refreshProfile, signOut } = useAuth()
+  const { profile, session, refreshProfile } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState(profile?.full_name ?? '')
   const [busy, setBusy] = useState(false)
@@ -25,9 +27,10 @@ export default function GuestNameModal({ onClose }) {
     try {
       // If we're already signed in (rare — coming back to the page), just update.
       if (session?.user) {
-        const { error: upErr } = await import('../../lib/supabase.js').then(({ supabase }) =>
-          supabase.from('profiles').update({ full_name: trimmed }).eq('id', session.user.id)
-        )
+        const { error: upErr } = await supabase
+          .from('profiles')
+          .update({ full_name: trimmed })
+          .eq('id', session.user.id)
         if (upErr) throw upErr
         await refreshProfile(session.user.id)
       } else {
@@ -35,12 +38,18 @@ export default function GuestNameModal({ onClose }) {
         // email provider must allow new signups (default). The account gets a
         // randomly-generated email and password; we then immediately sign the
         // user in via the throwaway client and update their profile name.
-        const { createClient } = await import('@supabase/supabase-js')
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+        const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+
+        if (!supabaseUrl || !supabaseKey) {
+          throw new Error('Supabase URL or Key configuration is missing in environment variables.')
+        }
+
         const guestEmail = `guest-${crypto.randomUUID()}@adraconnects.local`
         const guestPassword = crypto.randomUUID() + crypto.randomUUID()
         const temp = createClient(
-          import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoemmwtriee.supabase.co',
-          import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V',
+          supabaseUrl,
+          supabaseKey,
           { auth: { storageKey: 'sb-guest', persistSession: true } }
         )
         const { error: signUpErr } = await temp.auth.signUp({
@@ -50,7 +59,6 @@ export default function GuestNameModal({ onClose }) {
         })
         if (signUpErr) throw signUpErr
         // Promote to guest tier (email signup defaults to 'member').
-        const { supabase } = await import('../../lib/supabase.js')
         const { data: sess } = await temp.auth.getSession()
         if (sess?.session?.user?.id) {
           await supabase.rpc('set_user_type', { _user: sess.session.user.id, _type: 'guest' })

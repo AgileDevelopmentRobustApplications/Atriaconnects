@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
+import { supabase } from '../../lib/supabase.js'
 
 // Welcome page — used both for first-time invite setup and password reset.
 // Without a session, the user enters their email; we send a Supabase reset
@@ -24,7 +25,6 @@ export default function WelcomePage() {
     setMessage('')
     setBusy(true)
     try {
-      const { supabase } = await import('../../lib/supabase.js')
       const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/welcome`,
       })
@@ -50,7 +50,6 @@ export default function WelcomePage() {
     }
     setBusy(true)
     try {
-      const { supabase } = await import('../../lib/supabase.js')
       const { error: err } = await supabase.auth.updateUser({ password: newPassword })
       if (err) throw err
       if (profile?.must_reset_password) {

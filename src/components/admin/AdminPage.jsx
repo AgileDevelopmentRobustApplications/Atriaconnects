@@ -18,6 +18,7 @@ const TABS = [
   { id: 'events', label: 'Events' },
   { id: 'faculty', label: 'Faculty' },
   { id: 'groups', label: 'Academics'},
+  { id: 'canteen', label: 'Canteen' },
 ]
 
 export default function AdminPage() {
@@ -34,6 +35,7 @@ export default function AdminPage() {
     userRoles: [],
     academicGroups: [],
     academicMemberships: [],
+    canteenShops: [],
   })
   const [loading, setLoading] = useState(true)
 
@@ -47,7 +49,8 @@ export default function AdminPage() {
       requestsRes,
       userRolesRes,
       academicGroupsRes,
-      academicMembershipsRes
+      academicMembershipsRes,
+      canteenShopsRes
     ] = await Promise.all([
       supabase.from('profiles').select('*').order('full_name'),
       supabase.from('employees').select('*, profile:profiles(id, full_name, email)').order('created_at'),
@@ -67,6 +70,7 @@ export default function AdminPage() {
       supabase.from('user_roles').select('*'),
       supabase.from('academic_groups').select('*').order('name'),
       supabase.from('academic_group_memberships').select('*'),
+      supabase.from('canteen_shops').select('*').order('name'),
     ])
 
     setData({
@@ -79,6 +83,7 @@ export default function AdminPage() {
       userRoles: userRolesRes.data ?? [],
       academicGroups: academicGroupsRes.data ?? [],
       academicMemberships: academicMembershipsRes.data ?? [],
+      canteenShops: canteenShopsRes.data ?? [],
     })
     setLoading(false)
   }, [])
@@ -135,6 +140,7 @@ export default function AdminPage() {
             {tab === 'events' && <EventsAdminTab events={data.events} reload={loadAll} />}
             {tab === 'faculty' && <FacultyTab data={data} isHod={isHod} reload={loadAll} />}
             {tab === 'groups' && <GroupsTab data={data} isHod={isHod} reload={loadAll} />}
+            {tab === 'canteen' && <CanteenAdminTab data={data} isHod={isHod} reload={loadAll} />}
           </>
         )}
       </div>
@@ -774,3 +780,208 @@ function GroupsTab({ data, isHod, reload }) {
     </div>
   )
 }
+
+/* ===== Canteen Shop Management (Canteen Tab) ===== */
+function CanteenAdminTab({ data, isHod, reload }) {
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [shopkeeperId, setShopkeeperId] = useState('')
+  const [creating, setCreating] = useState(false)
+  
+  // Edit states
+  const [editingShop, setEditingShop] = useState(null)
+  const [editName, setEditName] = useState('')
+  const [editDesc, setEditDesc] = useState('')
+  const [editKeeper, setEditKeeper] = useState('')
+  const [editOpen, setEditOpen] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  const profileOf = (id) => data.profiles.find((p) => p.id === id)
+
+  async function handleCreateShop(e) {
+    e.preventDefault()
+    if (!name.trim() || !shopkeeperId) return
+    setCreating(true)
+    const { error } = await supabase.from('canteen_shops').insert({
+      name: name.trim(),
+      description: description.trim(),
+      shopkeeper_id: shopkeeperId,
+      is_open: true
+    })
+    setCreating(false)
+    if (error) {
+      alert(error.message)
+    } else {
+      setName('')
+      setDescription('')
+      setShopkeeperId('')
+      alert('Canteen shop created successfully!')
+      reload()
+    }
+  }
+
+  async function handleDeleteShop(shopId, shopName) {
+    if (!confirm(`Delete ${shopName} permanently? This will delete all its menu items, announcements, and order history.`)) return
+    const { error } = await supabase.from('canteen_shops').delete().eq('id', shopId)
+    if (error) alert(error.message)
+    else reload()
+  }
+
+  function startEdit(shop) {
+    setEditingShop(shop)
+    setEditName(shop.name)
+    setEditDesc(shop.description || '')
+    setEditKeeper(shop.shopkeeper_id)
+    setEditOpen(shop.is_open)
+  }
+
+  async function handleSaveEdit(e) {
+    e.preventDefault()
+    if (!editName.trim() || !editKeeper || !editingShop) return
+    setSaving(true)
+    const { error } = await supabase
+      .from('canteen_shops')
+      .update({
+        name: editName.trim(),
+        description: editDesc.trim(),
+        shopkeeper_id: editKeeper,
+        is_open: editOpen
+      })
+      .eq('id', editingShop.id)
+    setSaving(false)
+    if (error) {
+      alert(error.message)
+    } else {
+      setEditingShop(null)
+      alert('Canteen shop updated!')
+      reload()
+    }
+  }
+
+  return (
+    <div>
+      {/* Create Shop Form */}
+      {isHod && (
+        <div className="faculty-add" style={{ marginBottom: 20 }}>
+          <form onSubmit={handleCreateShop} style={{ display: 'flex', gap: 8, width: '100%', flexWrap: 'wrap' }}>
+            <input
+              placeholder="Shop name (e.g. Campus Bites)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              style={{ flex: 2, minWidth: 200 }}
+            />
+            <input
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ flex: 2, minWidth: 200 }}
+            />
+            <select
+              value={shopkeeperId}
+              onChange={(e) => setShopkeeperId(e.target.value)}
+              required
+              style={{ flex: 1.5, minWidth: 200 }}
+            >
+              <option value="">Assign shopkeeper…</option>
+              {data.profiles.map(p => (
+                <option key={p.id} value={p.id}>{p.full_name} ({p.email})</option>
+              ))}
+            </select>
+            <button className="btn-small" type="submit" disabled={creating}>
+              {creating ? 'Creating…' : 'Create Shop'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Edit Shop Section */}
+      {editingShop && (
+        <div className="faculty-add" style={{ marginBottom: 20, padding: 16, border: '1px solid var(--line)', background: 'var(--cream-2)' }}>
+          <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
+            <h4 style={{ margin: 0, color: 'var(--green)' }}>Edit Shop: {editingShop.name}</h4>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <input
+                placeholder="Shop name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                required
+                style={{ flex: 2, minWidth: 180 }}
+              />
+              <input
+                placeholder="Description"
+                value={editDesc}
+                onChange={(e) => setEditDesc(e.target.value)}
+                style={{ flex: 2, minWidth: 180 }}
+              />
+              <select
+                value={editKeeper}
+                onChange={(e) => setEditKeeper(e.target.value)}
+                required
+                style={{ flex: 1.5, minWidth: 180 }}
+              >
+                {data.profiles.map(p => (
+                  <option key={p.id} value={p.id}>{p.full_name} ({p.email})</option>
+                ))}
+              </select>
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, userSelect: 'none' }}>
+                <input
+                  type="checkbox"
+                  checked={editOpen}
+                  onChange={(e) => setEditOpen(e.target.checked)}
+                  style={{ width: 'auto', margin: 0 }}
+                />
+                Shop is open
+              </label>
+            </div>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button className="btn-small danger" type="button" onClick={() => setEditingShop(null)}>
+                Cancel
+              </button>
+              <button className="btn-small" type="submit" disabled={saving}>
+                {saving ? 'Saving…' : 'Save Changes'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* List of Shops */}
+      <div className="picker-list">
+        {data.canteenShops.length === 0 && <div className="side-note">No canteen shops created yet.</div>}
+        {data.canteenShops.map((shop) => {
+          const keeper = profileOf(shop.shopkeeper_id)
+          return (
+            <div key={shop.id} className="picker-item no-click">
+              <Avatar name={shop.name} size={40} icon={<Icon name="coffee" />} />
+              <div className="picker-grow">
+                <div className="picker-name">{shop.name}</div>
+                <div className="picker-sub">
+                  {shop.description || 'No description'} ·{' '}
+                  <span className={shop.is_open ? 'status-active-text' : 'status-dnd-text'}>
+                    {shop.is_open ? 'Open' : 'Closed'}
+                  </span>
+                  {keeper && ` · Keeper: ${keeper.full_name} (${keeper.email})`}
+                </div>
+              </div>
+              {isHod && (
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button className="btn-small" onClick={() => startEdit(shop)}>
+                    Edit
+                  </button>
+                  <button
+                    className="btn-small danger"
+                    onClick={() => handleDeleteShop(shop.id, shop.name)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
