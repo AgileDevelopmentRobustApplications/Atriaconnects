@@ -6,6 +6,7 @@ import LoginPage from './components/auth/LoginPage.jsx'
 import WelcomePage from './components/auth/WelcomePage.jsx'
 import AppLayout from './components/layout/AppLayout.jsx'
 import AdminPage from './components/admin/AdminPage.jsx'
+import NotFoundPage from './components/layout/NotFoundPage.jsx'
 
 function Protected({ children }) {
   const { session, loading } = useAuth()
@@ -77,7 +78,7 @@ export default function App() {
           </Protected>
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

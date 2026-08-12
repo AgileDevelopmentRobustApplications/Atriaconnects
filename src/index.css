@@ -2015,3 +2015,89 @@ textarea:focus {
   color: #007aff !important;
 }
 
+/* ===== 404 Not Found Page ===== */
+.not-found-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--cream);
+  color: var(--ink);
+  text-align: center;
+  padding: 24px;
+}
+
+.not-found-card {
+  background: var(--cream-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 48px 36px;
+  width: 440px;
+  max-width: 100%;
+  box-shadow: 0 12px 48px rgba(51, 41, 31, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: notFoundFadeIn 0.5s ease-out;
+}
+
+@keyframes notFoundFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.not-found-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(191, 59, 27, 0.08);
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.not-found-code {
+  font-size: 72px;
+  font-weight: 800;
+  color: var(--red);
+  line-height: 1;
+  letter-spacing: -2px;
+  margin-bottom: 8px;
+}
+
+.not-found-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 12px;
+}
+
+.not-found-text {
+  font-size: 15px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-bottom: 32px;
+  max-width: 320px;
+}
+
+.not-found-actions {
+  width: 100%;
+}
+
+.btn-not-found-home {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+  padding: 14px;
+}
+
