@@ -22,8 +22,8 @@ function WelcomeDashboard() {
           supabase
             .from('events')
             .select('*, club:clubs(name)')
-            .gt('date', new Date().toISOString())
-            .order('date', { ascending: true })
+            .gt('starts_at', new Date().toISOString())
+            .order('starts_at', { ascending: true })
             .limit(3),
           supabase
             .from('canteen_announcements')
@@ -33,12 +33,15 @@ function WelcomeDashboard() {
         ])
 
         if (active) {
-          setEvents(eventsRes.data ?? [])
-          setAnnouncements(annRes.data ?? [])
+          setEvents(eventsRes?.data ?? [])
+          setAnnouncements(annRes?.data ?? [])
           setLoading(false)
         }
       } catch (err) {
         console.error('Error fetching dashboard data:', err)
+        if (active) {
+          setLoading(false)
+        }
       }
     }
 
@@ -47,7 +50,9 @@ function WelcomeDashboard() {
   }, [])
 
   const formatDate = (dateStr) => {
+    if (!dateStr) return ''
     const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return ''
     return d.toLocaleDateString(undefined, {
       weekday: 'short',
       month: 'short',
@@ -58,13 +63,23 @@ function WelcomeDashboard() {
   }
 
   const formatRelativeTime = (dateStr) => {
-    const diff = Date.now() - new Date(dateStr).getTime()
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return ''
+    const diff = Date.now() - d.getTime()
     const mins = Math.floor(diff / 60000)
     if (mins < 1) return 'Just now'
     if (mins < 60) return `${mins}m ago`
     const hours = Math.floor(mins / 60)
     if (hours < 24) return `${hours}h ago`
-    return new Date(dateStr).toLocaleDateString()
+    return d.toLocaleDateString()
+  }
+
+  const getFormattedDate = () => {
+    const d = new Date()
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`
   }
 
   const triggerModal = (name) => {
@@ -86,9 +101,7 @@ function WelcomeDashboard() {
           <span className="waving-hand">👋</span>
           <div>
             <h1>{greeting()}, {profile?.full_name || 'Guest'}</h1>
-            <p className="dashboard-subtitle">
-              {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
-            </p>
+            <p className="dashboard-subtitle">{getFormattedDate()}</p>
           </div>
         </div>
       </header>
@@ -114,7 +127,7 @@ function WelcomeDashboard() {
                     <h3>{ev.title}</h3>
                     <p className="item-meta">
                       <span>📍 {ev.location}</span>
-                      <span>📅 {formatDate(ev.date)}</span>
+                      <span>📅 {formatDate(ev.starts_at)}</span>
                     </p>
                     {ev.description && <p className="item-desc">{ev.description}</p>}
                   </div>
