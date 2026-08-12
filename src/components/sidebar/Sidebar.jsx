@@ -20,6 +20,12 @@ export default function Sidebar() {
   const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse' | 'profile' | 'canteen'
   const [statusMenu, setStatusMenu] = useState(false)
 
+  useEffect(() => {
+    const handleOpenModal = (e) => setModal(e.detail)
+    window.addEventListener('open-modal', handleOpenModal)
+    return () => window.removeEventListener('open-modal', handleOpenModal)
+  }, [])
+
   const filtered = chats.filter((c) => c.title?.toLowerCase().includes(search.toLowerCase()))
   const myStatus = statusById(profile?.status)
 

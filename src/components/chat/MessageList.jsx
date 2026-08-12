@@ -3,7 +3,7 @@ import { formatDayLabel, sameDay } from '../../lib/format.js'
 import MessageBubble from './MessageBubble.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 
-export default function MessageList({ messages, loading, isGroup, peerReadAt }) {
+export default function MessageList({ messages, loading, isGroup, peerReadAt, reactions = {}, onReact }) {
   const { user } = useAuth()
   const bottomRef = useRef(null)
 
@@ -25,7 +25,14 @@ export default function MessageList({ messages, loading, isGroup, peerReadAt }) 
         return (
           <div key={msg.id}>
             {showDay && <div className="date-separator"><span>{formatDayLabel(msg.created_at)}</span></div>}
-            <MessageBubble msg={msg} own={own} showSender={showSender} peerReadAt={peerReadAt} />
+            <MessageBubble
+              msg={msg}
+              own={own}
+              showSender={showSender}
+              peerReadAt={peerReadAt}
+              reactions={reactions[msg.id] ?? []}
+              onReact={onReact}
+            />
           </div>
         )
       })}

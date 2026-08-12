@@ -83,3 +83,78 @@ export function usePeerRead(conversationId, peerId) {
 
   return peerReadAt
 }
+
+export function useReactions(conversationId, messages) {
+  const { user } = useAuth()
+  const [reactions, setReactions] = useState({}) // message_id -> [{ user_id, reaction, profile: { full_name } }]
+
+  const loadReactions = useCallback(async () => {
+    if (!messages || messages.length === 0) return
+    const messageIds = messages.map(m => m.id)
+    const { data } = await supabase
+      .from('message_reactions')
+      .select('message_id, user_id, reaction, profile:profiles(full_name)')
+      .in('message_id', messageIds)
+
+    const groups = {}
+    for (const r of (data ?? [])) {
+      if (!groups[r.message_id]) groups[r.message_id] = []
+      groups[r.message_id].push(r)
+    }
+    setReactions(groups)
+  }, [messages])
+
+  useEffect(() => {
+    loadReactions()
+  }, [messages, loadReactions])
+
+  useEffect(() => {
+    if (!conversationId) return
+    
+    const channel = supabase
+      .channel(`reactions-${conversationId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'message_reactions' },
+        () => {
+          loadReactions()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [conversationId, loadReactions])
+
+  const toggleReaction = async (messageId, emoji) => {
+    const existing = reactions[messageId]?.find(
+      r => r.user_id === user.id && r.reaction === emoji
+    )
+
+    try {
+      if (existing) {
+        await supabase
+          .from('message_reactions')
+          .delete()
+          .eq('message_id', messageId)
+          .eq('user_id', user.id)
+          .eq('reaction', emoji)
+      } else {
+        await supabase
+          .from('message_reactions')
+          .insert({
+            message_id: messageId,
+            user_id: user.id,
+            reaction: emoji
+          })
+      }
+      loadReactions()
+    } catch (err) {
+      console.error("Failed to toggle reaction:", err)
+    }
+  }
+
+  return { reactions, toggleReaction }
+}
+

@@ -131,8 +131,16 @@ export default function CanteenModal({ onClose }) {
   }, [loadMyOrders, loadDashboardDetails, loadShopDetails, selectedShop])
 
   // Cart actions
+  const [animateCart, setAnimateCart] = useState(false)
+
+  const triggerCartBounce = () => {
+    setAnimateCart(true)
+    setTimeout(() => setAnimateCart(false), 350)
+  }
+
   const addToCart = (itemId) => {
     setCart(c => ({ ...c, [itemId]: (c[itemId] || 0) + 1 }))
+    triggerCartBounce()
   }
 
   const removeFromCart = (itemId) => {
@@ -142,6 +150,7 @@ export default function CanteenModal({ onClose }) {
       else delete next[itemId]
       return next
     })
+    triggerCartBounce()
   }
 
   const clearCart = () => setCart({})
@@ -394,7 +403,7 @@ export default function CanteenModal({ onClose }) {
 
                   {/* Cart Summary */}
                   {Object.keys(cart).length > 0 && (
-                    <div className="canteen-cart-card">
+                    <div className={`canteen-cart-card ${animateCart ? 'cart-bounce' : ''}`}>
                       <h3>Your Cart</h3>
                       <div className="cart-items-review">
                         {Object.entries(cart).map(([itemId, qty]) => {

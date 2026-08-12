@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
 import { usePresence } from '../../context/PresenceContext.jsx'
-import { useMessages, usePeerRead } from '../../hooks/useMessages.js'
+import { useMessages, usePeerRead, useReactions } from '../../hooks/useMessages.js'
 import { useTyping } from '../../hooks/useTyping.js'
 import { useClub } from '../../hooks/useClub.js'
 import { statusById } from '../../lib/status.js'
@@ -25,6 +25,7 @@ export default function ChatWindow({ openPanel }) {
   const adminOfAdmission = isAdmission && Boolean(activeChat.other_user_id)
 
   const { messages, loading, sendMessage } = useMessages(conversationId)
+  const { reactions, toggleReaction } = useReactions(conversationId, messages)
   const { typingNames, sendTyping } = useTyping(conversationId)
   const peerReadAt = usePeerRead(isDm ? conversationId : null, activeChat.other_user_id)
   const { members, myRole } = useClub(activeChat.club_id)
@@ -139,6 +140,8 @@ export default function ChatWindow({ openPanel }) {
         loading={loading}
         isGroup={!isDm}
         peerReadAt={isDm ? peerReadAt : null}
+        reactions={reactions}
+        onReact={toggleReaction}
       />
 
       {canPost ? (
