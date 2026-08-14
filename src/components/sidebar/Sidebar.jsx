@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 import { STATUSES, statusById } from '../../lib/status.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
@@ -13,6 +14,7 @@ import SettingsModal from './SettingsModal.jsx'
 
 export default function Sidebar() {
   const { profile, signOut, isEmployee, isGuest, updateStatus } = useAuth()
+  const { showToast } = useToast()
   const { chats, chatsLoading } = useChat()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
@@ -54,8 +56,18 @@ export default function Sidebar() {
           </span>
         </div>
 
-        {/* Right Side Actions */}
+        {/* Right Side Actions on Top Navigation Bar */}
         <div className="sidebar-actions">
+          <button className="icon-btn" title="Campus & Communities" onClick={() => setModal('browse')}>
+            <Icon name="compass" size={18} />
+          </button>
+          <button
+            className="icon-btn"
+            title="Campus Services & Alerts"
+            onClick={() => setModal({ type: 'settings', initialTab: 'services' })}
+          >
+            <Icon name="bell" size={18} />
+          </button>
           {isEmployee && (
             <button className="icon-btn" title="Admin panel" onClick={() => navigate('/admin')}>
               <Icon name="shield" size={18} />
@@ -66,9 +78,6 @@ export default function Sidebar() {
               <Icon name="chat" size={18} />
             </button>
           )}
-          <button className="icon-btn" title="Browse communities" onClick={() => setModal('browse')}>
-            <Icon name="compass" size={18} />
-          </button>
           {!isGuest && (
             <button className="icon-btn" title="Create community" onClick={() => setModal('club')}>
               <Icon name="plus" size={18} />
@@ -117,7 +126,11 @@ export default function Sidebar() {
 
       {/* Bottom Footer with matching icon color */}
       <div className="sidebar-footer">
-        <button className="icon-btn" title="Settings" onClick={() => setModal('settings')}>
+        <button
+          className="icon-btn"
+          title="Settings"
+          onClick={() => setModal({ type: 'settings', initialTab: 'profile' })}
+        >
           <Icon name="settings" size={18} />
         </button>
         <button className="icon-btn logout-btn" title="Exit / Log out" onClick={signOut}>
@@ -128,7 +141,12 @@ export default function Sidebar() {
       {modal === 'dm' && <NewDmModal onClose={() => setModal(null)} />}
       {modal === 'club' && <NewClubModal onClose={() => setModal(null)} />}
       {modal === 'browse' && <BrowseClubsModal onClose={() => setModal(null)} />}
-      {modal === 'settings' && <SettingsModal onClose={() => setModal(null)} />}
+      {(modal === 'settings' || modal?.type === 'settings') && (
+        <SettingsModal
+          initialTab={typeof modal === 'object' ? modal.initialTab : 'profile'}
+          onClose={() => setModal(null)}
+        />
+      )}
     </div>
   )
 }

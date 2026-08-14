@@ -28,10 +28,10 @@ const YEAR_OPTIONS = [
   { value: '4', label: 'Year 4 (7th/8th Sem)' },
 ]
 
-export default function SettingsModal({ onClose }) {
+export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   const { profile, user, updateProfile, theme, toggleTheme } = useAuth()
   const { showToast } = useToast()
-  const [tab, setTab] = useState('profile') // 'profile' | 'services'
+  const [tab, setTab] = useState(initialTab) // 'profile' | 'services'
   const [status, setStatus] = useState(profile?.status ?? 'active')
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? '')
   const [avatarColor, setAvatarColor] = useState(profile?.avatar_color ?? '#0B1E13')
