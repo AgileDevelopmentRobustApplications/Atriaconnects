@@ -5,7 +5,7 @@ import Icon from '../common/Icon.jsx'
 
 // Email signup = full "adra" member account (can request to join communities)
 export default function SignupPage() {
-  const { signUp } = useAuth()
+  const { signUp, theme, toggleTheme } = useAuth()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -73,6 +73,22 @@ export default function SignupPage() {
         <p className="auth-switch">
           Already have an account? <Link to="/login">Log in</Link>
         </p>
+
+        <div className="auth-theme-switch-wrap">
+          <button
+            type="button"
+            className="theme-toggle-pill"
+            onClick={() => toggleTheme(theme === 'light' ? 'dark' : 'light')}
+            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+          >
+            <span className={`toggle-thumb ${theme}`}>
+              <Icon name={theme === 'light' ? 'sun' : 'moon'} size={14} />
+            </span>
+            <span className="toggle-label">
+              {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )

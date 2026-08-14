@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
 
 export default function LoginPage() {
-  const { signIn, signInWithGoogle } = useAuth()
+  const { signIn, signInWithGoogle, theme, toggleTheme } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -83,6 +83,22 @@ export default function LoginPage() {
           <br />
           Teacher or HOD? <Link to="/faculty">Faculty gateway</Link>
         </p>
+
+        <div className="auth-theme-switch-wrap">
+          <button
+            type="button"
+            className="theme-toggle-pill"
+            onClick={() => toggleTheme(theme === 'light' ? 'dark' : 'light')}
+            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+          >
+            <span className={`toggle-thumb ${theme}`}>
+              <Icon name={theme === 'light' ? 'sun' : 'moon'} size={14} />
+            </span>
+            <span className="toggle-label">
+              {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )

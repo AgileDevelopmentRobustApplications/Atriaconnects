@@ -29,7 +29,7 @@ const YEAR_OPTIONS = [
 ]
 
 export default function SettingsModal({ onClose }) {
-  const { profile, user, updateProfile } = useAuth()
+  const { profile, user, updateProfile, theme, toggleTheme } = useAuth()
   const { showToast } = useToast()
   const [tab, setTab] = useState('profile') // 'profile' | 'services'
   const [status, setStatus] = useState(profile?.status ?? 'active')
@@ -230,6 +230,45 @@ export default function SettingsModal({ onClose }) {
                   <span className="status-card-label">{s.label}</span>
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Section: Theme & Appearance */}
+          <div className="settings-section">
+            <div className="settings-section-title">
+              <Icon name="sun" size={16} />
+              <span>Appearance & Theme Mode</span>
+            </div>
+            <div className="theme-toggle-grid">
+              <button
+                type="button"
+                className={`theme-card${theme === 'light' ? ' selected' : ''}`}
+                onClick={() => toggleTheme('light')}
+              >
+                <div className="theme-card-icon light">
+                  <Icon name="sun" size={20} />
+                </div>
+                <div className="theme-card-text">
+                  <h4>Light Mode</h4>
+                  <p>Clean Porcelain surface & obsidian green contrast</p>
+                </div>
+                {theme === 'light' && <Icon name="check" size={16} className="theme-check" />}
+              </button>
+
+              <button
+                type="button"
+                className={`theme-card${theme === 'dark' ? ' selected' : ''}`}
+                onClick={() => toggleTheme('dark')}
+              >
+                <div className="theme-card-icon dark">
+                  <Icon name="moon" size={20} />
+                </div>
+                <div className="theme-card-text">
+                  <h4>Dark Mode</h4>
+                  <p>Deep Obsidian Carbon surface & Electric Lime glow</p>
+                </div>
+                {theme === 'dark' && <Icon name="check" size={16} className="theme-check" />}
+              </button>
             </div>
           </div>
 

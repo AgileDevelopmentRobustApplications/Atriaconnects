@@ -8,6 +8,18 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null)
   const [employee, setEmployee] = useState(null) // { role: 'teacher'|'hod', department } or null
   const [loading, setLoading] = useState(true)
+  const [theme, setThemeState] = useState(() => {
+    return localStorage.getItem('theme') || 'light'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = (newTheme) => {
+    setThemeState(newTheme)
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -112,6 +124,8 @@ export function AuthProvider({ children }) {
     signOut,
     updateStatus,
     updateProfile,
+    theme,
+    toggleTheme,
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
