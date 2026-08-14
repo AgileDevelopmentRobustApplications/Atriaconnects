@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
+import LamaMouseGlow from '../common/LamaMouseGlow.jsx'
 
 // Gateway for registering new teachers/HODs: sign in with Google, then
 // unlock the faculty role with a staff access code.
@@ -44,6 +45,7 @@ export default function FacultyGateway() {
 
   return (
     <div className="auth-page">
+      <LamaMouseGlow />
       <div className="auth-card">
         <div className="auth-logo">
           <span className="auth-logo-mark">

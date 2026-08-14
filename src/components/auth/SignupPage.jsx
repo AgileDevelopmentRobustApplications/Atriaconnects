@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
+import LamaMouseGlow from '../common/LamaMouseGlow.jsx'
 
 // Email signup = full "adra" member account (can request to join communities)
 export default function SignupPage() {
@@ -30,6 +31,7 @@ export default function SignupPage() {
 
   return (
     <div className="auth-page">
+      <LamaMouseGlow />
       <div className="auth-card">
         <div className="auth-logo">
           <span className="auth-logo-mark">

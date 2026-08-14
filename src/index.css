@@ -230,16 +230,22 @@ select:focus {
   align-items: center;
   justify-content: center;
   background: var(--background);
+  position: relative;
+  overflow: hidden;
 }
 
 .auth-card {
+  position: relative;
+  z-index: 2;
   background: var(--card-elevated);
   border: 1px solid var(--border-strong);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 40px 36px;
   width: 400px;
   max-width: calc(100vw - 32px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18), var(--shadow-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .auth-logo {

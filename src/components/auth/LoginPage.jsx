@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
+import LamaMouseGlow from '../common/LamaMouseGlow.jsx'
 
 export default function LoginPage() {
   const { signIn, signInWithGoogle, theme, toggleTheme } = useAuth()
@@ -35,6 +36,7 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
+      <LamaMouseGlow />
       <div className="auth-card">
         <div className="auth-logo">
           <span className="auth-logo-mark">
