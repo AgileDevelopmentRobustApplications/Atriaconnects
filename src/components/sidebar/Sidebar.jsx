@@ -9,13 +9,14 @@ import ChatListItem from './ChatListItem.jsx'
 import NewDmModal from './NewDmModal.jsx'
 import NewClubModal from './NewClubModal.jsx'
 import BrowseClubsModal from './BrowseClubsModal.jsx'
+import SettingsModal from './SettingsModal.jsx'
 
 export default function Sidebar() {
   const { profile, signOut, isEmployee, isGuest, updateStatus } = useAuth()
   const { chats, chatsLoading } = useChat()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse'
+  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse' | 'settings'
   const [statusMenu, setStatusMenu] = useState(false)
 
   const filtered = chats.filter((c) => c.title?.toLowerCase().includes(search.toLowerCase()))
@@ -23,14 +24,25 @@ export default function Sidebar() {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-brand">AdraConnects</div>
+      <div className="sidebar-brand">
+        <span className="brand-logo-badge">AC</span>
+        <span>AdraConnects</span>
+      </div>
       <div className="sidebar-header">
+        {/* User Avatar & Name */}
         <button
           className="status-trigger"
           title="Set your status"
           onClick={() => setStatusMenu((v) => !v)}
         >
-          <Avatar name={profile?.full_name} size={38} online status={profile?.status} />
+          <Avatar
+            name={profile?.full_name}
+            size={36}
+            online
+            status={profile?.status}
+            url={profile?.avatar_url}
+            color={profile?.avatar_color}
+          />
         </button>
         <div className="sidebar-me-wrap" onClick={() => setStatusMenu((v) => !v)}>
           <span className="sidebar-me">
@@ -41,29 +53,29 @@ export default function Sidebar() {
             {myStatus.label} ▾
           </span>
         </div>
+
+        {/* Right Side Actions */}
         <div className="sidebar-actions">
           {isEmployee && (
             <button className="icon-btn" title="Admin panel" onClick={() => navigate('/admin')}>
-              <Icon name="shield" />
+              <Icon name="shield" size={18} />
             </button>
           )}
           {!isGuest && (
             <button className="icon-btn" title="New direct message" onClick={() => setModal('dm')}>
-              <Icon name="chat" />
+              <Icon name="chat" size={18} />
             </button>
           )}
           <button className="icon-btn" title="Browse communities" onClick={() => setModal('browse')}>
-            <Icon name="compass" />
+            <Icon name="compass" size={18} />
           </button>
           {!isGuest && (
             <button className="icon-btn" title="Create community" onClick={() => setModal('club')}>
-              <Icon name="plus" />
+              <Icon name="plus" size={18} />
             </button>
           )}
-          <button className="icon-btn" title="Log out" onClick={signOut}>
-            <Icon name="logout" />
-          </button>
         </div>
+
         {statusMenu && (
           <div className="status-menu" onMouseLeave={() => setStatusMenu(false)}>
             {STATUSES.map((s) => (
@@ -103,9 +115,20 @@ export default function Sidebar() {
         ))}
       </div>
 
+      {/* Bottom Footer with matching icon color */}
+      <div className="sidebar-footer">
+        <button className="icon-btn" title="Settings" onClick={() => setModal('settings')}>
+          <Icon name="settings" size={18} />
+        </button>
+        <button className="icon-btn logout-btn" title="Exit / Log out" onClick={signOut}>
+          <Icon name="logout" size={18} />
+        </button>
+      </div>
+
       {modal === 'dm' && <NewDmModal onClose={() => setModal(null)} />}
       {modal === 'club' && <NewClubModal onClose={() => setModal(null)} />}
       {modal === 'browse' && <BrowseClubsModal onClose={() => setModal(null)} />}
+      {modal === 'settings' && <SettingsModal onClose={() => setModal(null)} />}
     </div>
   )
 }

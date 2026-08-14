@@ -86,6 +86,13 @@ export function AuthProvider({ children }) {
     await supabase.from('profiles').update({ status }).eq('id', session.user.id)
   }
 
+  async function updateProfile(fields) {
+    if (!session?.user) return
+    setProfile((p) => (p ? { ...p, ...fields } : p))
+    const { error } = await supabase.from('profiles').update(fields).eq('id', session.user.id)
+    if (error) throw error
+  }
+
   const isGuest = profile?.user_type === 'guest' && !employee
 
   const value = {
@@ -104,6 +111,7 @@ export function AuthProvider({ children }) {
     signUp,
     signOut,
     updateStatus,
+    updateProfile,
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

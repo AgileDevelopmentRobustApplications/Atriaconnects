@@ -44,7 +44,7 @@ export default function MessageBubble({ msg, own, showSender, peerReadAt }) {
     <div className={`bubble-row${own ? ' own' : ''}`}>
       <div className={`bubble${own ? ' bubble-out' : ' bubble-in'}`}>
         {showSender && msg.sender && (
-          <div className="bubble-sender" style={{ color: colorFor(msg.sender.full_name) }}>
+          <div className="bubble-sender">
             {msg.sender.full_name}
           </div>
         )}

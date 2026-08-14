@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useChat } from '../context/ChatContext'
 
-const SENDER_JOIN = '*, sender:profiles(id, full_name, avatar_color)'
+const SENDER_JOIN = '*, sender:profiles!sender_id(id, full_name, avatar_color)'
 
 export function useMessages(conversationId) {
   const { user } = useAuth()

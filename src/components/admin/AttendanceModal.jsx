@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Modal from '../common/Modal.jsx'
 import { formatEventTime } from '../../lib/format.js'
@@ -9,6 +10,7 @@ import { formatEventTime } from '../../lib/format.js'
 // pre-checks previously saved attendance, and shows each member's RSVP.
 export default function AttendanceModal({ event, onSaved, onClose }) {
   const { user } = useAuth()
+  const { showToast } = useToast()
   const [members, setMembers] = useState([])
   const [present, setPresent] = useState(new Set())
   const [loading, setLoading] = useState(true)
@@ -56,9 +58,10 @@ export default function AttendanceModal({ event, onSaved, onClose }) {
       .upsert(rows, { onConflict: 'event_id,user_id' })
     setBusy(false)
     if (error) {
-      alert(error.message)
+      showToast(error.message, 'error')
       return
     }
+    showToast('Attendance recorded successfully!', 'success')
     onSaved?.()
     onClose()
   }

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { statusById } from '../../lib/status.js'
+import { useToast } from '../../context/ToastContext.jsx'
 import Modal from '../common/Modal.jsx'
 import Icon from '../common/Icon.jsx'
 
 // Edit any user's information (faculty only; user_type changes go through an RPC)
 export default function UserEditModal({ user, membership, clubs, employee, isHod, onSaved, onClose }) {
+  const { showToast } = useToast()
   const [form, setForm] = useState({
     full_name: user.full_name ?? '',
     phone: user.phone ?? '',
@@ -62,20 +64,24 @@ export default function UserEditModal({ user, membership, clubs, employee, isHod
       .delete()
       .eq('club_id', clubId)
       .eq('user_id', user.id)
-    if (err) alert(err.message)
-    else onSaved()
+    if (err) showToast(err.message, 'error')
+    else {
+      showToast('Membership removed', 'info')
+      onSaved()
+    }
   }
 
   async function toggleFaculty() {
     if (employee) {
-      if (!confirm(`Remove ${user.full_name} from faculty?`)) return
       const { error: err } = await supabase.from('employees').delete().eq('user_id', user.id)
-      if (err) alert(err.message)
+      if (err) showToast(err.message, 'error')
+      else showToast('Faculty status removed', 'info')
     } else {
       const { error: err } = await supabase
         .from('employees')
         .insert({ user_id: user.id, role: 'teacher', department: form.department.trim() })
-      if (err) alert(err.message)
+      if (err) showToast(err.message, 'error')
+      else showToast('Promoted to Faculty!', 'success')
     }
     onSaved()
     onClose()

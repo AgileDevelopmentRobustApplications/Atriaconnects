@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
 import { usePresence } from '../../context/PresenceContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Modal from '../common/Modal.jsx'
 
@@ -10,6 +11,7 @@ export default function NewDmModal({ onClose }) {
   const { user } = useAuth()
   const { refreshChats, openConversation } = useChat()
   const { onlineIds } = usePresence()
+  const { showToast } = useToast()
   const [people, setPeople] = useState([])
   const [search, setSearch] = useState('')
   const [busy, setBusy] = useState(false)
@@ -39,7 +41,7 @@ export default function NewDmModal({ onClose }) {
       openConversation(convId)
       onClose()
     } catch (err) {
-      alert(err.message)
+      showToast(err.message, 'error')
       setBusy(false)
     }
   }

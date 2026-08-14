@@ -1,16 +1,13 @@
 import { format, isToday, isYesterday, isThisYear } from 'date-fns'
 
-// Muted, earthy avatar palette (overrides the bright colors stored in the DB)
+// Alethia.earth organic avatar palette using CSS variable tokens
 const AVATAR_COLORS = [
-  '#BF3B1B', // rust
-  '#26332E', // dark green
-  '#6B705C', // olive
-  '#A98467', // tan
-  '#7D8CA3', // slate
-  '#8C5E58', // clay
-  '#5F7161', // sage
-  '#B08968', // camel
+  'var(--primary)',
+  'var(--primary-hover)',
+  'var(--text-secondary)',
+  'var(--border-strong)',
 ]
+
 
 export function colorFor(name = '') {
   let hash = 0
