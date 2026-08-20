@@ -19,6 +19,18 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null)
   const [roles, setRoles] = useState([]) // [{ role, department }, ...]
   const [loading, setLoading] = useState(true)
+  const [theme, setThemeState] = useState(() => {
+    return localStorage.getItem('theme') || 'light'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = (newTheme) => {
+    setThemeState(newTheme)
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -73,7 +85,14 @@ export function AuthProvider({ children }) {
     await supabase.from('profiles').update({ status }).eq('id', session.user.id)
   }
 
-  // Derived flags. legacy 'employee' kept as a non-superadmin staff member.
+  async function updateProfile(fields) {
+    if (!session?.user) return
+    setProfile((p) => (p ? { ...p, ...fields } : p))
+    const { error } = await supabase.from('profiles').update(fields).eq('id', session.user.id)
+    if (error) throw error
+  }
+
+  // Derived flags.
   const roleIds = roles.map((r) => r.role)
   const isGuest = profile?.user_type === 'guest' && roleIds.length === 0
   const isEmployee = roleIds.some((r) => r === 'faculty' || SUPERADMIN_ROLES.includes(r))
@@ -96,6 +115,9 @@ export function AuthProvider({ children }) {
     signIn,
     signOut,
     updateStatus,
+    updateProfile,
+    theme,
+    toggleTheme,
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

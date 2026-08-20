@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 import { formatEventTime, formatChatTime } from '../../lib/format.js'
 import { statusById } from '../../lib/status.js'
 import Avatar from '../common/Avatar.jsx'
@@ -280,14 +281,18 @@ function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
 
 /* ===== Join requests across all communities ===== */
 function RequestsAdminTab({ requests, reload }) {
+  const { showToast } = useToast()
   const [busyId, setBusyId] = useState(null)
 
   async function decide(id, approve) {
     setBusyId(id)
     const { error } = await supabase.rpc('decide_join_request', { _request: id, _approve: approve })
     setBusyId(null)
-    if (error) alert(error.message)
-    else reload()
+    if (error) showToast(error.message, 'error')
+    else {
+      showToast(approve ? 'Request approved!' : 'Request rejected', approve ? 'success' : 'info')
+      reload()
+    }
   }
 
   if (requests.length === 0) {
@@ -322,19 +327,22 @@ function RequestsAdminTab({ requests, reload }) {
 
 /* ===== Communities ===== */
 function ClubsTab({ data, isHod, reload }) {
+  const { showToast } = useToast()
   const [openClub, setOpenClub] = useState(null)
   const profileOf = (id) => data.profiles.find((p) => p.id === id)
 
   async function removeMember(club, userId) {
     const p = profileOf(userId)
-    if (!confirm(`Remove ${p?.full_name} from ${club.name}?`)) return
     const { error } = await supabase
       .from('memberships')
       .delete()
       .eq('club_id', club.id)
       .eq('user_id', userId)
-    if (error) alert(error.message)
-    else reload()
+    if (error) showToast(error.message, 'error')
+    else {
+      showToast('Member removed', 'info')
+      reload()
+    }
   }
 
   async function setClubRole(club, userId, role) {
@@ -343,16 +351,20 @@ function ClubsTab({ data, isHod, reload }) {
       .update({ role })
       .eq('club_id', club.id)
       .eq('user_id', userId)
-    if (error) alert(error.message)
-    else reload()
+    if (error) showToast(error.message, 'error')
+    else {
+      showToast('Club role updated', 'success')
+      reload()
+    }
   }
 
   async function deleteClub(club) {
-    if (!confirm(`Delete ${club.name}? This removes its chats, events and attendance permanently.`))
-      return
     const { error } = await supabase.from('clubs').delete().eq('id', club.id)
-    if (error) alert(error.message)
-    else reload()
+    if (error) showToast(error.message, 'error')
+    else {
+      showToast(`Deleted ${club.name}`, 'info')
+      reload()
+    }
   }
 
   return (
@@ -482,6 +494,7 @@ function EventsAdminTab({ events, reload }) {
 
 /* ===== Faculty (HOD adds/removes teachers) ===== */
 function FacultyTab({ data, isHod, reload }) {
+  const { showToast } = useToast()
   const [pickId, setPickId] = useState('')
   const [pickRole, setPickRole] = useState('teacher')
   const [pickDept, setPickDept] = useState('')
@@ -495,8 +508,9 @@ function FacultyTab({ data, isHod, reload }) {
     const { error } = await supabase
       .from('employees')
       .insert({ user_id: pickId, role: pickRole, department: pickDept.trim() })
-    if (error) alert(error.message)
+    if (error) showToast(error.message, 'error')
     else {
+      showToast('Faculty member added successfully!', 'success')
       setPickId('')
       setPickDept('')
       reload()
@@ -505,15 +519,20 @@ function FacultyTab({ data, isHod, reload }) {
 
   async function setRole(emp, role) {
     const { error } = await supabase.from('employees').update({ role }).eq('user_id', emp.user_id)
-    if (error) alert(error.message)
-    else reload()
+    if (error) showToast(error.message, 'error')
+    else {
+      showToast('Faculty role updated', 'success')
+      reload()
+    }
   }
 
   async function removeEmployee(emp) {
-    if (!confirm(`Remove ${emp.profile?.full_name} from faculty?`)) return
     const { error } = await supabase.from('employees').delete().eq('user_id', emp.user_id)
-    if (error) alert(error.message)
-    else reload()
+    if (error) showToast(error.message, 'error')
+    else {
+      showToast('Faculty member removed', 'info')
+      reload()
+    }
   }
 
   return (

@@ -1,19 +1,27 @@
 import { initials, colorFor } from '../../lib/format.js'
 import { statusById } from '../../lib/status.js'
 
-export default function Avatar({ name, size = 40, online = false, status = 'active', icon = null, url = null }) {
+export default function Avatar({
+  name,
+  size = 40,
+  online = false,
+  status = 'active',
+  icon = null,
+  url = null,
+  color = null,
+}) {
   return (
     <div className="avatar-wrap" style={{ width: size, height: size }}>
       {url ? (
         <img
           src={url}
-          alt={name}
+          alt={name || 'Avatar'}
           className="avatar avatar-img"
           style={{ width: size, height: size, objectFit: 'cover' }}
           onError={(e) => {
-            e.target.style.display = 'none';
+            e.target.style.display = 'none'
             if (e.target.nextSibling) {
-              e.target.nextSibling.style.display = 'flex';
+              e.target.nextSibling.style.display = 'flex'
             }
           }}
         />
@@ -23,7 +31,7 @@ export default function Avatar({ name, size = 40, online = false, status = 'acti
         style={{
           width: size,
           height: size,
-          background: colorFor(name),
+          background: color || colorFor(name),
           fontSize: size * 0.36,
           display: url ? 'none' : 'flex',
         }}

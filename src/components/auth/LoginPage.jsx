@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
 import GuestNameModal from './GuestNameModal.jsx'
+import LamaMouseGlow from '../common/LamaMouseGlow.jsx'
+import ThemeToggleSwitch from '../common/ThemeToggleSwitch.jsx'
 
 export default function LoginPage() {
   const { signIn } = useAuth()
@@ -26,6 +28,7 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
+      <LamaMouseGlow />
       <div className="auth-card">
         <div className="auth-logo">
           <span className="auth-logo-mark">
@@ -78,6 +81,10 @@ export default function LoginPage() {
           <br />
           <Link to="/forgot">Forgot password?</Link>
         </p>
+
+        <div className="auth-theme-switch-wrap">
+          <ThemeToggleSwitch />
+        </div>
       </div>
 
       {guestOpen && <GuestNameModal onClose={() => setGuestOpen(false)} />}

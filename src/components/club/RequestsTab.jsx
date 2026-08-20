@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { formatChatTime } from '../../lib/format.js'
 import Avatar from '../common/Avatar.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 
 // Pending join requests for one club — visible to club admins and faculty
 export default function RequestsTab({ clubId, onDecided }) {
+  const { showToast } = useToast()
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [busyId, setBusyId] = useState(null)
@@ -29,9 +31,10 @@ export default function RequestsTab({ clubId, onDecided }) {
     const { error } = await supabase.rpc('decide_join_request', { _request: id, _approve: approve })
     setBusyId(null)
     if (error) {
-      alert(error.message)
+      showToast(error.message, 'error')
       return
     }
+    showToast(approve ? 'Member request approved!' : 'Member request declined', approve ? 'success' : 'info')
     await load()
     onDecided?.()
   }

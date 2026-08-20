@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { statusById } from '../../lib/status.js'
+import { useToast } from '../../context/ToastContext.jsx'
 import Modal from '../common/Modal.jsx'
 import Icon from '../common/Icon.jsx'
 
@@ -19,12 +20,13 @@ const ALL_ROLES = Object.keys(ROLE_LABELS)
 export default function UserEditModal({
   user,
   userRoles = [],
-  membership,
-  clubs,
+  membership = [],
+  clubs = [],
   isSuperAdmin,
   onSaved,
   onClose,
 }) {
+  const { showToast } = useToast()
   const [form, setForm] = useState({
     full_name: user.full_name ?? '',
     phone: user.phone ?? '',
@@ -75,6 +77,7 @@ export default function UserEditModal({
         return
       }
     }
+    showToast('User profile updated successfully', 'success')
     onSaved()
     onClose()
   }
@@ -86,13 +89,16 @@ export default function UserEditModal({
       .delete()
       .eq('club_id', clubId)
       .eq('user_id', user.id)
-    if (err) alert(err.message)
-    else onSaved()
+    if (err) showToast(err.message, 'error')
+    else {
+      showToast('Membership removed', 'info')
+      onSaved()
+    }
   }
 
   async function addRoleAssignment() {
     if (roleAssignments.some((r) => r.role === newRole)) {
-      alert(`${ROLE_LABELS[newRole]} already assigned.`)
+      showToast(`${ROLE_LABELS[newRole]} already assigned.`, 'warning')
       return
     }
     const { data, error: err } = await supabase
@@ -101,11 +107,12 @@ export default function UserEditModal({
       .select()
       .single()
     if (err) {
-      alert(err.message)
+      showToast(err.message, 'error')
       return
     }
     setRoleAssignments((rs) => [...rs, { ...data, profile: user }])
     setNewDept('')
+    showToast(`Role ${ROLE_LABELS[newRole]} assigned`, 'success')
     onSaved()
   }
 
@@ -121,9 +128,10 @@ export default function UserEditModal({
       .delete()
       .eq('user_id', user.id)
       .eq('role', role)
-    if (err) alert(err.message)
+    if (err) showToast(err.message, 'error')
     else {
       setRoleAssignments((rs) => rs.filter((r) => r.role !== role))
+      showToast('Role removed', 'info')
       onSaved()
     }
   }
@@ -134,9 +142,9 @@ export default function UserEditModal({
       .from('profiles')
       .update({ must_reset_password: true })
       .eq('id', user.id)
-    if (err) alert(err.message)
+    if (err) showToast(err.message, 'error')
     else {
-      alert('Done — they will be redirected to /welcome next time.')
+      showToast('Password reset required on next sign in', 'success')
       onSaved()
     }
   }
@@ -149,7 +157,10 @@ export default function UserEditModal({
         <button
           className="icon-btn"
           title="Copy UUID"
-          onClick={() => navigator.clipboard?.writeText(user.id)}
+          onClick={() => {
+            navigator.clipboard?.writeText(user.id)
+            showToast('UUID copied to clipboard', 'info')
+          }}
         >
           <Icon name="file" size={14} />
         </button>

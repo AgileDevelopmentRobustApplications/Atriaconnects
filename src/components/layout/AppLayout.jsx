@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useChat } from '../../context/ChatContext.jsx'
+import { format } from 'date-fns'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useChat } from '../../context/ChatContext.jsx'
 import { supabase } from '../../lib/supabase.js'
 import Sidebar from '../sidebar/Sidebar.jsx'
 import ChatWindow from '../chat/ChatWindow.jsx'
 import InfoPanel from '../common/InfoPanel.jsx'
+import BrowseClubsModal from '../sidebar/BrowseClubsModal.jsx'
+import SettingsModal from '../sidebar/SettingsModal.jsx'
 import InstallPwaCard from '../common/InstallPwaCard.jsx'
 import Icon from '../common/Icon.jsx'
 
@@ -75,16 +78,11 @@ function WelcomeDashboard() {
     return d.toLocaleDateString()
   }
 
-  const getFormattedDate = () => {
-    const d = new Date()
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`
-  }
-
   const triggerModal = (name) => {
     window.dispatchEvent(new CustomEvent('open-modal', { detail: name }))
   }
+
+  const firstName = profile?.full_name?.trim().split(/\s+/)[0] || 'Member'
 
   const greeting = () => {
     const hour = new Date().getHours()
@@ -100,8 +98,8 @@ function WelcomeDashboard() {
         <div className="dashboard-welcome">
           <span className="waving-hand">👋</span>
           <div>
-            <h1>{greeting()}, {profile?.full_name || 'Guest'}</h1>
-            <p className="dashboard-subtitle">{getFormattedDate()}</p>
+            <h1>{greeting()}, {firstName}</h1>
+            <p className="dashboard-subtitle">{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
           </div>
         </div>
       </header>
@@ -204,6 +202,16 @@ function WelcomeDashboard() {
 export default function AppLayout() {
   const { activeChat } = useChat()
   const [panel, setPanel] = useState(null)
+  const [modal, setModal] = useState(null) // 'browse' | 'settings'
+
+  useEffect(() => {
+    const handleOpenModal = (e) => {
+      if (e.detail === 'browse') setModal('browse')
+      else if (e.detail === 'settings' || e.detail === 'profile') setModal('settings')
+    }
+    window.addEventListener('open-modal', handleOpenModal)
+    return () => window.removeEventListener('open-modal', handleOpenModal)
+  }, [])
 
   return (
     <div className={`app${activeChat ? ' chat-open' : ''}`}>
@@ -224,6 +232,8 @@ export default function AppLayout() {
           onClose={() => setPanel(null)}
         />
       )}
+      {modal === 'browse' && <BrowseClubsModal onClose={() => setModal(null)} />}
+      {modal === 'settings' && <SettingsModal onClose={() => setModal(null)} />}
     </div>
   )
 }

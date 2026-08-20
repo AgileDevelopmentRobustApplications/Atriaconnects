@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
+import { useToast } from '../../context/ToastContext.jsx'
 import Icon from '../common/Icon.jsx'
 
 // 10 MB cap is enforced in storage RLS (migration 006). This client-side check
@@ -8,6 +9,7 @@ import Icon from '../common/Icon.jsx'
 const MAX_FILE_MB = 10
 
 export default function MessageInput({ conversationId, onSend, onTyping }) {
+  const { showToast } = useToast()
   const [text, setText] = useState('')
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef(null)
@@ -20,7 +22,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
     try {
       await onSend({ content })
     } catch (err) {
-      alert(err.message)
+      showToast(err.message || 'Failed to send message', 'error')
       setText(content)
     }
   }
@@ -30,6 +32,10 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
     e.target.value = ''
     if (!file) return
 
+    if (file.size > MAX_FILE_MB * 1024 * 1024) {
+      showToast(`File too large — max ${MAX_FILE_MB} MB`, 'warning')
+      return
+    }
     setUploading(true)
     try {
       let uploadFile = file
@@ -39,7 +45,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
       }
 
       if (uploadFile.size > MAX_FILE_MB * 1024 * 1024) {
-        alert(`File too large — max ${MAX_FILE_MB} MB (server enforces this too)`)
+        showToast(`File too large — max ${MAX_FILE_MB} MB (server enforces this too)`, 'warning')
         setUploading(false)
         return
       }
@@ -59,7 +65,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
       })
       setText('')
     } catch (err) {
-      alert(`Upload failed: ${err.message}`)
+      showToast(`Upload failed: ${err.message}`, 'error')
     } finally {
       setUploading(false)
     }

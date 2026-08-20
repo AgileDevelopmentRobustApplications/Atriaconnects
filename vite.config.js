@@ -7,14 +7,17 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: false,
+      },
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
         name: 'AdraConnects',
         short_name: 'AdraConnects',
         description:
           'College club management & communication — chats, announcements, events and resources',
-        theme_color: '#bf3b1b',
-        background_color: '#eae3d2',
+        theme_color: '#0B1E13',
+        background_color: '#F8F9F6',
         display: 'standalone',
         start_url: '/',
         scope: '/',

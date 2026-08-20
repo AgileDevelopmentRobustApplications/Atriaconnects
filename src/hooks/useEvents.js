@@ -55,7 +55,7 @@ export function useEvents({ clubId, groupId } = {}) {
         .from('event_rsvps')
         .insert({ event_id: eventId, user_id: user.id, status })
       if (error) {
-        alert(
+        throw new Error(
           error.code === '23505'
             ? 'Your RSVP is already recorded — RSVPs are final and cannot be changed.'
             : error.message
