@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Avatar from '../common/Avatar.jsx'
@@ -20,6 +20,7 @@ export default function CanteenModal({ onClose }) {
   const [newAnn, setNewAnn] = useState('')
   const [announcements, setAnnouncements] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingDetails, setLoadingDetails] = useState(false)
   const [paying, setPaying] = useState(false)
   const [mockCard, setMockCard] = useState('')
   const [mockUpi, setMockUpi] = useState('')
@@ -30,23 +31,37 @@ export default function CanteenModal({ onClose }) {
   const [showAddItem, setShowAddItem] = useState(false)
   const [addingItem, setAddingItem] = useState(false)
 
-  // Load shops
+  // Ref to keep track of current selectedShop ID for realtime callbacks
+  const selectedShopIdRef = useRef(null)
+  useEffect(() => {
+    selectedShopIdRef.current = selectedShop?.id ?? null
+  }, [selectedShop])
+
+  // Load shops (works for both authenticated and guest/anon users)
   const loadShops = useCallback(async () => {
     setLoading(true)
-    const { data } = await supabase.from('canteen_shops').select('*').order('name')
-    const allShops = data ?? []
-    setShops(allShops)
+    try {
+      const { data, error } = await supabase.from('canteen_shops').select('*').order('name')
+      if (error) console.error('Error fetching canteen shops:', error)
+      const allShops = data ?? []
+      setShops(allShops)
 
-    // Check if user is shopkeeper for any shop
-    const myShop = allShops.find(s => s.shopkeeper_id === user.id)
-    if (myShop) {
-      setDashboardShop(myShop)
-    } else if (isEmployee && allShops.length > 0) {
-      // Principal / IT Dept can oversee the first shop as a fallback or mock HOD role
-      setDashboardShop(allShops[0])
+      // Shopkeeper / employee dashboard only applies when logged in
+      if (user?.id) {
+        const myShop = allShops.find(s => s.shopkeeper_id === user.id)
+        if (myShop) {
+          setDashboardShop(myShop)
+        } else if (isEmployee && allShops.length > 0) {
+          // Principal / IT Dept can oversee the first shop as a fallback
+          setDashboardShop(allShops[0])
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load shops:', err)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
-  }, [user.id, isEmployee])
+  }, [user?.id, isEmployee])
 
   useEffect(() => {
     loadShops()
@@ -54,13 +69,31 @@ export default function CanteenModal({ onClose }) {
 
   // Load menu items and announcements for a shop
   const loadShopDetails = useCallback(async (shopId) => {
-    const [itemsRes, annRes] = await Promise.all([
-      supabase.from('canteen_items').select('*').eq('shop_id', shopId).order('category').order('name'),
-      supabase.from('canteen_announcements').select('*, profile:profiles(full_name)').eq('shop_id', shopId).order('created_at', { ascending: false })
-    ])
-    setMenuItems(itemsRes.data ?? [])
-    setAnnouncements(annRes.data ?? [])
-    setActiveCategory(null) // reset category filter on new shop
+    if (!shopId) return
+    setLoadingDetails(true)
+    try {
+      const [itemsRes, annRes] = await Promise.all([
+        supabase.from('canteen_items').select('*').eq('shop_id', shopId).order('category').order('name'),
+        supabase.from('canteen_announcements').select('*, profile:profiles(full_name)').eq('shop_id', shopId).order('created_at', { ascending: false })
+      ])
+
+      if (itemsRes.error) {
+        console.error('Error loading canteen items:', itemsRes.error)
+        // Fallback without category ordering in case of schema discrepancy
+        const fallbackRes = await supabase.from('canteen_items').select('*').eq('shop_id', shopId).order('name')
+        setMenuItems(fallbackRes.data ?? [])
+      } else {
+        setMenuItems(itemsRes.data ?? [])
+      }
+
+      setAnnouncements(annRes.data ?? [])
+    } catch (err) {
+      console.error('Failed to load shop details:', err)
+      setMenuItems([])
+    } finally {
+      setLoadingDetails(false)
+      setActiveCategory(null) // reset category filter on new shop
+    }
   }, [])
 
   useEffect(() => {
@@ -71,13 +104,22 @@ export default function CanteenModal({ onClose }) {
 
   // Load my orders
   const loadMyOrders = useCallback(async () => {
-    const { data } = await supabase
-      .from('canteen_orders')
-      .select('*, shop:canteen_shops(name), items:canteen_order_items(quantity, price, item:canteen_items(name))')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-    setMyOrders(data ?? [])
-  }, [user.id])
+    if (!user?.id) {
+      setMyOrders([])
+      return
+    }
+    try {
+      const { data, error } = await supabase
+        .from('canteen_orders')
+        .select('*, shop:canteen_shops(name), items:canteen_order_items(quantity, price, item:canteen_items(name))')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+      if (error) console.error('Error fetching orders:', error)
+      setMyOrders(data ?? [])
+    } catch (err) {
+      console.error('Failed to load orders:', err)
+    }
+  }, [user?.id])
 
   useEffect(() => {
     if (view === 'my-orders') {
@@ -88,16 +130,20 @@ export default function CanteenModal({ onClose }) {
   // Load dashboard details (orders, items) for shopkeeper
   const loadDashboardDetails = useCallback(async () => {
     if (!dashboardShop) return
-    const [ordersRes, itemsRes] = await Promise.all([
-      supabase
-        .from('canteen_orders')
-        .select('*, profile:profiles(full_name, email), items:canteen_order_items(quantity, price, item:canteen_items(name))')
-        .eq('shop_id', dashboardShop.id)
-        .order('created_at', { ascending: false }),
-      supabase.from('canteen_items').select('*').eq('shop_id', dashboardShop.id).order('category').order('name')
-    ])
-    setDashboardOrders(ordersRes.data ?? [])
-    setDashboardItems(itemsRes.data ?? [])
+    try {
+      const [ordersRes, itemsRes] = await Promise.all([
+        supabase
+          .from('canteen_orders')
+          .select('*, profile:profiles(full_name, email), items:canteen_order_items(quantity, price, item:canteen_items(name))')
+          .eq('shop_id', dashboardShop.id)
+          .order('created_at', { ascending: false }),
+        supabase.from('canteen_items').select('*').eq('shop_id', dashboardShop.id).order('category').order('name')
+      ])
+      setDashboardOrders(ordersRes.data ?? [])
+      setDashboardItems(itemsRes.data ?? [])
+    } catch (err) {
+      console.error('Failed to load dashboard:', err)
+    }
   }, [dashboardShop])
 
   useEffect(() => {
@@ -122,8 +168,8 @@ export default function CanteenModal({ onClose }) {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'canteen_items' },
         () => {
-          if (selectedShop) {
-            loadShopDetails(selectedShop.id)
+          if (selectedShopIdRef.current) {
+            loadShopDetails(selectedShopIdRef.current)
           }
           loadDashboardDetails()
         }
@@ -133,7 +179,7 @@ export default function CanteenModal({ onClose }) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [loadMyOrders, loadDashboardDetails, loadShopDetails, selectedShop])
+  }, [loadMyOrders, loadDashboardDetails, loadShopDetails])
 
   // Cart actions
   const [animateCart, setAnimateCart] = useState(false)
@@ -163,7 +209,7 @@ export default function CanteenModal({ onClose }) {
   const cartTotal = () => {
     return Object.entries(cart).reduce((total, [itemId, qty]) => {
       const item = menuItems.find(i => i.id === itemId)
-      return total + (item ? item.price * qty : 0)
+      return total + (item ? Number(item.price) * qty : 0)
     }, 0)
   }
 
@@ -171,10 +217,18 @@ export default function CanteenModal({ onClose }) {
 
   // Checkout process
   const triggerCheckout = () => {
+    if (!user?.id) {
+      alert('Please sign in or continue as guest to place an order.')
+      return
+    }
     setShowPaymentPortal(true)
   }
 
   const handlePayment = async () => {
+    if (!user?.id) {
+      alert('Please sign in to place an order.')
+      return
+    }
     setPaying(true)
     try {
       const shopId = selectedShop.id
@@ -215,7 +269,7 @@ export default function CanteenModal({ onClose }) {
           order_id: order.id,
           item_id: itemId,
           quantity: qty,
-          price: item.price
+          price: item ? Number(item.price) : 0
         }
       })
 
@@ -269,7 +323,7 @@ export default function CanteenModal({ onClose }) {
 
   const makeAnnouncement = async (e) => {
     e.preventDefault()
-    if (!newAnn.trim() || !dashboardShop) return
+    if (!newAnn.trim() || !dashboardShop || !user?.id) return
 
     const { error } = await supabase
       .from('canteen_announcements')
@@ -324,9 +378,9 @@ export default function CanteenModal({ onClose }) {
   }
 
   // Derived: unique categories for the selected shop's menu
-  const categories = [...new Set(menuItems.map(i => i.category).filter(Boolean))]
+  const categories = [...new Set(menuItems.map(i => (i.category || '').trim()).filter(Boolean))]
   const displayedItems = activeCategory
-    ? menuItems.filter(i => i.category === activeCategory)
+    ? menuItems.filter(i => (i.category || '').trim() === activeCategory)
     : menuItems
 
   // Group dashboard items by category
@@ -363,7 +417,7 @@ export default function CanteenModal({ onClose }) {
 
       <div className="canteen-body">
         {loading ? (
-          <div className="side-note center">Loading Canteen…</div>
+          <div className="side-note center" style={{ padding: 32 }}>Loading Canteen…</div>
         ) : (
           <>
             {/* 1. SHOPS DIRECTORY VIEW */}
@@ -442,38 +496,45 @@ export default function CanteenModal({ onClose }) {
                       {activeCategory && <span className="picker-sub" style={{ fontWeight: 400, marginLeft: 8 }}>— {activeCategory}</span>}
                     </h3>
 
-                    {displayedItems.length === 0 && <div className="side-note">No items in this category.</div>}
-
-                    {/* Group by category when showing All */}
-                    {!activeCategory
-                      ? categories.map(cat => {
-                          const catItems = menuItems.filter(i => i.category === cat)
-                          return (
-                            <div key={cat} className="canteen-category-group">
-                              <div className="canteen-category-label">{cat}</div>
-                              <div className="picker-list">
-                                {catItems.map(item => {
-                                  const qty = cart[item.id] || 0
-                                  const outOfStock = item.inventory_count <= 0 || !item.is_available
-                                  return (
-                                    <MenuItemRow
-                                      key={item.id}
-                                      item={item}
-                                      qty={qty}
-                                      outOfStock={outOfStock}
-                                      shopOpen={selectedShop.is_open}
-                                      onAdd={() => addToCart(item.id)}
-                                      onRemove={() => removeFromCart(item.id)}
-                                    />
-                                  )
-                                })}
-                              </div>
+                    {loadingDetails ? (
+                      <div className="side-note center" style={{ padding: 24 }}>Loading menu items…</div>
+                    ) : menuItems.length === 0 ? (
+                      <div className="side-note">No menu items available for this shop.</div>
+                    ) : !activeCategory && categories.length > 1 ? (
+                      /* Grouped by category when showing All and multiple categories exist */
+                      categories.map(cat => {
+                        const catItems = menuItems.filter(i => (i.category || '').trim() === cat)
+                        if (catItems.length === 0) return null
+                        return (
+                          <div key={cat} className="canteen-category-group">
+                            <div className="canteen-category-label">{cat}</div>
+                            <div className="picker-list">
+                              {catItems.map(item => {
+                                const qty = cart[item.id] || 0
+                                const outOfStock = item.inventory_count <= 0 || !item.is_available
+                                return (
+                                  <MenuItemRow
+                                    key={item.id}
+                                    item={item}
+                                    qty={qty}
+                                    outOfStock={outOfStock}
+                                    shopOpen={selectedShop.is_open}
+                                    onAdd={() => addToCart(item.id)}
+                                    onRemove={() => removeFromCart(item.id)}
+                                  />
+                                )
+                              })}
                             </div>
-                          )
-                        })
-                      : (
-                        <div className="picker-list">
-                          {displayedItems.map(item => {
+                          </div>
+                        )
+                      })
+                    ) : (
+                      /* Flat list if single category, no categories, or a specific activeCategory selected */
+                      <div className="picker-list">
+                        {displayedItems.length === 0 ? (
+                          <div className="side-note">No items in this category.</div>
+                        ) : (
+                          displayedItems.map(item => {
                             const qty = cart[item.id] || 0
                             const outOfStock = item.inventory_count <= 0 || !item.is_available
                             return (
@@ -487,10 +548,10 @@ export default function CanteenModal({ onClose }) {
                                 onRemove={() => removeFromCart(item.id)}
                               />
                             )
-                          })}
-                        </div>
-                      )
-                    }
+                          })
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Cart Summary */}
@@ -508,7 +569,7 @@ export default function CanteenModal({ onClose }) {
                             <div key={itemId} className="cart-review-row">
                               <div className="cart-review-item-info">
                                 <span className="cart-review-name">{item.name}</span>
-                                <span className="cart-review-category">{item.category}</span>
+                                <span className="cart-review-category">{item.category || 'Item'}</span>
                               </div>
                               <div className="cart-review-right">
                                 <div className="cart-item-controls" style={{ gap: 4 }}>
@@ -516,7 +577,7 @@ export default function CanteenModal({ onClose }) {
                                   <span className="cart-qty">{qty}</span>
                                   <button className="btn-small" style={{ padding: '1px 6px' }} onClick={() => addToCart(item.id)} disabled={qty >= item.inventory_count}>+</button>
                                 </div>
-                                <span className="cart-review-price">₹{(item.price * qty).toFixed(2)}</span>
+                                <span className="cart-review-price">₹{(Number(item.price) * qty).toFixed(2)}</span>
                               </div>
                             </div>
                           )
@@ -549,18 +610,18 @@ export default function CanteenModal({ onClose }) {
                       <div className="picker-grow">
                         <div className="picker-name">{order.shop?.name}</div>
                         <div className="picker-sub">
-                          Token: <strong>#{order.token_number}</strong> · ₹{order.total_amount.toFixed(2)}
+                          Token: <strong>#{order.token_number}</strong> · ₹{Number(order.total_amount).toFixed(2)}
                           <br />
                           Items:{' '}
-                          {order.items.map(i => `${i.item?.name} (x${i.quantity})`).join(', ')}
+                          {(order.items || []).map(i => `${i.item?.name || 'Item'} (x${i.quantity})`).join(', ')}
                         </div>
                       </div>
                       <span
                         className="tier-tag"
                         style={{
-                          background: orderStatusColor[order.status] + '22',
-                          color: orderStatusColor[order.status],
-                          border: `1px solid ${orderStatusColor[order.status]}44`,
+                          background: (orderStatusColor[order.status] || '#95a5a6') + '22',
+                          color: orderStatusColor[order.status] || '#95a5a6',
+                          border: `1px solid ${(orderStatusColor[order.status] || '#95a5a6')}44`,
                           fontWeight: 600,
                           fontSize: 11,
                           padding: '3px 8px',
@@ -605,10 +666,10 @@ export default function CanteenModal({ onClose }) {
                           <div key={order.id} className="picker-item no-click">
                             <div className="picker-grow">
                               <div className="picker-name">
-                                Token #{order.token_number} · {order.profile?.full_name}
+                                Token #{order.token_number} · {order.profile?.full_name || 'Guest'}
                               </div>
                               <div className="picker-sub">
-                                Items: {order.items.map(i => `${i.item?.name} (x${i.quantity})`).join(', ')}
+                                Items: {(order.items || []).map(i => `${i.item?.name || 'Item'} (x${i.quantity})`).join(', ')}
                                 <br />
                                 Order placed: {formatChatTime(order.created_at)}
                               </div>
@@ -733,7 +794,7 @@ export default function CanteenModal({ onClose }) {
       </div>
 
       {/* Simulated Payment Portal */}
-      {showPaymentPortal && (
+      {showPaymentPortal && selectedShop && (
         <div className="payment-portal-overlay">
           <div className="payment-portal-card">
             <div className="payment-portal-header">
@@ -743,14 +804,14 @@ export default function CanteenModal({ onClose }) {
             <p>You are paying <strong>₹{cartTotal().toFixed(2)}</strong> to <strong>{selectedShop.name}</strong></p>
 
             {/* Order summary in payment portal */}
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.6 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.6, maxHeight: 120, overflowY: 'auto' }}>
               {Object.entries(cart).map(([itemId, qty]) => {
                 const item = menuItems.find(i => i.id === itemId)
                 if (!item) return null
                 return (
                   <div key={itemId} style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>{item.name} × {qty}</span>
-                    <span>₹{(item.price * qty).toFixed(2)}</span>
+                    <span>₹{(Number(item.price) * qty).toFixed(2)}</span>
                   </div>
                 )
               })}
@@ -820,7 +881,7 @@ function MenuItemRow({ item, qty, outOfStock, shopOpen, onAdd, onRemove }) {
         <div className="picker-sub">
           {item.description}
           <br />
-          <strong>₹{item.price}</strong> ·{' '}
+          <strong>₹{Number(item.price).toFixed(2)}</strong> ·{' '}
           {outOfStock ? (
             <span className="status-dnd-text">Out of stock</span>
           ) : (
