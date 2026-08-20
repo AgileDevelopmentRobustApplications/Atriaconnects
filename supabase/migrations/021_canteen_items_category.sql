@@ -1,0 +1,69 @@
+-- Migration 021: Add category column to canteen_items for organized menu display
+
+ALTER TABLE public.canteen_items
+  ADD COLUMN IF NOT EXISTS category text NOT NULL DEFAULT 'Other';
+
+-- Categorize Naveen Anna's items
+UPDATE public.canteen_items SET category = 'Rice & Meals'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000001',
+  'cc000003-0000-0000-0000-000000000002',
+  'cc000003-0000-0000-0000-000000000010',
+  'cc000003-0000-0000-0000-000000000011'
+);
+
+UPDATE public.canteen_items SET category = 'Tiffin'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000003',
+  'cc000003-0000-0000-0000-000000000004',
+  'cc000003-0000-0000-0000-000000000005',
+  'cc000003-0000-0000-0000-000000000006',
+  'cc000003-0000-0000-0000-000000000007',
+  'cc000003-0000-0000-0000-000000000008'
+);
+
+UPDATE public.canteen_items SET category = 'Snacks'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000009'
+);
+
+UPDATE public.canteen_items SET category = 'Drinks'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000012',
+  'cc000003-0000-0000-0000-000000000013',
+  'cc000003-0000-0000-0000-000000000014'
+);
+
+-- Categorize Sandwich Anna's items
+UPDATE public.canteen_items SET category = 'Grilled Sandwiches'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000020',
+  'cc000003-0000-0000-0000-000000000021',
+  'cc000003-0000-0000-0000-000000000022',
+  'cc000003-0000-0000-0000-000000000023'
+);
+
+UPDATE public.canteen_items SET category = 'Loaded & Subs'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000024',
+  'cc000003-0000-0000-0000-000000000025'
+);
+
+UPDATE public.canteen_items SET category = 'Wraps'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000026',
+  'cc000003-0000-0000-0000-000000000027'
+);
+
+UPDATE public.canteen_items SET category = 'Burgers'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000028',
+  'cc000003-0000-0000-0000-000000000029'
+);
+
+UPDATE public.canteen_items SET category = 'Sides & Drinks'
+WHERE id IN (
+  'cc000003-0000-0000-0000-000000000030',
+  'cc000003-0000-0000-0000-000000000031',
+  'cc000003-0000-0000-0000-000000000032'
+);

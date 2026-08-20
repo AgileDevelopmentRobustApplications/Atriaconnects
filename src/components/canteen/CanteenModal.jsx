@@ -25,6 +25,10 @@ export default function CanteenModal({ onClose }) {
   const [mockUpi, setMockUpi] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('upi')
   const [showPaymentPortal, setShowPaymentPortal] = useState(false)
+  const [activeCategory, setActiveCategory] = useState(null) // for category tab filter
+  const [newItemForm, setNewItemForm] = useState({ name: '', description: '', price: '', category: '', inventory_count: 10 })
+  const [showAddItem, setShowAddItem] = useState(false)
+  const [addingItem, setAddingItem] = useState(false)
 
   // Load shops
   const loadShops = useCallback(async () => {
@@ -51,11 +55,12 @@ export default function CanteenModal({ onClose }) {
   // Load menu items and announcements for a shop
   const loadShopDetails = useCallback(async (shopId) => {
     const [itemsRes, annRes] = await Promise.all([
-      supabase.from('canteen_items').select('*').eq('shop_id', shopId).order('name'),
+      supabase.from('canteen_items').select('*').eq('shop_id', shopId).order('category').order('name'),
       supabase.from('canteen_announcements').select('*, profile:profiles(full_name)').eq('shop_id', shopId).order('created_at', { ascending: false })
     ])
     setMenuItems(itemsRes.data ?? [])
     setAnnouncements(annRes.data ?? [])
+    setActiveCategory(null) // reset category filter on new shop
   }, [])
 
   useEffect(() => {
@@ -89,7 +94,7 @@ export default function CanteenModal({ onClose }) {
         .select('*, profile:profiles(full_name, email), items:canteen_order_items(quantity, price, item:canteen_items(name))')
         .eq('shop_id', dashboardShop.id)
         .order('created_at', { ascending: false }),
-      supabase.from('canteen_items').select('*').eq('shop_id', dashboardShop.id).order('name')
+      supabase.from('canteen_items').select('*').eq('shop_id', dashboardShop.id).order('category').order('name')
     ])
     setDashboardOrders(ordersRes.data ?? [])
     setDashboardItems(itemsRes.data ?? [])
@@ -162,6 +167,8 @@ export default function CanteenModal({ onClose }) {
     }, 0)
   }
 
+  const cartCount = () => Object.values(cart).reduce((a, b) => a + b, 0)
+
   // Checkout process
   const triggerCheckout = () => {
     setShowPaymentPortal(true)
@@ -201,7 +208,7 @@ export default function CanteenModal({ onClose }) {
 
       if (orderErr) throw orderErr
 
-      // 3. Insert order items and decrement inventory
+      // 3. Insert order items into canteen_order_items
       const orderItems = Object.entries(cart).map(([itemId, qty]) => {
         const item = menuItems.find(i => i.id === itemId)
         return {
@@ -215,7 +222,7 @@ export default function CanteenModal({ onClose }) {
       const { error: itemsErr } = await supabase.from('canteen_order_items').insert(orderItems)
       if (itemsErr) throw itemsErr
 
-      // Update inventory counts
+      // 4. Decrement inventory counts
       for (const [itemId, qty] of Object.entries(cart)) {
         const item = menuItems.find(i => i.id === itemId)
         if (item && item.inventory_count >= qty) {
@@ -290,6 +297,54 @@ export default function CanteenModal({ onClose }) {
     else loadDashboardDetails()
   }
 
+  // Add a new menu item (shopkeeper)
+  const handleAddItem = async (e) => {
+    e.preventDefault()
+    if (!dashboardShop) return
+    setAddingItem(true)
+    try {
+      const { error } = await supabase.from('canteen_items').insert({
+        shop_id: dashboardShop.id,
+        name: newItemForm.name.trim(),
+        description: newItemForm.description.trim(),
+        price: parseFloat(newItemForm.price),
+        category: newItemForm.category.trim() || 'Other',
+        inventory_count: parseInt(newItemForm.inventory_count, 10) || 10,
+        is_available: true,
+      })
+      if (error) throw error
+      setNewItemForm({ name: '', description: '', price: '', category: '', inventory_count: 10 })
+      setShowAddItem(false)
+      loadDashboardDetails()
+    } catch (err) {
+      alert('Failed to add item: ' + err.message)
+    } finally {
+      setAddingItem(false)
+    }
+  }
+
+  // Derived: unique categories for the selected shop's menu
+  const categories = [...new Set(menuItems.map(i => i.category).filter(Boolean))]
+  const displayedItems = activeCategory
+    ? menuItems.filter(i => i.category === activeCategory)
+    : menuItems
+
+  // Group dashboard items by category
+  const dashboardItemsByCategory = dashboardItems.reduce((acc, item) => {
+    const cat = item.category || 'Other'
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(item)
+    return acc
+  }, {})
+
+  const orderStatusColor = {
+    pending: '#f39c12',
+    preparing: '#3498db',
+    ready: '#2ecc71',
+    completed: '#95a5a6',
+    cancelled: '#e74c3c',
+  }
+
   return (
     <Modal title="College Canteen" onClose={onClose} wide>
       <div className="club-tabs" style={{ marginBottom: 16 }}>
@@ -358,61 +413,111 @@ export default function CanteenModal({ onClose }) {
                   </div>
                 )}
 
+                {/* Category filter tabs */}
+                {categories.length > 1 && (
+                  <div className="canteen-category-tabs">
+                    <button
+                      className={`canteen-cat-tab${!activeCategory ? ' active' : ''}`}
+                      onClick={() => setActiveCategory(null)}
+                    >
+                      All
+                    </button>
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        className={`canteen-cat-tab${activeCategory === cat ? ' active' : ''}`}
+                        onClick={() => setActiveCategory(cat)}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 <div className="canteen-menu-columns">
                   {/* Menu List */}
                   <div className="canteen-menu-list">
-                    <h3>Menu</h3>
-                    {menuItems.length === 0 && <div className="side-note">No menu items found.</div>}
-                    <div className="picker-list">
-                      {menuItems.map(item => {
-                        const qty = cart[item.id] || 0
-                        const outOfStock = item.inventory_count <= 0 || !item.is_available
-                        return (
-                          <div key={item.id} className={`picker-item no-click ${outOfStock ? 'item-disabled' : ''}`}>
-                            <div className="picker-grow">
-                              <div className="picker-name">{item.name}</div>
-                              <div className="picker-sub">
-                                {item.description}
-                                <br />
-                                <strong>₹{item.price}</strong> ·{' '}
-                                {outOfStock ? (
-                                  <span className="status-dnd-text">Out of stock</span>
-                                ) : (
-                                  <span className="picker-sub">{item.inventory_count} remaining</span>
-                                )}
+                    <h3>
+                      Menu
+                      {activeCategory && <span className="picker-sub" style={{ fontWeight: 400, marginLeft: 8 }}>— {activeCategory}</span>}
+                    </h3>
+
+                    {displayedItems.length === 0 && <div className="side-note">No items in this category.</div>}
+
+                    {/* Group by category when showing All */}
+                    {!activeCategory
+                      ? categories.map(cat => {
+                          const catItems = menuItems.filter(i => i.category === cat)
+                          return (
+                            <div key={cat} className="canteen-category-group">
+                              <div className="canteen-category-label">{cat}</div>
+                              <div className="picker-list">
+                                {catItems.map(item => {
+                                  const qty = cart[item.id] || 0
+                                  const outOfStock = item.inventory_count <= 0 || !item.is_available
+                                  return (
+                                    <MenuItemRow
+                                      key={item.id}
+                                      item={item}
+                                      qty={qty}
+                                      outOfStock={outOfStock}
+                                      shopOpen={selectedShop.is_open}
+                                      onAdd={() => addToCart(item.id)}
+                                      onRemove={() => removeFromCart(item.id)}
+                                    />
+                                  )
+                                })}
                               </div>
                             </div>
-                            {!outOfStock && selectedShop.is_open && (
-                              <div className="cart-item-controls">
-                                {qty > 0 ? (
-                                  <>
-                                    <button className="btn-small" onClick={() => removeFromCart(item.id)}>-</button>
-                                    <span className="cart-qty">{qty}</span>
-                                    <button className="btn-small" onClick={() => addToCart(item.id)} disabled={qty >= item.inventory_count}>+</button>
-                                  </>
-                                ) : (
-                                  <button className="btn-small" onClick={() => addToCart(item.id)}>Add</button>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
-                    </div>
+                          )
+                        })
+                      : (
+                        <div className="picker-list">
+                          {displayedItems.map(item => {
+                            const qty = cart[item.id] || 0
+                            const outOfStock = item.inventory_count <= 0 || !item.is_available
+                            return (
+                              <MenuItemRow
+                                key={item.id}
+                                item={item}
+                                qty={qty}
+                                outOfStock={outOfStock}
+                                shopOpen={selectedShop.is_open}
+                                onAdd={() => addToCart(item.id)}
+                                onRemove={() => removeFromCart(item.id)}
+                              />
+                            )
+                          })}
+                        </div>
+                      )
+                    }
                   </div>
 
                   {/* Cart Summary */}
                   {Object.keys(cart).length > 0 && (
                     <div className={`canteen-cart-card ${animateCart ? 'cart-bounce' : ''}`}>
-                      <h3>Your Cart</h3>
+                      <h3>
+                        Your Cart
+                        <span className="cart-count-badge">{cartCount()}</span>
+                      </h3>
                       <div className="cart-items-review">
                         {Object.entries(cart).map(([itemId, qty]) => {
                           const item = menuItems.find(i => i.id === itemId)
                           if (!item) return null
                           return (
                             <div key={itemId} className="cart-review-row">
-                              <span>{item.name} x {qty}</span>
-                              <span>₹{(item.price * qty).toFixed(2)}</span>
+                              <div className="cart-review-item-info">
+                                <span className="cart-review-name">{item.name}</span>
+                                <span className="cart-review-category">{item.category}</span>
+                              </div>
+                              <div className="cart-review-right">
+                                <div className="cart-item-controls" style={{ gap: 4 }}>
+                                  <button className="btn-small" style={{ padding: '1px 6px' }} onClick={() => removeFromCart(item.id)}>-</button>
+                                  <span className="cart-qty">{qty}</span>
+                                  <button className="btn-small" style={{ padding: '1px 6px' }} onClick={() => addToCart(item.id)} disabled={qty >= item.inventory_count}>+</button>
+                                </div>
+                                <span className="cart-review-price">₹{(item.price * qty).toFixed(2)}</span>
+                              </div>
                             </div>
                           )
                         })}
@@ -423,6 +528,9 @@ export default function CanteenModal({ onClose }) {
                       </div>
                       <button className="btn-primary btn-block" onClick={triggerCheckout}>
                         Proceed to Pay
+                      </button>
+                      <button className="btn-small btn-block" style={{ marginTop: 6 }} onClick={clearCart}>
+                        Clear Cart
                       </button>
                     </div>
                   )}
@@ -447,7 +555,18 @@ export default function CanteenModal({ onClose }) {
                           {order.items.map(i => `${i.item?.name} (x${i.quantity})`).join(', ')}
                         </div>
                       </div>
-                      <span className={`tier-tag status-${order.status}`}>
+                      <span
+                        className="tier-tag"
+                        style={{
+                          background: orderStatusColor[order.status] + '22',
+                          color: orderStatusColor[order.status],
+                          border: `1px solid ${orderStatusColor[order.status]}44`,
+                          fontWeight: 600,
+                          fontSize: 11,
+                          padding: '3px 8px',
+                          borderRadius: 20,
+                        }}
+                      >
                         {order.status.toUpperCase()}
                       </span>
                     </div>
@@ -533,20 +652,78 @@ export default function CanteenModal({ onClose }) {
                       <button className="btn-small btn-block" type="submit">Post Announcement</button>
                     </form>
 
-                    {/* Inventory counts */}
-                    <h3>Inventory Management</h3>
-                    <div className="picker-list" style={{ gap: 4 }}>
-                      {dashboardItems.map(item => (
-                        <div key={item.id} className="picker-item no-click" style={{ padding: '6px 4px' }}>
-                          <span className="picker-grow picker-name" style={{ fontSize: 13 }}>{item.name}</span>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <button className="btn-small" style={{ padding: '2px 6px' }} onClick={() => updateInventory(item.id, item.inventory_count - 5)}>-5</button>
-                            <span style={{ fontSize: 13, minWidth: 20, textAlign: 'center', fontWeight: 'bold' }}>{item.inventory_count}</span>
-                            <button className="btn-small" style={{ padding: '2px 6px' }} onClick={() => updateInventory(item.id, item.inventory_count + 5)}>+5</button>
+                    {/* Add new menu item */}
+                    <div style={{ marginBottom: 16 }}>
+                      <button
+                        className="btn-small btn-block"
+                        onClick={() => setShowAddItem(v => !v)}
+                      >
+                        {showAddItem ? 'Cancel' : '+ Add Menu Item'}
+                      </button>
+                      {showAddItem && (
+                        <form onSubmit={handleAddItem} className="modal-form" style={{ padding: '12px 0 0', gap: 8 }}>
+                          <input
+                            placeholder="Item name *"
+                            value={newItemForm.name}
+                            onChange={e => setNewItemForm(f => ({ ...f, name: e.target.value }))}
+                            required
+                          />
+                          <input
+                            placeholder="Description"
+                            value={newItemForm.description}
+                            onChange={e => setNewItemForm(f => ({ ...f, description: e.target.value }))}
+                          />
+                          <input
+                            placeholder="Category (e.g. Snacks)"
+                            value={newItemForm.category}
+                            onChange={e => setNewItemForm(f => ({ ...f, category: e.target.value }))}
+                          />
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <input
+                              placeholder="Price (₹) *"
+                              type="number"
+                              min="0"
+                              step="0.5"
+                              value={newItemForm.price}
+                              onChange={e => setNewItemForm(f => ({ ...f, price: e.target.value }))}
+                              required
+                              style={{ flex: 1 }}
+                            />
+                            <input
+                              placeholder="Stock qty"
+                              type="number"
+                              min="0"
+                              value={newItemForm.inventory_count}
+                              onChange={e => setNewItemForm(f => ({ ...f, inventory_count: e.target.value }))}
+                              style={{ flex: 1 }}
+                            />
                           </div>
-                        </div>
-                      ))}
+                          <button className="btn-primary btn-block" type="submit" disabled={addingItem}>
+                            {addingItem ? 'Adding…' : 'Add Item'}
+                          </button>
+                        </form>
+                      )}
                     </div>
+
+                    {/* Inventory counts grouped by category */}
+                    <h3>Inventory Management</h3>
+                    {Object.entries(dashboardItemsByCategory).map(([cat, items]) => (
+                      <div key={cat} style={{ marginBottom: 12 }}>
+                        <div className="canteen-category-label" style={{ marginBottom: 4 }}>{cat}</div>
+                        <div className="picker-list" style={{ gap: 4 }}>
+                          {items.map(item => (
+                            <div key={item.id} className="picker-item no-click" style={{ padding: '6px 4px' }}>
+                              <span className="picker-grow picker-name" style={{ fontSize: 13 }}>{item.name}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <button className="btn-small" style={{ padding: '2px 6px' }} onClick={() => updateInventory(item.id, item.inventory_count - 5)}>-5</button>
+                                <span style={{ fontSize: 13, minWidth: 20, textAlign: 'center', fontWeight: 'bold' }}>{item.inventory_count}</span>
+                                <button className="btn-small" style={{ padding: '2px 6px' }} onClick={() => updateInventory(item.id, item.inventory_count + 5)}>+5</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -564,6 +741,20 @@ export default function CanteenModal({ onClose }) {
               <span>AdraPay simulated portal</span>
             </div>
             <p>You are paying <strong>₹{cartTotal().toFixed(2)}</strong> to <strong>{selectedShop.name}</strong></p>
+
+            {/* Order summary in payment portal */}
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.6 }}>
+              {Object.entries(cart).map(([itemId, qty]) => {
+                const item = menuItems.find(i => i.id === itemId)
+                if (!item) return null
+                return (
+                  <div key={itemId} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{item.name} × {qty}</span>
+                    <span>₹{(item.price * qty).toFixed(2)}</span>
+                  </div>
+                )
+              })}
+            </div>
 
             <div className="payment-method-selector">
               <label>
@@ -617,5 +808,39 @@ export default function CanteenModal({ onClose }) {
         </div>
       )}
     </Modal>
+  )
+}
+
+// ── Reusable menu item row component ──────────────────────────────────────────
+function MenuItemRow({ item, qty, outOfStock, shopOpen, onAdd, onRemove }) {
+  return (
+    <div className={`picker-item no-click ${outOfStock ? 'item-disabled' : ''}`}>
+      <div className="picker-grow">
+        <div className="picker-name">{item.name}</div>
+        <div className="picker-sub">
+          {item.description}
+          <br />
+          <strong>₹{item.price}</strong> ·{' '}
+          {outOfStock ? (
+            <span className="status-dnd-text">Out of stock</span>
+          ) : (
+            <span className="picker-sub">{item.inventory_count} remaining</span>
+          )}
+        </div>
+      </div>
+      {!outOfStock && shopOpen && (
+        <div className="cart-item-controls">
+          {qty > 0 ? (
+            <>
+              <button className="btn-small" onClick={onRemove}>-</button>
+              <span className="cart-qty">{qty}</span>
+              <button className="btn-small" onClick={onAdd} disabled={qty >= item.inventory_count}>+</button>
+            </>
+          ) : (
+            <button className="btn-small" onClick={onAdd}>Add</button>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
