@@ -58,7 +58,7 @@ export default function Sidebar() {
 
         {/* Right Side Actions on Top Navigation Bar */}
         <div className="sidebar-actions">
-          <button className="icon-btn" title="Campus & Communities" onClick={() => setModal('browse')}>
+          <button className="icon-btn" title="Clubs & Communities" onClick={() => setModal('browse')}>
             <Icon name="compass" size={18} />
           </button>
           <button
@@ -76,11 +76,6 @@ export default function Sidebar() {
           {!isGuest && (
             <button className="icon-btn" title="New direct message" onClick={() => setModal('dm')}>
               <Icon name="chat" size={18} />
-            </button>
-          )}
-          {!isGuest && (
-            <button className="icon-btn" title="Create community" onClick={() => setModal('club')}>
-              <Icon name="plus" size={18} />
             </button>
           )}
         </div>
@@ -140,7 +135,12 @@ export default function Sidebar() {
 
       {modal === 'dm' && <NewDmModal onClose={() => setModal(null)} />}
       {modal === 'club' && <NewClubModal onClose={() => setModal(null)} />}
-      {modal === 'browse' && <BrowseClubsModal onClose={() => setModal(null)} />}
+      {modal === 'browse' && (
+        <BrowseClubsModal
+          onClose={() => setModal(null)}
+          onCreateClub={() => setModal('club')}
+        />
+      )}
       {(modal === 'settings' || modal?.type === 'settings') && (
         <SettingsModal
           initialTab={typeof modal === 'object' ? modal.initialTab : 'profile'}

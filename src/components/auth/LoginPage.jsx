@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
 import LamaMouseGlow from '../common/LamaMouseGlow.jsx'
+import ThemeToggleSwitch from '../common/ThemeToggleSwitch.jsx'
 
 export default function LoginPage() {
-  const { signIn, signInWithGoogle, theme, toggleTheme } = useAuth()
+  const { signIn, signInWithGoogle } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -87,19 +88,7 @@ export default function LoginPage() {
         </p>
 
         <div className="auth-theme-switch-wrap">
-          <button
-            type="button"
-            className="theme-toggle-pill"
-            onClick={() => toggleTheme(theme === 'light' ? 'dark' : 'light')}
-            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-          >
-            <span className={`toggle-thumb ${theme}`}>
-              <Icon name={theme === 'light' ? 'sun' : 'moon'} size={14} />
-            </span>
-            <span className="toggle-label">
-              {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
-            </span>
-          </button>
+          <ThemeToggleSwitch />
         </div>
       </div>
     </div>

@@ -4,10 +4,11 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 import Avatar from '../common/Avatar.jsx'
+import Icon from '../common/Icon.jsx'
 import Modal from '../common/Modal.jsx'
 
 // Browse all communities. Members request to join (admin-approved); guests view only.
-export default function BrowseClubsModal({ onClose }) {
+export default function BrowseClubsModal({ onClose, onCreateClub }) {
   const { user, isGuest } = useAuth()
   const { chats } = useChat()
   const { showToast } = useToast()
@@ -47,20 +48,34 @@ export default function BrowseClubsModal({ onClose }) {
   }
 
   return (
-    <Modal title="Browse communities" onClose={onClose} wide>
+    <Modal title="Clubs & Communities" onClose={onClose} wide>
       {isGuest && (
         <p className="side-note">
           You're a guest — you can browse communities, but only members can request to join. Ask
           the Admissions Office about becoming a member.
         </p>
       )}
-      <input
-        className="modal-search"
-        placeholder="Search communities"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        autoFocus
-      />
+      <div className="browse-header-row">
+        <input
+          className="modal-search"
+          placeholder="Search communities..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          autoFocus
+        />
+        {!isGuest && onCreateClub && (
+          <button
+            className="btn-small create-club-trigger-btn"
+            onClick={() => {
+              onClose()
+              onCreateClub()
+            }}
+          >
+            <Icon name="plus" size={14} />
+            <span>Create Club</span>
+          </button>
+        )}
+      </div>
       <div className="picker-list">
         {filtered.length === 0 && (
           <div className="side-note">No communities yet — create the first one.</div>
