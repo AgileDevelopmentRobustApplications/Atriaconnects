@@ -11,7 +11,6 @@ import NewDmModal from './NewDmModal.jsx'
 import NewClubModal from './NewClubModal.jsx'
 import BrowseClubsModal from './BrowseClubsModal.jsx'
 import SettingsModal from './SettingsModal.jsx'
-import CanteenModal from '../canteen/CanteenModal.jsx'
 
 export default function Sidebar() {
   const { profile, signOut, isEmployee, isGuest, updateStatus } = useAuth()
@@ -19,7 +18,7 @@ export default function Sidebar() {
   const { chats, chatsLoading } = useChat()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse' | 'settings' | 'canteen'
+  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse' | 'settings'
   const [statusMenu, setStatusMenu] = useState(false)
 
   useEffect(() => {
@@ -72,9 +71,6 @@ export default function Sidebar() {
         <div className="sidebar-actions">
           <button className="icon-btn" title="Clubs & Communities" onClick={() => setModal('browse')}>
             <Icon name="compass" size={18} />
-          </button>
-          <button className="icon-btn" title="College Canteen" onClick={() => setModal('canteen')}>
-            <Icon name="coffee" size={18} />
           </button>
           <button
             className="icon-btn"
@@ -203,7 +199,6 @@ export default function Sidebar() {
           onClose={() => setModal(null)}
         />
       )}
-      {modal === 'canteen' && <CanteenModal onClose={() => setModal(null)} />}
     </div>
   )
 }
