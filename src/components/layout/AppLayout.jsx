@@ -14,30 +14,23 @@ import Icon from '../common/Icon.jsx'
 function WelcomeDashboard() {
   const { profile } = useAuth()
   const [events, setEvents] = useState([])
-  const [announcements, setAnnouncements] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let active = true
     const fetchData = async () => {
       try {
-        const [eventsRes, annRes] = await Promise.all([
+        const [eventsRes] = await Promise.all([
           supabase
             .from('events')
             .select('*, club:clubs(name)')
             .gt('starts_at', new Date().toISOString())
             .order('starts_at', { ascending: true })
             .limit(3),
-          supabase
-            .from('canteen_announcements')
-            .select('*, shop:canteen_shops(name)')
-            .order('created_at', { ascending: false })
-            .limit(2)
         ])
 
         if (active) {
           setEvents(eventsRes?.data ?? [])
-          setAnnouncements(annRes?.data ?? [])
           setLoading(false)
         }
       } catch (err) {
@@ -135,31 +128,6 @@ function WelcomeDashboard() {
           )}
         </section>
 
-        {/* Canteen Card */}
-        <section className="dashboard-card canteen-card animate-fade-in delay-2">
-          <div className="card-header-wrap">
-            <Icon name="coffee" size={20} />
-            <h2>Canteen Alerts & Banners</h2>
-          </div>
-          {loading ? (
-            <div className="dashboard-loading">Loading updates...</div>
-          ) : announcements.length === 0 ? (
-            <div className="dashboard-empty-state">No recent canteen banners posted.</div>
-          ) : (
-            <div className="dashboard-list">
-              {announcements.map((ann) => (
-                <div key={ann.id} className="dashboard-item-row">
-                  <div className="item-badge alert-badge">{ann.shop?.name || 'Canteen'}</div>
-                  <div className="item-details">
-                    <p className="ann-content">"{ann.content}"</p>
-                    <p className="item-meta">⏰ {formatRelativeTime(ann.created_at)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
         {/* Quick Actions Card */}
         <section className="dashboard-card actions-card animate-fade-in delay-3">
           <div className="card-header-wrap">
@@ -167,13 +135,6 @@ function WelcomeDashboard() {
             <h2>Quick Actions</h2>
           </div>
           <div className="actions-button-grid">
-            <button className="action-card-btn" onClick={() => triggerModal('canteen')}>
-              <span className="action-icon">🍔</span>
-              <div>
-                <h3>Order Food</h3>
-                <p>Browse menu & place order</p>
-              </div>
-            </button>
             <button className="action-card-btn" onClick={() => triggerModal('browse')}>
               <span className="action-icon">🔍</span>
               <div>

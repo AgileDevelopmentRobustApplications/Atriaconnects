@@ -390,23 +390,6 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
             </div>
           </div>
 
-          {/* Canteen Alerts & Banners */}
-          <div className="dashboard-card canteen-card">
-            <div className="dashboard-card-header">
-              <div className="card-title-wrap">
-                <span className="card-icon-wrap"><Icon name="megaphone" size={18} /></span>
-                <h3>Canteen Alerts & Banners</h3>
-              </div>
-              <span className="pill-badge green">Live</span>
-            </div>
-            <div className="dashboard-card-body empty-box">
-              <div className="empty-box-icon">
-                <Icon name="megaphone" size={28} />
-              </div>
-              <p className="empty-box-text">No recent canteen banners posted today.</p>
-            </div>
-          </div>
-
           {/* Quick Actions */}
           <div className="dashboard-card actions-card">
             <div className="dashboard-card-header">
@@ -416,18 +399,6 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
               </div>
             </div>
             <div className="quick-actions-grid">
-              <div
-                className="quick-action-card"
-                onClick={() => showToast('Canteen ordering & menu service coming soon!', 'info')}
-              >
-                <div className="action-card-icon food"><Icon name="coffee" size={20} /></div>
-                <div className="action-card-text">
-                  <h4>Order Food</h4>
-                  <p>Browse menu & place order</p>
-                </div>
-                <span className="action-arrow">→</span>
-              </div>
-
               <div
                 className="quick-action-card"
                 onClick={() => setBrowseModal(true)}
