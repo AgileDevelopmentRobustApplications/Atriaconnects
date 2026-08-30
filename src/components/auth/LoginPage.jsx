@@ -79,7 +79,7 @@ export default function LoginPage() {
         <p className="auth-switch">
           New here? <Link to="/welcome">Set up your account</Link>
           <br />
-          <Link to="/forgot">Forgot password?</Link>
+          <Link to="/welcome">Forgot password?</Link>
         </p>
 
         <div className="auth-theme-switch-wrap">
