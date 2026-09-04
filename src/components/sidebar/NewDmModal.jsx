@@ -6,6 +6,7 @@ import { usePresence } from '../../context/PresenceContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Modal from '../common/Modal.jsx'
+import Icon from '../common/Icon.jsx'
 
 export default function NewDmModal({ onClose }) {
   const { user } = useAuth()
@@ -46,11 +47,33 @@ export default function NewDmModal({ onClose }) {
     }
   }
 
+  const openModal = (type) => {
+    window.dispatchEvent(new CustomEvent('open-modal', { detail: type }))
+    onClose()
+  }
+
   return (
-    <Modal title="New direct message" onClose={onClose}>
+    <Modal title="New message or community" onClose={onClose}>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        <button
+          className="btn btn-secondary"
+          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          onClick={() => openModal('browse')}
+        >
+          <Icon name="compass" size={16} /> Browse Clubs
+        </button>
+        <button
+          className="btn btn-secondary"
+          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          onClick={() => openModal('club')}
+        >
+          <Icon name="plus" size={16} /> Create Community
+        </button>
+      </div>
+
       <input
         className="modal-search"
-        placeholder="Search people"
+        placeholder="Search people for direct message"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         autoFocus
