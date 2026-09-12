@@ -9,3 +9,5 @@ dist/
 # Executables and temp files
 agy.exe
 resq-paws-*.html
+
+.claude/
