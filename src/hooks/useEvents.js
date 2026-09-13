@@ -33,13 +33,18 @@ export function useEvents({ clubId, groupId } = {}) {
 
   const createEvent = useCallback(
     async ({ title, description, location, starts_at, targetClubId = null }) => {
+      const finalClubId = targetClubId ?? clubId;
+      if (!finalClubId) {
+        throw new Error('Select a club before scheduling the event');
+      }
+
       const insert = {
         title,
         description,
         location,
         starts_at,
         created_by: user.id,
-        club_id: targetClubId ?? clubId ?? null,
+        club_id: finalClubId,
         academic_group_id: groupId ?? null,
       }
       const { error } = await supabase.from('events').insert(insert)

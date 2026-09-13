@@ -256,9 +256,9 @@ create policy "clubs_delete_admin" on public.clubs
   for delete to authenticated using (public.is_club_admin(id));
 
 create policy "memberships_select" on public.memberships
-  for select to authenticated using (true);
-create policy "memberships_join_self" on public.memberships
-  for insert to authenticated with check (user_id = auth.uid() and role = 'member');
+  for select to authenticated using (
+    public.is_club_member(club_id) or public.is_club_admin(club_id)
+  );
 create policy "memberships_update_admin" on public.memberships
   for update to authenticated using (public.is_club_admin(club_id)) with check (public.is_club_admin(club_id));
 create policy "memberships_delete" on public.memberships

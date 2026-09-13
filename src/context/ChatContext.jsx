@@ -16,7 +16,11 @@ export function ChatProvider({ children }) {
   const readListeners = useRef(new Set())
   const profileCache = useRef(new Map())
   const activeIdRef = useRef(null)
-  activeIdRef.current = activeId
+
+  useEffect(() => {
+    activeIdRef.current = activeId
+  }, [activeId])
+
 
   const refreshChats = useCallback(async () => {
     const { data, error } = await supabase.rpc('get_chat_list')

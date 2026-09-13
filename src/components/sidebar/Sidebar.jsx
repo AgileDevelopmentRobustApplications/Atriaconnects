@@ -69,9 +69,6 @@ export default function Sidebar() {
 
         {/* Right Side Actions on Top Navigation Bar */}
         <div className="sidebar-actions">
-          <button className="icon-btn" title="Clubs & Communities" onClick={() => setModal('browse')}>
-            <Icon name="compass" size={18} />
-          </button>
           <button
             className="icon-btn"
             title="Campus Services & Alerts"
@@ -85,13 +82,8 @@ export default function Sidebar() {
             </button>
           )}
           {!isGuest && (
-            <button className="icon-btn" title="New direct message" onClick={() => setModal('dm')}>
+            <button className="icon-btn" title="New message or community" onClick={() => setModal('dm')}>
               <Icon name="chat" size={18} />
-            </button>
-          )}
-          {!isGuest && (
-            <button className="icon-btn" title="Create community" onClick={() => setModal('club')}>
-              <Icon name="plus" size={18} />
             </button>
           )}
         </div>
