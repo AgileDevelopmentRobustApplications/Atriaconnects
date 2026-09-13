@@ -6,7 +6,9 @@ import LoginPage from './components/auth/LoginPage.jsx'
 import WelcomePage from './components/auth/WelcomePage.jsx'
 import AppLayout from './components/layout/AppLayout.jsx'
 import AdminPage from './components/admin/AdminPage.jsx'
-import NotFoundPage from './components/layout/NotFoundPage.jsx'
+import NotFoundPage from './components/layout/NotFoundPage.jsx';
+import { Suspense, lazy } from 'react';
+const CanteenPage = lazy(() => import('./components/canteen/CanteenPage.jsx'));
 
 function Protected({ children }) {
   const { session, loading } = useAuth()
@@ -78,7 +80,17 @@ export default function App() {
           </Protected>
         }
       />
-      <Route path="*" element={<NotFoundPage />} />
+      <Route
+        path="/canteen"
+        element={
+          <Protected>
+            <Suspense fallback={<div className="full-center"><div className="spinner" /></div>}>
+              <CanteenPage />
+            </Suspense>
+          </Protected>
+        }
+      />
+        <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }
