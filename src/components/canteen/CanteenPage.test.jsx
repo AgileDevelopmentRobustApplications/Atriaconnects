@@ -1,19 +1,22 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import CanteenPage from './CanteenPage.jsx';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock the navigation hook
-const navigateMock = jest.fn();
-jest.mock('react-router-dom', () => {
-  const originalModule = jest.requireActual('react-router-dom');
+const navigateMock = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
-    ...originalModule,
+    ...actual,
     useNavigate: () => navigateMock,
   };
 });
 
 // Mock the modal component to avoid rendering the full modal UI
-jest.mock('./CanteenModal.jsx', () => () => <div data-testid="mock-modal">CanteenModal</div>);
+vi.mock('./CanteenModal.jsx', () => ({
+  default: () => <div data-testid="mock-modal">CanteenModal</div>
+}));
 
 describe('CanteenPage', () => {
   beforeEach(() => {
