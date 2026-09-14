@@ -170,6 +170,8 @@ function OverviewTab({ data, employeeById }) {
 
 /* ===== Users (all users, filter + search by name/email/uuid, edit) ===== */
 function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
+  const { profile, roleIds } = useAuth()
+  const { showToast } = useToast()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all') // all | guest | member | faculty
   const [editing, setEditing] = useState(null)
@@ -185,6 +187,22 @@ function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
     })
   }
 
+  const requestDeleteUser = async (user) => {
+    if (!confirm(`Are you sure you want to request deletion for ${user.full_name}?`)) return;
+    const { error } = await supabase.from('user_deletion_requests').insert({
+      user_id: user.id,
+      requested_by: profile.id,
+      reason: 'Admin requested deletion',
+      status: 'pending'
+    });
+    if (error) {
+      showToast(error.message, 'error');
+    } else {
+      showToast('Deletion request submitted', 'success');
+      reload();
+    }
+  };
+
   const tierOf = (p) =>
     employeeById.has(p.id) ? 'faculty' : p.user_type === 'guest' ? 'guest' : 'member'
 
@@ -194,10 +212,10 @@ function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
     if (!q) return true
     return (
       p.full_name.toLowerCase().includes(q) ||
-      p.email.toLowerCase().includes(q) ||
-      p.id.toLowerCase().includes(q)
+      p.email.toLowerCase().includes(q)
     )
   })
+
 
   const FILTERS = [
     { id: 'all', label: `All (${data.profiles.length})` },
@@ -211,13 +229,15 @@ function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
       <div className="users-toolbar">
         <input
           className="modal-search"
-          placeholder="Search by name, email or UUID"
+          placeholder="Search by name or email"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button className="btn-small" onClick={() => setAdding(true)}>
-          + Add user
-        </button>
+        {roleIds.some(r => ['faculty', 'itdept', 'principal'].includes(r)) && (
+          <button className="btn-small" onClick={() => setAdding(true)}>
+            + Add user
+          </button>
+        )}
       </div>
       <div className="filter-row">
         {FILTERS.map((f) => (
@@ -249,9 +269,20 @@ function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
               <span className={`tier-tag tier-${tier}`}>
                 {tier === 'faculty' ? 'Faculty' : tier === 'guest' ? 'Guest' : 'Student'}
               </span>
-              <button className="btn-small" onClick={() => setEditing(p)}>
-                Edit
-              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn-small" onClick={() => setEditing(p)}>
+                  Edit
+                </button>
+                {roleIds.includes('itdept') && (
+                  <button
+                    className="btn-small danger"
+                    title="Request user deletion"
+                    onClick={() => requestDeleteUser(p)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
           )
         })}
@@ -326,7 +357,7 @@ function ClubsTab({ data, isHod, reload }) {
   const profileOf = (id) => data.profiles.find((p) => p.id === id)
 
   async function removeMember(club, userId) {
-    const p = profileOf(userId)
+    const _p = profileOf(userId)
     const { error } = await supabase
       .from('memberships')
       .delete()
@@ -606,7 +637,7 @@ function GroupsTab({ data, isHod, reload }) {
     e.preventDefault()
     if (!name.trim()) return
     setCreating(true)
-    const { data: gid, error } = await supabase.rpc('create_academic_group', {
+    const { data: _gid, error } = await supabase.rpc('create_academic_group', {
       _name: name.trim(),
       _description: description.trim(),
       _parent: parentId === '' ? null : parentId
