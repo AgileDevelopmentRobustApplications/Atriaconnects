@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
-import { useToast } from '../../context/ToastContext.jsx'
 import { STATUSES, statusById } from '../../lib/status.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
@@ -14,7 +13,6 @@ import SettingsModal from './SettingsModal.jsx'
 
 export default function Sidebar() {
   const { profile, signOut, isEmployee, isGuest, updateStatus } = useAuth()
-  const { showToast } = useToast()
   const { chats, chatsLoading } = useChat()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')

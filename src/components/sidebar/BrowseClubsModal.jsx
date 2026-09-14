@@ -51,7 +51,7 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
     <Modal title="Clubs & Communities" onClose={onClose} wide>
       {isGuest && (
         <p className="side-note">
-          You're a guest — you can browse communities, but only members can request to join. Ask
+          You&apos;re a guest — you can browse communities, but only members can request to join. Ask
           the Admissions Office about becoming a member.
         </p>
       )}

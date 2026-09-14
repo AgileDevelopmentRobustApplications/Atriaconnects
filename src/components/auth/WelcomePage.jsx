@@ -108,7 +108,7 @@ export default function WelcomePage() {
         ) : (
           <form onSubmit={handleRequestReset}>
             <p className="auth-note">
-              Enter the email your account was set up with. We'll send a setup link.
+              Enter the email your account was set up with. We&apos;ll send a setup link.
             </p>
             <input
               type="email"

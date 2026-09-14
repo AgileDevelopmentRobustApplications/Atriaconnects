@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import Modal from '../common/Modal.jsx'
-import Icon from '../common/Icon.jsx'
 import CustomSelect from '../common/CustomSelect.jsx'
 
 export default function CustomizationModal({ item, options, onClose, onConfirm }) {

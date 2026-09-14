@@ -72,7 +72,7 @@ export default function NewClubModal({ onClose, parentId = null, parentName = ''
           {busy ? 'Creating…' : parentId ? 'Create sub-group' : 'Create club'}
         </button>
         <p className="side-note">
-          You'll be the admin — you can post announcements and schedule events.
+          You&apos;ll be the admin — you can post announcements and schedule events.
         </p>
       </form>
     </Modal>
