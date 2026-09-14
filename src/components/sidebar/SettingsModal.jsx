@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
-import { useToast } from '../../context/ToastContext.jsx'
 import { supabase } from '../../lib/supabase.js'
 import { STATUSES } from '../../lib/status.js'
 import Modal from '../common/Modal.jsx'
@@ -30,16 +29,15 @@ const YEAR_OPTIONS = [
 
 export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   const { profile, user, updateProfile, theme, toggleTheme } = useAuth()
-  const { showToast } = useToast()
   const [tab, setTab] = useState(initialTab) // 'profile' | 'services'
   const [status, setStatus] = useState(profile?.status ?? 'active')
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? '')
   const [avatarColor, setAvatarColor] = useState(profile?.avatar_color ?? '#0B1E13')
   const [phone, setPhone] = useState(profile?.phone ?? '')
-  const [department, setDepartment] = useState(profile?.department ?? '')
-  const [branch, setBranch] = useState(profile?.branch ?? '')
+  const [department] = useState(profile?.department ?? '')
+  const [branch] = useState(profile?.branch ?? '')
   const [year, setYear] = useState(profile?.year ?? '')
-  const [admissionCode, setAdmissionCode] = useState(profile?.admission_code ?? '')
+  const [admissionCode] = useState(profile?.admission_code ?? '')
   const [dob, setDob] = useState(profile?.dob ?? '')
   const [uploading, setUploading] = useState(false)
   const [busy, setBusy] = useState(false)

@@ -3,7 +3,6 @@ import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Modal from '../common/Modal.jsx'
-import Icon from '../common/Icon.jsx'
 
 export default function ProfileSettingsModal({ onClose }) {
   const { profile, refreshProfile } = useAuth()

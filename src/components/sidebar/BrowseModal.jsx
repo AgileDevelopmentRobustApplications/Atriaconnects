@@ -133,7 +133,7 @@ function CommunitiesList({ isGuest, userId }) {
     <div>
       {isGuest && (
         <p className="side-note">
-          You're a guest — browse only. Ask the Admissions Office about becoming a member.
+          You&apos;re a guest — browse only. Ask the Admissions Office about becoming a member.
         </p>
       )}
       <input

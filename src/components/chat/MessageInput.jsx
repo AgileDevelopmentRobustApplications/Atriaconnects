@@ -50,7 +50,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
         return
       }
 
-      const safeName = uploadFile.name.replace(/[^\w.\-]+/g, '_')
+      const safeName = uploadFile.name.replace(/[^\w.-]+/g, '_')
       const path = `${conversationId}/${crypto.randomUUID()}_${safeName}`
       const { error } = await supabase.storage.from('attachments').upload(path, uploadFile)
       if (error) throw error
