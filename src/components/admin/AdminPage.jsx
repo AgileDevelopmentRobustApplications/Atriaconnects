@@ -357,7 +357,6 @@ function ClubsTab({ data, isHod, reload }) {
   const profileOf = (id) => data.profiles.find((p) => p.id === id)
 
   async function removeMember(club, userId) {
-    const _p = profileOf(userId)
     const { error } = await supabase
       .from('memberships')
       .delete()
@@ -637,7 +636,7 @@ function GroupsTab({ data, isHod, reload }) {
     e.preventDefault()
     if (!name.trim()) return
     setCreating(true)
-    const { data: _gid, error } = await supabase.rpc('create_academic_group', {
+    const { error } = await supabase.rpc('create_academic_group', {
       _name: name.trim(),
       _description: description.trim(),
       _parent: parentId === '' ? null : parentId
