@@ -1,13 +1,43 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Secrets — NEVER commit these. The .env.example template is safe.
+# ─────────────────────────────────────────────────────────────────────────────
 .env
 .env.local
+.env.development
+.env.production
+.env.staging
+.env*.local
 
+# Vercel
 .vercel
-.env*
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
 
 # Executables and temp files
 agy.exe
+agy.exe.*.old
 resq-paws-*.html
+supabase/.temp/
 
+# Claude / AI assistants
 .claude/
+
+# Logs
+*.log
+crash_mcp.log
+lint_output.txt

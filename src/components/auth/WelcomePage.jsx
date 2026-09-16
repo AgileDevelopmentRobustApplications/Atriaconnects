@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
 import { supabase } from '../../lib/supabase.js'
+import { resetLimiter } from '../../lib/rate-limit.js'
+import { sanitizeEmail } from '../../lib/sanitize.js'
 
 // Welcome page — used both for first-time invite setup and password reset.
 // Without a session, the user enters their email; we send a Supabase reset
@@ -23,9 +25,24 @@ export default function WelcomePage() {
     e.preventDefault()
     setError('')
     setMessage('')
+
+    // Rate-limit reset requests
+    if (!resetLimiter.check('reset')) {
+      const wait = resetLimiter.remainingCooldown('reset')
+      setError(`Too many reset requests. Please wait ${wait}s before trying again.`)
+      return
+    }
+
+    const cleanEmail = sanitizeEmail(email)
+    if (!cleanEmail) {
+      setError('Please enter a valid email address.')
+      return
+    }
+
     setBusy(true)
+    resetLimiter.record('reset')
     try {
-      const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      const { error: err } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
         redirectTo: `${window.location.origin}/welcome`,
       })
       if (err) throw err
@@ -40,8 +57,12 @@ export default function WelcomePage() {
   async function handleSetPassword(e) {
     e.preventDefault()
     setError('')
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters')
+      return
+    }
+    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/\d/.test(newPassword)) {
+      setError('Password must include uppercase, lowercase, and a number')
       return
     }
     if (newPassword !== confirm) {
@@ -87,7 +108,7 @@ export default function WelcomePage() {
             </p>
             <input
               type="password"
-              placeholder="New password (min 6 characters)"
+              placeholder="New password (min 8 chars, mixed case + digit)"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required

@@ -5,6 +5,8 @@ import Icon from '../common/Icon.jsx'
 import GuestNameModal from './GuestNameModal.jsx'
 import LamaMouseGlow from '../common/LamaMouseGlow.jsx'
 import ThemeToggleSwitch from '../common/ThemeToggleSwitch.jsx'
+import { authLimiter } from '../../lib/rate-limit.js'
+import { sanitizeEmail } from '../../lib/sanitize.js'
 
 export default function LoginPage() {
   const { signIn } = useAuth()
@@ -17,9 +19,25 @@ export default function LoginPage() {
   async function handleEmailLogin(e) {
     e.preventDefault()
     setError('')
+
+    // Rate-limit login attempts (defense-in-depth; Supabase GoTrue also limits server-side)
+    if (!authLimiter.check('login')) {
+      const wait = authLimiter.remainingCooldown('login')
+      setError(`Too many login attempts. Please wait ${wait}s before trying again.`)
+      return
+    }
+
+    const cleanEmail = sanitizeEmail(email)
+    if (!cleanEmail) {
+      setError('Please enter a valid email address.')
+      return
+    }
+
     setBusy(true)
+    authLimiter.record('login')
     try {
-      await signIn(email.trim(), password)
+      await signIn(cleanEmail, password)
+      authLimiter.reset('login') // clear on success
     } catch (err) {
       setError(err.message ?? 'Login failed')
       setBusy(false)

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { sanitizeText } from '../lib/sanitize'
 
 // Hook for events. Either clubId or groupId must be set; the other is null.
 export function useEvents({ clubId, groupId } = {}) {
@@ -39,14 +40,15 @@ export function useEvents({ clubId, groupId } = {}) {
       }
 
       const insert = {
-        title,
-        description,
-        location,
+        title: sanitizeText(title, 200),
+        description: sanitizeText(description, 2000),
+        location: sanitizeText(location, 200),
         starts_at,
         created_by: user.id,
         club_id: finalClubId,
         academic_group_id: groupId ?? null,
       }
+      if (!insert.title) throw new Error('Event title is required')
       const { error } = await supabase.from('events').insert(insert)
       if (error) throw error
       await refresh()

@@ -10,6 +10,7 @@ import Icon from '../common/Icon.jsx'
 import AttendanceModal from './AttendanceModal.jsx'
 import UserEditModal from './UserEditModal.jsx'
 import AddUserModal from './AddUserModal.jsx'
+import { sanitizeText } from '../../lib/sanitize.js'
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -531,7 +532,7 @@ function FacultyTab({ data, isHod, reload }) {
     if (!pickId) return
     const { error } = await supabase
       .from('employees')
-      .insert({ user_id: pickId, role: pickRole, department: pickDept.trim() })
+      .insert({ user_id: pickId, role: pickRole, department: sanitizeText(pickDept, 100) })
     if (error) showToast(error.message, 'error')
     else {
       showToast('Faculty member added successfully!', 'success')
@@ -634,11 +635,12 @@ function GroupsTab({ data, isHod, reload }) {
 
   async function createGroup(e) {
     e.preventDefault()
-    if (!name.trim()) return
+    const cleanName = sanitizeText(name, 80)
+    if (!cleanName) return
     setCreating(true)
     const { error } = await supabase.rpc('create_academic_group', {
-      _name: name.trim(),
-      _description: description.trim(),
+      _name: cleanName,
+      _description: sanitizeText(description, 500),
       _parent: parentId === '' ? null : parentId
     })
     setCreating(false)
