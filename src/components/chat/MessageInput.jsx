@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import Icon from '../common/Icon.jsx'
+import { sanitizeText, sanitizeFileName } from '../../lib/sanitize.js'
 
 // 10 MB cap is enforced in storage RLS (migration 006). This client-side check
 // is kept as defense-in-depth so users see a friendly message before the
@@ -16,7 +17,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
 
   async function handleSendText(e) {
     e?.preventDefault()
-    const content = text.trim()
+    const content = sanitizeText(text)
     if (!content) return
     setText('')
     try {
@@ -50,7 +51,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
         return
       }
 
-      const safeName = uploadFile.name.replace(/[^\w.-]+/g, '_')
+      const safeName = sanitizeFileName(uploadFile.name)
       const path = `${conversationId}/${crypto.randomUUID()}_${safeName}`
       const { error } = await supabase.storage.from('attachments').upload(path, uploadFile)
       if (error) throw error
