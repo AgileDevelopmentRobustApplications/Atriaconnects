@@ -10,7 +10,6 @@ import Icon from '../common/Icon.jsx'
 import AttendanceModal from './AttendanceModal.jsx'
 import UserEditModal from './UserEditModal.jsx'
 import AddUserModal from './AddUserModal.jsx'
-import { sanitizeText } from '../../lib/sanitize.js'
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -358,6 +357,7 @@ function ClubsTab({ data, isHod, reload }) {
   const profileOf = (id) => data.profiles.find((p) => p.id === id)
 
   async function removeMember(club, userId) {
+    const _p = profileOf(userId)
     const { error } = await supabase
       .from('memberships')
       .delete()
@@ -532,7 +532,7 @@ function FacultyTab({ data, isHod, reload }) {
     if (!pickId) return
     const { error } = await supabase
       .from('employees')
-      .insert({ user_id: pickId, role: pickRole, department: sanitizeText(pickDept, 100) })
+      .insert({ user_id: pickId, role: pickRole, department: pickDept.trim() })
     if (error) showToast(error.message, 'error')
     else {
       showToast('Faculty member added successfully!', 'success')
@@ -635,12 +635,11 @@ function GroupsTab({ data, isHod, reload }) {
 
   async function createGroup(e) {
     e.preventDefault()
-    const cleanName = sanitizeText(name, 80)
-    if (!cleanName) return
+    if (!name.trim()) return
     setCreating(true)
-    const { error } = await supabase.rpc('create_academic_group', {
-      _name: cleanName,
-      _description: sanitizeText(description, 500),
+    const { data: _gid, error } = await supabase.rpc('create_academic_group', {
+      _name: name.trim(),
+      _description: description.trim(),
       _parent: parentId === '' ? null : parentId
     })
     setCreating(false)

@@ -3,7 +3,6 @@ import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Modal from '../common/Modal.jsx'
-import { sanitizeName } from '../../lib/sanitize.js'
 
 export default function ProfileSettingsModal({ onClose }) {
   const { profile, refreshProfile } = useAuth()
@@ -55,7 +54,7 @@ export default function ProfileSettingsModal({ onClose }) {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          full_name: sanitizeName(fullName),
+          full_name: fullName.trim(),
           avatar_url: avatarUrl,
         })
         .eq('id', profile.id)

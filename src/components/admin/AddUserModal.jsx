@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase.js'
 import Modal from '../common/Modal.jsx'
-import { sanitizeName, sanitizeEmail, sanitizeText } from '../../lib/sanitize.js'
 
 const ROLE_LABELS = {
   management: 'Management',
@@ -29,28 +28,18 @@ export default function AddUserModal({ onCreated, onClose }) {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-
-    const cleanName = sanitizeName(fullName)
-    const cleanEmail = sanitizeEmail(email)
-    if (!cleanName) { setError('Please enter a valid name.'); return }
-    if (!cleanEmail) { setError('Please enter a valid email address.'); return }
-
     setBusy(true)
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-    const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-    if (!supabaseUrl || !supabaseKey) {
-      setError('Supabase configuration missing.'); setBusy(false); return
-    }
     const temp = createClient(
-      supabaseUrl,
-      supabaseKey,
+      import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoemmwtriee.supabase.co',
+      import.meta.env.VITE_SUPABASE_KEY ??
+        'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V',
       { auth: { storageKey: 'sb-admin-adduser', persistSession: false } }
     )
     const tempPassword = 'Welcome@123'
     const { data, error: signUpErr } = await temp.auth.signUp({
-      email: cleanEmail,
+      email: email.trim(),
       password: tempPassword,
-      options: { data: { full_name: cleanName } },
+      options: { data: { full_name: fullName.trim() } },
     })
     if (signUpErr) {
       setError(signUpErr.message)
@@ -66,8 +55,7 @@ export default function AddUserModal({ onCreated, onClose }) {
 
     // Update the profile: department, semester, must_reset_password.
     const profileUpdates = { must_reset_password: true }
-    const cleanDept = sanitizeText(department, 100)
-    if (cleanDept) profileUpdates.department = cleanDept
+    if (department.trim()) profileUpdates.department = department.trim()
     if (semester) profileUpdates.semester = Number(semester)
     const { error: profErr } = await supabase
       .from('profiles')
@@ -83,7 +71,7 @@ export default function AddUserModal({ onCreated, onClose }) {
     if (initialRole !== 'student') {
       const { error: roleErr } = await supabase
         .from('user_roles')
-        .insert({ user_id: newId, role: initialRole, department: cleanDept })
+        .insert({ user_id: newId, role: initialRole, department: department.trim() })
       if (roleErr) {
         setError(`Role assignment failed: ${roleErr.message}. Profile was created.`)
         setBusy(false)
