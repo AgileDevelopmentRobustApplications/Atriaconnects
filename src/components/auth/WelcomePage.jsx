@@ -26,21 +26,22 @@ export default function WelcomePage() {
     setError('')
     setMessage('')
 
-    // Rate-limit reset requests
-    if (!resetLimiter.check('reset')) {
-      const wait = resetLimiter.remainingCooldown('reset')
-      setError(`Too many reset requests. Please wait ${wait}s before trying again.`)
-      return
-    }
-
     const cleanEmail = sanitizeEmail(email)
     if (!cleanEmail) {
       setError('Please enter a valid email address.')
       return
     }
 
+    // Rate-limit reset requests
+    const rateLimitKey = `reset:${cleanEmail}`
+    if (!resetLimiter.check(rateLimitKey)) {
+      const wait = resetLimiter.remainingCooldown(rateLimitKey)
+      setError(`Too many reset requests. Please wait ${wait}s before trying again.`)
+      return
+    }
+
     setBusy(true)
-    resetLimiter.record('reset')
+    resetLimiter.record(rateLimitKey)
     try {
       const { error: err } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
         redirectTo: `${window.location.origin}/welcome`,

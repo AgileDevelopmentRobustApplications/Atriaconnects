@@ -33,7 +33,7 @@ export function sanitizeName(raw) {
   if (typeof raw !== 'string') return ''
   return raw
     .replace(/<[^>]*>/g, '')
-    .replace(/[^\p{L}\p{N}\s'.-]/gu, '') // keep letters, digits, spaces, apostrophes, dots, hyphens
+    .replace(/[^\p{L}\p{N}\s'._(),/&-]/gu, '') // keep letters, digits, spaces, apostrophes, dots, underscores, parens, commas, slashes, ampersands, hyphens
     .trim()
     .slice(0, 100)
 }

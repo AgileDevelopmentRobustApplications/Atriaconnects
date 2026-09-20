@@ -20,24 +20,25 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
 
-    // Rate-limit login attempts (defense-in-depth; Supabase GoTrue also limits server-side)
-    if (!authLimiter.check('login')) {
-      const wait = authLimiter.remainingCooldown('login')
-      setError(`Too many login attempts. Please wait ${wait}s before trying again.`)
-      return
-    }
-
     const cleanEmail = sanitizeEmail(email)
     if (!cleanEmail) {
       setError('Please enter a valid email address.')
       return
     }
 
+    // Rate-limit login attempts (defense-in-depth; Supabase GoTrue also limits server-side)
+    const rateLimitKey = `login:${cleanEmail}`
+    if (!authLimiter.check(rateLimitKey)) {
+      const wait = authLimiter.remainingCooldown(rateLimitKey)
+      setError(`Too many login attempts. Please wait ${wait}s before trying again.`)
+      return
+    }
+
     setBusy(true)
-    authLimiter.record('login')
+    authLimiter.record(rateLimitKey)
     try {
       await signIn(cleanEmail, password)
-      authLimiter.reset('login') // clear on success
+      authLimiter.reset(rateLimitKey) // clear on success
     } catch (err) {
       setError(err.message ?? 'Login failed')
       setBusy(false)

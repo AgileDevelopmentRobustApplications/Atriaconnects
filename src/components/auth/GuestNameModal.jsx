@@ -39,11 +39,11 @@ export default function GuestNameModal({ onClose }) {
         // email provider must allow new signups (default). The account gets a
         // randomly-generated email and password; we then immediately sign the
         // user in via the throwaway client and update their profile name.
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-        const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoemmwtriee.supabase.co'
+        const supabaseKey = import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V'
 
         if (!supabaseUrl || !supabaseKey) {
-          throw new Error('Supabase URL or Key configuration is missing in environment variables.')
+          throw new Error('Supabase URL or Key configuration is missing.')
         }
 
         const guestEmail = `guest-${crypto.randomUUID()}@adraconnects.local`

@@ -36,8 +36,8 @@ export default function AddUserModal({ onCreated, onClose }) {
     if (!cleanEmail) { setError('Please enter a valid email address.'); return }
 
     setBusy(true)
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-    const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoemmwtriee.supabase.co'
+    const supabaseKey = import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V'
     if (!supabaseUrl || !supabaseKey) {
       setError('Supabase configuration missing.'); setBusy(false); return
     }
