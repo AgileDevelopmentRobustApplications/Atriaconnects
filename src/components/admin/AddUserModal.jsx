@@ -29,10 +29,13 @@ export default function AddUserModal({ onCreated, onClose }) {
     e.preventDefault()
     setError('')
     setBusy(true)
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoemmwtriee.supabase.co'
+    const supabaseKey = import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V'
+
     const temp = createClient(
-      import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoemmwtriee.supabase.co',
-      import.meta.env.VITE_SUPABASE_KEY ??
-        'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V',
+      supabaseUrl,
+      supabaseKey,
       { auth: { storageKey: 'sb-admin-adduser', persistSession: false } }
     )
     const tempPassword = 'Welcome@123'

@@ -6,6 +6,10 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoem
 const SUPABASE_KEY =
   import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V'
 
+if (!import.meta.env.VITE_SUPABASE_URL && import.meta.env.PROD) {
+  console.warn('VITE_SUPABASE_URL is not set; falling back to default project URL.')
+}
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 if (import.meta.env.DEV) {
