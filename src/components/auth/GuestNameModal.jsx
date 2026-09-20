@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import Modal from '../common/Modal.jsx'
 import { createClient } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase.js'
-import { sanitizeName } from '../../lib/sanitize.js'
 
 // "Continue as guest" — user picks a display name and a one-time guest account
 // is provisioned in the background. The guest can browse and message the
@@ -19,7 +18,7 @@ export default function GuestNameModal({ onClose }) {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-    const trimmed = sanitizeName(name)
+    const trimmed = name.trim()
     if (!trimmed) {
       setError('Please enter a display name')
       return

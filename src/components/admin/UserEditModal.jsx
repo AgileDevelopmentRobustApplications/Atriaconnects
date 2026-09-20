@@ -4,7 +4,6 @@ import { statusById } from '../../lib/status.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import Modal from '../common/Modal.jsx'
 import Icon from '../common/Icon.jsx'
-import { sanitizeName, sanitizeText } from '../../lib/sanitize.js'
 
 const ROLE_LABELS = {
   management: 'Management',
@@ -52,19 +51,14 @@ export default function UserEditModal({
     setError('')
     setBusy(true)
     const updates = {
-      full_name: sanitizeName(form.full_name),
-      phone: sanitizeText(form.phone, 20),
-      department: sanitizeText(form.department, 100),
-      branch: sanitizeText(form.branch, 100),
+      full_name: form.full_name.trim(),
+      phone: form.phone.trim(),
+      department: form.department.trim(),
+      branch: form.branch.trim(),
       year: form.year === '' ? null : Number(form.year),
       semester: form.semester === '' ? null : Number(form.semester),
-      admission_code: sanitizeText(form.admission_code, 50),
+      admission_code: form.admission_code.trim(),
       dob: form.dob === '' ? null : form.dob,
-    }
-    if (!updates.full_name) {
-      setError('Full name is required.')
-      setBusy(false)
-      return
     }
     const { error: upErr } = await supabase.from('profiles').update(updates).eq('id', user.id)
     if (upErr) {
@@ -109,7 +103,7 @@ export default function UserEditModal({
     }
     const { data, error: err } = await supabase
       .from('user_roles')
-      .insert({ user_id: user.id, role: newRole, department: sanitizeText(newDept, 100) })
+      .insert({ user_id: user.id, role: newRole, department: newDept.trim() })
       .select()
       .single()
     if (err) {

@@ -1,9 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Environment variables are the ONLY source for credentials.
-// The VITE_SUPABASE_KEY is a publishable anon key — safe for client bundles
-// (RLS is the real security boundary). But we still avoid hardcoding to prevent
-// credentials from leaking into git history.
+// Publishable values — safe to ship in the client bundle (RLS is the security
+// boundary). Env vars override them for local development against another project.
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'https://zgwckrpeveoemmwtriee.supabase.co'
 const SUPABASE_KEY =
   import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_J7ezco2M177uP-eUvVZjXQ_AAFOk84V'
