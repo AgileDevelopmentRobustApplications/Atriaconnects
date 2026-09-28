@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { validation } from '../utils/validation'
 
 // Hook for events. Either clubId or groupId must be set; the other is null.
 export function useEvents({ clubId, groupId } = {}) {
@@ -39,9 +40,9 @@ export function useEvents({ clubId, groupId } = {}) {
       }
 
       const insert = {
-        title,
-        description,
-        location,
+        title: validation.sanitizeString(validation.trim(title)),
+        description: validation.sanitizeString(validation.trim(description)),
+        location: validation.sanitizeString(validation.trim(location)),
         starts_at,
         created_by: user.id,
         club_id: finalClubId,

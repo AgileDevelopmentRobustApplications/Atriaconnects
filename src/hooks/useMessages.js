@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useChat } from '../context/ChatContext'
+import { validation } from '../utils/validation'
 
 const SENDER_JOIN = '*, sender:profiles!sender_id(id, full_name, avatar_color)'
 
@@ -41,10 +42,11 @@ export function useMessages(conversationId) {
 
   const sendMessage = useCallback(
     async ({ content = '', attachment = null }) => {
+      const sanitizedContent = validation.sanitizeString(validation.trim(content))
       const row = {
         conversation_id: conversationId,
         sender_id: user.id,
-        content,
+        content: sanitizedContent,
         ...(attachment ?? {}),
       }
       const { data, error } = await supabase.from('messages').insert(row).select(SENDER_JOIN).single()

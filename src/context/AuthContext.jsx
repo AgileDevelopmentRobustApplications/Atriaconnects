@@ -66,8 +66,18 @@ export function AuthProvider({ children }) {
       setRoles([])
       return
     }
-    refreshProfile(uid)
-    refreshRoles(uid)
+
+    let cancelled = false
+    const update = async () => {
+      await refreshProfile(uid)
+      await refreshRoles(uid)
+      if (cancelled) return
+    }
+    update()
+
+    return () => {
+      cancelled = true
+    }
   }, [session?.user?.id])
 
   async function signIn(email, password) {

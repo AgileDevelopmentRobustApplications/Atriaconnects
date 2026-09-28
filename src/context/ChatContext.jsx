@@ -38,12 +38,25 @@ export function ChatProvider({ children }) {
     return data
   }, [])
 
+  // Utility to clear profile cache if it grows too large (simple LRU-like cleanup)
+  const pruneProfileCache = useCallback(() => {
+    if (profileCache.current.size > 100) {
+      // Keep most recent, clear others
+      const keys = Array.from(profileCache.current.keys())
+      const toRemove = keys.slice(0, keys.length - 100)
+      toRemove.forEach(k => profileCache.current.delete(k))
+    }
+  }, [])
+
   // Lazily resolve another user's status (for presence dots)
   const ensureStatus = useCallback(
     (id) => {
-      if (id && !profileCache.current.has(id)) getProfile(id)
+      if (id && !profileCache.current.has(id)) {
+        getProfile(id)
+        pruneProfileCache()
+      }
     },
-    [getProfile]
+    [getProfile, pruneProfileCache]
   )
 
   const markRead = useCallback(

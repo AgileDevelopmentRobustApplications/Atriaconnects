@@ -5,6 +5,7 @@
 -- 1. BREAK RECURSION: Convert Helper Functions to plpgsql
 -- =============================================================================
 -- We convert these from LANGUAGE sql to LANGUAGE plpgsql to prevent the
+
 -- PostgreSQL optimizer from inlining them. This ensures that the
 -- SECURITY DEFINER attribute is respected and RLS on the memberships
 -- table is bypassed, breaking the infinite recursion loop.
