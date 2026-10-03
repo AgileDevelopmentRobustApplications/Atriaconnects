@@ -37,7 +37,7 @@ export default function Sidebar() {
     <div className="sidebar">
       <div className="sidebar-brand">
         <span className="brand-logo-badge">AC</span>
-        <span>AdraConnects</span>
+        <span style={{ color: 'white' }}>AdraConnects</span>
       </div>
       <div className="sidebar-header">
         {/* User Avatar & Name */}
@@ -65,23 +65,11 @@ export default function Sidebar() {
           </span>
         </div>
 
-        {/* Right Side Actions on Top Navigation Bar */}
+        {/* Admin action stays in the header; common actions live in the footer. */}
         <div className="sidebar-actions">
-          <button
-            className="icon-btn"
-            title="Campus Services & Alerts"
-            onClick={() => setModal({ type: 'settings', initialTab: 'services' })}
-          >
-            <Icon name="bell" size={18} />
-          </button>
           {isEmployee && (
             <button className="icon-btn" title="Admin panel" onClick={() => navigate('/admin')}>
               <Icon name="shield" size={18} />
-            </button>
-          )}
-          {!isGuest && (
-            <button className="icon-btn" title="New message or community" onClick={() => setModal('dm')}>
-              <Icon name="chat" size={18} />
             </button>
           )}
         </div>
@@ -166,11 +154,31 @@ export default function Sidebar() {
         <button
           className="icon-btn"
           title="Settings"
+          aria-label="Settings"
           onClick={() => setModal({ type: 'settings', initialTab: 'profile' })}
         >
           <Icon name="settings" size={18} />
         </button>
-        <button className="icon-btn logout-btn" title="Exit / Log out" onClick={signOut}>
+        {!isGuest && (
+          <button className="icon-btn" title="New message" aria-label="New message" onClick={() => setModal('dm')}>
+            <Icon name="chat" size={18} />
+          </button>
+        )}
+        <button className="icon-btn" title="Communities" aria-label="Communities" onClick={() => setModal('browse')}>
+          <Icon name="users" size={18} />
+        </button>
+        <button
+          className="icon-btn"
+          title="Campus Services & Alerts"
+          aria-label="Campus Services & Alerts"
+          onClick={() => setModal({ type: 'settings', initialTab: 'services' })}
+        >
+          <Icon name="bell" size={18} />
+        </button>
+        <button className="icon-btn" title="Print" aria-label="Print" onClick={() => window.print()}>
+          <Icon name="printer" size={18} />
+        </button>
+        <button className="icon-btn logout-btn" title="Log out" aria-label="Log out" onClick={signOut}>
           <Icon name="logout" size={18} />
         </button>
       </div>

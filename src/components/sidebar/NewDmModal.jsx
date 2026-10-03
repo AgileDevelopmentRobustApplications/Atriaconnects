@@ -53,24 +53,7 @@ export default function NewDmModal({ onClose }) {
   }
 
   return (
-    <Modal title="New message or community" onClose={onClose}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-        <button
-          className="btn btn-secondary"
-          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-          onClick={() => openModal('browse')}
-        >
-          <Icon name="compass" size={16} /> Browse Clubs
-        </button>
-        <button
-          className="btn btn-secondary"
-          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-          onClick={() => openModal('club')}
-        >
-          <Icon name="plus" size={16} /> Create Community
-        </button>
-      </div>
-
+    <Modal title="New message" onClose={onClose}>
       <input
         className="modal-search"
         placeholder="Search people for direct message"

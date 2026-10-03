@@ -112,7 +112,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   }
 
   return (
-    <Modal title="Settings & Campus Services" onClose={onClose} wide>
+    <Modal title="Settings & Campus Services" onClose={onClose} wide className="settings-modal">
       <div className="settings-nav-tabs">
         <button
           className={`settings-nav-tab${tab === 'profile' ? ' active' : ''}`}
@@ -248,7 +248,6 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                 </div>
                 <div className="theme-card-text">
                   <h4>Light Mode</h4>
-                  <p>Clean Porcelain surface & obsidian green contrast</p>
                 </div>
                 {theme === 'light' && <Icon name="check" size={16} className="theme-check" />}
               </button>
@@ -262,8 +261,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                   <Icon name="moon" size={20} />
                 </div>
                 <div className="theme-card-text">
-                  <h4>Dark Mode</h4>
-                  <p>Deep Obsidian Carbon surface & Electric Lime glow</p>
+                  <h4>Dark Mode</h4>cle
                 </div>
                 {theme === 'dark' && <Icon name="check" size={16} className="theme-check" />}
               </button>
