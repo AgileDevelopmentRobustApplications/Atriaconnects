@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Icon from './Icon.jsx'
+import { requestNotificationPermission } from '../../lib/notifications.js'
 
 const STORAGE_KEY = 'pwa-install-dismissed'
 
@@ -38,6 +39,7 @@ export default function InstallPwaCard() {
       const choice = await evt.userChoice
       if (choice.outcome === 'accepted') {
         setInstalled(true)
+        await requestNotificationPermission()
       } else {
         sessionStorage.setItem(STORAGE_KEY, '1')
         setDismissed(true)
