@@ -112,7 +112,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   }
 
   return (
-    <Modal title="Settings & Campus Services" onClose={onClose} wide className="settings-modal">
+    <Modal title="Settings & Campus Services" onClose={onClose} wide>
       <div className="settings-nav-tabs">
         <button
           className={`settings-nav-tab${tab === 'profile' ? ' active' : ''}`}
