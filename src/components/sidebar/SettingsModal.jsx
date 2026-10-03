@@ -112,21 +112,21 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   }
 
   return (
-    <Modal title="Settings & Campus Services" onClose={onClose} wide>
+    <Modal title="Settings & Campus Services" onClose={onClose} wide className="settings-modal">
       <div className="settings-nav-tabs">
         <button
           className={`settings-nav-tab${tab === 'profile' ? ' active' : ''}`}
           onClick={() => setTab('profile')}
         >
           <Icon name="user" size={16} />
-          <span>Personal Info & Status</span>
+          <span>Personal Info</span>
         </button>
         <button
           className={`settings-nav-tab${tab === 'services' ? ' active' : ''}`}
           onClick={() => setTab('services')}
         >
           <Icon name="compass" size={16} />
-          <span>Campus Services & Alerts</span>
+          <span>Notifications</span>
         </button>
       </div>
 
@@ -374,7 +374,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
             <div className="dashboard-card-header">
               <div className="card-title-wrap">
                 <span className="card-icon-wrap"><Icon name="calendar" size={18} /></span>
-                <h3>Upcoming Campus Events</h3>
+                <h3>Upcoming Events</h3>
               </div>
               <span className="pill-badge">0 Scheduled</span>
             </div>

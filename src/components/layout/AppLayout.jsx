@@ -90,7 +90,7 @@ function WelcomeDashboard() {
         <section className="dashboard-card events-card animate-fade-in delay-1">
           <div className="card-header-wrap">
             <Icon name="calendar" size={20} />
-            <h2>Upcoming Campus Events</h2>
+            <h2>Upcoming Events</h2>
           </div>
           {loading ? (
             <div className="dashboard-loading">Loading events...</div>

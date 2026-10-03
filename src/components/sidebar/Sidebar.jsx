@@ -10,13 +10,14 @@ import NewDmModal from './NewDmModal.jsx'
 import NewClubModal from './NewClubModal.jsx'
 import BrowseClubsModal from './BrowseClubsModal.jsx'
 import SettingsModal from './SettingsModal.jsx'
+import Modal from '../common/Modal.jsx'
 
 export default function Sidebar() {
   const { profile, signOut, isEmployee, isGuest, updateStatus } = useAuth()
   const { chats, chatsLoading } = useChat()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse' | 'settings'
+  const [modal, setModal] = useState(null) // 'dm' | 'club' | 'browse' | 'settings' | 'print'
   const [statusMenu, setStatusMenu] = useState(false)
 
   useEffect(() => {
@@ -175,7 +176,7 @@ export default function Sidebar() {
         >
           <Icon name="bell" size={18} />
         </button>
-        <button className="icon-btn" title="Print" aria-label="Print" onClick={() => window.print()}>
+        <button className="icon-btn" title="Print" aria-label="Print" onClick={() => setModal('print')}>
           <Icon name="printer" size={18} />
         </button>
         <button className="icon-btn logout-btn" title="Log out" aria-label="Log out" onClick={signOut}>
@@ -196,6 +197,20 @@ export default function Sidebar() {
           initialTab={typeof modal === 'object' ? modal.initialTab : 'profile'}
           onClose={() => setModal(null)}
         />
+      )}
+      {modal === 'print' && (
+        <Modal title="Print" onClose={() => setModal(null)}>
+          <div className="empty-box">
+            <div className="empty-box-icon">
+              <Icon name="printer" size={26} />
+            </div>
+            <p className="empty-box-text">Print is currently in progress</p>
+            <p className="empty-box-sub">
+              We’re still building this feature. Printing will be available in a future update.
+            </p>
+            <button className="btn-primary" onClick={() => setModal(null)}>Got it</button>
+          </div>
+        </Modal>
       )}
     </div>
   )

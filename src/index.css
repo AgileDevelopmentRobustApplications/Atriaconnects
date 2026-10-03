@@ -73,6 +73,12 @@
   --sidebar-item-active-border: #0B1E13;
   --sidebar-item-title: #06120B;
   --sidebar-item-preview: #526759;
+
+  /* Admin navigation */
+  --admin-header-bg: #3b5442;
+  --admin-tabs-bg: #304638;
+  --admin-accent: #eeffd8;
+  --admin-muted: rgba(255, 255, 255, 0.72);
 }
 
 [data-theme="dark"] {
@@ -146,6 +152,12 @@
   --sidebar-item-active-border: #dfeee0;
   --sidebar-item-title: #ffffff;
   --sidebar-item-preview: #dbeadf;
+
+  /* Admin navigation */
+  --admin-header-bg: #0E2417;
+  --admin-tabs-bg: #0B1E13;
+  --admin-accent: #C7F58A;
+  --admin-muted: #A5BAAC;
 }
 
 * {
@@ -476,7 +488,7 @@ select:focus {
 }
 
 .brand-logo-badge {
-  background: #C7F58A;
+  background: #e1e8dc;
   color: #06120B;
   font-weight: 900;
   font-size: 13px;
@@ -1118,6 +1130,8 @@ select:focus {
 
 .bubble-row {
   display: flex;
+  width: 100%;
+  min-width: 0;
 }
 
 .bubble-row.own {
@@ -1125,11 +1139,13 @@ select:focus {
 }
 
 .bubble {
-  max-width: min(65%, 560px);
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
   border-radius: 12px;
   padding: 9px 14px 10px 14px;
   position: relative;
-  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .bubble-in {
@@ -1159,6 +1175,8 @@ select:focus {
 
 .bubble-text {
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .bubble-meta {
@@ -1869,18 +1887,18 @@ select:focus {
   align-items: center;
   gap: 12px;
   padding: 12px 18px;
-  background: #0E2417;
+  background: var(--admin-header-bg);
   color: #FFFFFF;
-  border-bottom: 1px solid rgba(199, 245, 138, 0.15);
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-accent) 24%, transparent);
 }
 
 .admin-header .icon-btn {
-  color: #A5BAAC;
+  color: var(--admin-muted);
 }
 
 .admin-header .icon-btn:hover {
-  background: rgba(199, 245, 138, 0.12);
-  color: #C7F58A;
+  background: color-mix(in srgb, var(--admin-accent) 14%, transparent);
+  color: var(--admin-accent);
 }
 
 .admin-title {
@@ -1894,24 +1912,32 @@ select:focus {
 
 .admin-me {
   font-size: 12.5px;
-  color: #A5BAAC;
+  color: var(--admin-muted);
 }
 
 .admin-tabs {
   display: flex;
-  background: #0B1E13;
-  border-bottom: 1px solid rgba(199, 245, 138, 0.15);
+  background: var(--admin-tabs-bg);
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-accent) 24%, transparent);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.admin-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-tabs .club-tab {
   flex: none;
   padding: 12px 22px;
-  color: #8CA394;
+  color: var(--admin-muted);
+  white-space: nowrap;
 }
 
 .admin-tabs .club-tab.active {
-  color: #C7F58A;
-  border-bottom-color: #C7F58A;
+  color: var(--admin-accent);
+  border-bottom-color: var(--admin-accent);
 }
 
 .admin-body {
@@ -2340,11 +2366,12 @@ select:focus {
   }
 
   .message-list {
-    padding: 14px 4%;
+    padding: 14px 12px;
   }
 
   .bubble {
-    max-width: 85%;
+    padding: 10px 13px;
+    border-radius: 15px;
   }
 
   .msg-image {
@@ -2377,24 +2404,78 @@ select:focus {
   .admin-header {
     padding-top: calc(12px + env(safe-area-inset-top));
     flex-wrap: wrap;
+    gap: 8px;
+    padding-right: 14px;
+    padding-bottom: 10px;
   }
 
   .admin-me {
     width: 100%;
     order: 10;
+    padding-left: 42px;
+    overflow-wrap: anywhere;
   }
 
   .admin-tabs {
-    overflow-x: auto;
+    flex: 0 0 auto;
   }
 
   .admin-tabs .club-tab {
-    padding: 12px 14px;
-    white-space: nowrap;
+    min-height: 48px;
+    padding: 12px 16px;
   }
 
   .admin-body {
-    padding: 12px;
+    padding: 16px 12px calc(20px + env(safe-area-inset-bottom));
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 16px 10px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+  }
+
+  .stat-label {
+    letter-spacing: 0.8px;
+    line-height: 1.35;
+  }
+
+  .admin-body .btn-small,
+  .admin-body .icon-btn {
+    min-height: 40px;
+  }
+
+  .admin-event {
+    padding: 16px;
+  }
+
+  .event-when,
+  .event-attendees {
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-club-members {
+    padding: 8px;
+  }
+
+  .admin-club-members .picker-item {
+    flex-wrap: wrap;
+  }
+
+  .admin-club-members .picker-grow {
+    flex: 1 1 calc(100% - 56px);
+  }
+
+  .admin-club-members .btn-small {
+    margin-left: auto;
   }
 
   .faculty-add {
@@ -2575,13 +2656,13 @@ select:focus {
 }
 
 .theme-card-icon.light {
-  background: #FFF7ED;
-  color: #F59E0B;
+  background: #3b5442;
+  color: #eeffd8;
 }
 
 .theme-card-icon.dark {
-  background: #06120B;
-  color: #C7F58A;
+  background: #3b5442;
+  color: #eeffd8;
 }
 
 .theme-card-text h4 {
@@ -2985,6 +3066,16 @@ select:focus {
   margin-top: 6px;
 }
 
+:root:not([data-theme="dark"]) .settings-modal .photo-actions .btn-small:not(.danger),
+:root:not([data-theme="dark"]) .settings-modal .settings-footer-actions .btn-primary {
+  background: #3b5442;
+}
+
+:root:not([data-theme="dark"]) .settings-modal .photo-actions .btn-small:not(.danger):hover:not(:disabled),
+:root:not([data-theme="dark"]) .settings-modal .settings-footer-actions .btn-primary:hover:not(:disabled) {
+  background: #304638;
+}
+
 /* ===== Settings Modal Tabs & Locked Name ===== */
 .settings-nav-tabs {
   display: flex;
@@ -3123,7 +3214,16 @@ select:focus {
   position: relative;
   display: inline-flex;
   flex-direction: column;
+  min-width: 0;
+  max-width: min(65%, 560px);
 }
+
+@media (max-width: 768px) {
+  .bubble-container {
+    max-width: 88%;
+  }
+}
+
 .bubble-container.own {
   align-items: flex-end;
 }
@@ -3473,24 +3573,33 @@ select:focus {
   }
 
   .settings-nav-tabs {
+    position: sticky;
+    top: -12px;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 4px;
     margin: 0 -16px 14px;
     padding: 0 16px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-  }
-
-  .settings-nav-tabs::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
+    background: var(--card-elevated);
   }
 
   .settings-nav-tab {
-    flex: 0 0 auto;
-    min-height: 44px;
-    padding: 10px 12px;
-    white-space: nowrap;
+    min-width: 0;
+    min-height: 56px;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 6px;
+    white-space: normal;
     font-size: 12px;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .settings-nav-tab span {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .settings-form {

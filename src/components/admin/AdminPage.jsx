@@ -718,7 +718,7 @@ function GroupsTab({ data, isHod, reload }) {
             onChange={(e) => setParentId(e.target.value)}
             style={{ flex: 1, minWidth: 150 }}
           >
-            <option value="">No parent group (Top-level)</option>
+            <option value="">No parent group</option>
             {data.academicGroups.filter(g => !g.parent_id).map(g => (
               <option key={g.id} value={g.id}>Under {g.name}</option>
             ))}
