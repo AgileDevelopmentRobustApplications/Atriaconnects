@@ -28,7 +28,7 @@ const YEAR_OPTIONS = [
 ]
 
 export default function SettingsModal({ onClose, initialTab = 'profile' }) {
-  const { profile, user, updateProfile, theme, toggleTheme } = useAuth()
+  const { profile, user, updateProfile, theme, toggleTheme, signOut } = useAuth()
   const [tab, setTab] = useState(initialTab) // 'profile' | 'services'
   const [status, setStatus] = useState(profile?.status ?? 'active')
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? '')
@@ -355,6 +355,23 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
 
           {error && <div className="auth-error">{error}</div>}
           {success && <div className="auth-success">{success}</div>}
+
+          {/* Section: Log Out */}
+          <div className="settings-section">
+            <div className="settings-section-title">
+              <Icon name="logout" size={16} />
+              <span>Account</span>
+            </div>
+            <button
+              type="button"
+              className="btn-small danger"
+              style={{ width: '100%', marginTop: 4 }}
+              onClick={signOut}
+            >
+              <Icon name="logout" size={14} />
+              <span style={{ marginLeft: 6 }}>Log Out</span>
+            </button>
+          </div>
 
           <div className="settings-footer-actions">
             <button type="button" className="btn-small danger" onClick={onClose}>

@@ -13,7 +13,7 @@ import SettingsModal from './SettingsModal.jsx'
 import Modal from '../common/Modal.jsx'
 
 export default function Sidebar() {
-  const { profile, signOut, isEmployee, isGuest, updateStatus } = useAuth()
+  const { profile, isEmployee, isGuest, updateStatus } = useAuth()
   const { chats, chatsLoading } = useChat()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
@@ -179,8 +179,8 @@ export default function Sidebar() {
         <button className="icon-btn" title="Print" aria-label="Print" onClick={() => setModal('print')}>
           <Icon name="printer" size={18} />
         </button>
-        <button className="icon-btn logout-btn" title="Log out" aria-label="Log out" onClick={signOut}>
-          <Icon name="logout" size={18} />
+        <button className="icon-btn" title="Canteen" aria-label="Canteen" onClick={() => navigate('/canteen')}>
+          <Icon name="canteen" size={18} />
         </button>
       </div>
 
