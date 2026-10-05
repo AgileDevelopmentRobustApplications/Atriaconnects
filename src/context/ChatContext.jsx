@@ -67,11 +67,6 @@ export function ChatProvider({ children }) {
   useEffect(() => {
     if (!user) return
 
-    // Request notification permission
-    import('../lib/notifications.js').then(({ requestNotificationPermission }) => {
-      requestNotificationPermission()
-    })
-
     refreshChats()
     const channel = supabase
       .channel('db-changes')
