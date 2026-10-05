@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase.js'
-import { formatTime, formatFileSize, colorFor } from '../../lib/format.js'
+import { formatTime, formatFileSize } from '../../lib/format.js'
 import Icon from '../common/Icon.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 
@@ -19,7 +19,7 @@ function Attachment({ msg }) {
 
   if (isImage) {
     return (
-      <a href={url} target="_blank" rel="noreferrer">
+      <a className="msg-image-link" href={url} target="_blank" rel="noreferrer">
         <img className="msg-image" src={url} alt={msg.attachment_name} loading="lazy" />
       </a>
     )
@@ -73,7 +73,7 @@ export default function MessageBubble({ msg, own, showSender, peerReadAt, reacti
 
         <div className={`bubble${own ? ' bubble-out' : ' bubble-in'}`}>
           {showSender && msg.sender && (
-            <div className="bubble-sender" style={{ color: colorFor(msg.sender.full_name) }}>
+            <div className="bubble-sender">
               {msg.sender.full_name}
             </div>
           )}

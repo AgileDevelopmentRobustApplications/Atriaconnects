@@ -46,6 +46,7 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
     TABS = [
       { id: 'members', label: 'Members' },
       { id: 'events', label: 'Events' },
+      ...(canModerate ? [{ id: 'requests', label: 'Requests' }] : []),
     ]
   }
 
@@ -128,6 +129,9 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
         {tab === 'resources' && isClub && <ResourcesTab clubId={clubId} />}
         {tab === 'requests' && isClub && canModerate && (
           <RequestsTab clubId={clubId} onDecided={() => clubState.refresh()} />
+        )}
+        {tab === 'requests' && isGroup && canModerate && (
+          <RequestsTab groupId={groupId} onDecided={() => groupState.reload()} />
         )}
       </div>
 

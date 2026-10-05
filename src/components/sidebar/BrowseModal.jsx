@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Modal from '../common/Modal.jsx'
 
@@ -13,7 +14,7 @@ const TABS = [
 // Browse communities AND academic groups with tabs. Each tab lists top-level
 // items (parent_id null) with their subgroups nested underneath.
 // Communities: members request to join (admin-approved). Guests view only.
-// Groups: staff add members (memberships are auto-created on creation).
+// Groups: users request to join; group admins approve requests.
 export default function BrowseModal({ onClose }) {
   const { user, isGuest } = useAuth()
   const [tab, setTab] = useState('communities')
@@ -161,18 +162,27 @@ function CommunitiesList({ isGuest, userId }) {
   )
 }
 
-function GroupsList({ isGuest, userId }) {
+export function GroupsList({ isGuest, userId }) {
+  const { showToast } = useToast()
   const [groups, setGroups] = useState([])
   const [subByParent, setSubByParent] = useState({})
   const [myGroupIds, setMyGroupIds] = useState(new Set())
+  const [pendingIds, setPendingIds] = useState(new Set())
   const [search, setSearch] = useState('')
+  const [busyId, setBusyId] = useState(null)
 
   useEffect(() => {
     if (!userId) return
     ;(async () => {
-      const [groupsRes, mineRes] = await Promise.all([
+      const [groupsRes, mineRes, requestsRes] = await Promise.all([
         supabase.from('academic_groups').select('*').order('created_at'),
         supabase.from('academic_group_memberships').select('group_id').eq('user_id', userId),
+        supabase
+          .from('join_requests')
+          .select('academic_group_id')
+          .eq('user_id', userId)
+          .eq('status', 'pending')
+          .not('academic_group_id', 'is', null),
       ])
       const all = groupsRes.data ?? []
       const parents = all.filter((g) => !g.parent_id)
@@ -186,10 +196,25 @@ function GroupsList({ isGuest, userId }) {
       setGroups(parents)
       setSubByParent(grouped)
       setMyGroupIds(new Set((mineRes.data ?? []).map((m) => m.group_id)))
+      setPendingIds(new Set((requestsRes.data ?? []).map((r) => r.academic_group_id)))
     })()
   }, [userId])
 
   const filtered = groups.filter((g) => g.name.toLowerCase().includes(search.toLowerCase()))
+
+  async function requestJoin(group) {
+    setBusyId(group.id)
+    const { error } = await supabase
+      .from('join_requests')
+      .insert({ academic_group_id: group.id, user_id: userId })
+    setBusyId(null)
+    if (error) {
+      showToast(error.message, 'error')
+      return
+    }
+    setPendingIds((current) => new Set([...current, group.id]))
+    showToast(`Join request submitted for ${group.name}`, 'success')
+  }
 
   function row(group, indent = false) {
     const subs = subByParent[group.id] ?? []
@@ -206,8 +231,18 @@ function GroupsList({ isGuest, userId }) {
           </div>
           {myGroupIds.has(group.id) ? (
             <span className="joined-tag">In this group</span>
+          ) : pendingIds.has(group.id) ? (
+            <span className="pending-tag">Pending approval</span>
+          ) : isGuest ? (
+            <span className="picker-sub">View only</span>
           ) : (
-            <span className="picker-sub">Staff-managed</span>
+            <button
+              className="btn-small"
+              disabled={busyId === group.id}
+              onClick={() => requestJoin(group)}
+            >
+              {busyId === group.id ? 'Requesting…' : 'Request to join'}
+            </button>
           )}
         </div>
         {subs.map((s) => row(s, true))}

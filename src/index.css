@@ -1166,11 +1166,11 @@ select:focus {
   font-weight: 700;
   letter-spacing: 0.3px;
   margin-bottom: 3px;
-  color: #C7F58A;
+  color: var(--text-heading);
 }
 
-.bubble-in .bubble-sender {
-  color: var(--text-heading);
+.bubble-out .bubble-sender {
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .bubble-text {
@@ -1206,11 +1206,20 @@ select:focus {
   color: #C7F58A;
 }
 
-.msg-image {
-  max-width: 320px;
-  max-height: 320px;
-  border-radius: 8px;
+.msg-image-link {
   display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.msg-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 320px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
   margin-bottom: 4px;
 }
 
@@ -2238,7 +2247,7 @@ select:focus {
   padding: 5px 16px;
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #6f8f57;
   background: #F0F4ED;
   transition: all 0.15s ease;
 }

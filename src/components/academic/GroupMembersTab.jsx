@@ -4,7 +4,7 @@ import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
 
 // Members list for academic groups. Staff (or group admins) can add/remove
-// members directly — there are no join requests.
+// members directly; requested memberships are reviewed in the Requests tab.
 export default function GroupMembersTab({ groupState, isAdmin }) {
   const { members, reload } = groupState
   const [search, setSearch] = useState('')

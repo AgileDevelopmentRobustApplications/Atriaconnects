@@ -5,7 +5,7 @@ import Avatar from '../common/Avatar.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 
 // Pending join requests for one club — visible to club admins and faculty
-export default function RequestsTab({ clubId, onDecided }) {
+export default function RequestsTab({ clubId, groupId, onDecided }) {
   const { showToast } = useToast()
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
@@ -15,12 +15,12 @@ export default function RequestsTab({ clubId, onDecided }) {
     const { data } = await supabase
       .from('join_requests')
       .select('id, requested_at, profile:profiles(id, full_name, email, user_type)')
-      .eq('club_id', clubId)
+      .eq(clubId ? 'club_id' : 'academic_group_id', clubId ?? groupId)
       .eq('status', 'pending')
       .order('requested_at')
     setRequests(data ?? [])
     setLoading(false)
-  }, [clubId])
+  }, [clubId, groupId])
 
   useEffect(() => {
     load()
@@ -28,7 +28,7 @@ export default function RequestsTab({ clubId, onDecided }) {
 
   async function decide(id, approve) {
     setBusyId(id)
-    const { error } = await supabase.rpc('decide_join_request', { _request: id, _approve: approve })
+    const { error } = await supabase.rpc('decide_membership_request', { _request: id, _approve: approve })
     setBusyId(null)
     if (error) {
       showToast(error.message, 'error')
