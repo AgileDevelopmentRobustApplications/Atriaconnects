@@ -261,7 +261,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                   <Icon name="moon" size={20} />
                 </div>
                 <div className="theme-card-text">
-                  <h4>Dark Mode</h4>cle
+                  <h4>Dark Mode</h4>
                 </div>
                 {theme === 'dark' && <Icon name="check" size={16} className="theme-check" />}
               </button>

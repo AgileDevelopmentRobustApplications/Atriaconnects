@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useChat } from '../../context/ChatContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Modal from '../common/Modal.jsx'
 
@@ -37,45 +38,52 @@ export default function BrowseModal({ onClose }) {
 }
 
 function CommunitiesList({ isGuest, userId }) {
+  const { chats } = useChat()
   const [clubs, setClubs] = useState([])
   const [subByParent, setSubByParent] = useState({})
-  const [myClubIds, setMyClubIds] = useState(new Set())
   const [pendingIds, setPendingIds] = useState(new Set())
   const [search, setSearch] = useState('')
   const [busyId, setBusyId] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     if (!userId) return
     ;(async () => {
-      const [clubsRes, mineRes, reqRes] = await Promise.all([
-        supabase
-          .from('clubs')
-          .select('*, memberships(count)')
-          .eq('is_admission', false)
-          .order('created_at'),
-        supabase.from('memberships').select('club_id').eq('user_id', userId),
-        supabase
-          .from('join_requests')
-          .select('club_id')
-          .eq('user_id', userId)
-          .eq('status', 'pending'),
-      ])
-      const all = clubsRes.data ?? []
-      const parents = all.filter((c) => !c.parent_id)
-      const subs = all.filter((c) => c.parent_id)
-      const grouped = {}
-      for (const s of subs) {
-        const list = grouped[s.parent_id] ?? []
-        list.push(s)
-        grouped[s.parent_id] = list
+      try {
+        const [clubsRes, reqRes] = await Promise.all([
+          supabase
+            .from('clubs')
+            .select('*')
+            .order('created_at'),
+          supabase
+            .from('join_requests')
+            .select('club_id')
+            .eq('user_id', userId)
+            .eq('status', 'pending'),
+        ])
+        if (clubsRes.error) throw clubsRes.error
+        const all = clubsRes.data ?? []
+        const parents = all.filter((c) => !c.parent_id)
+        const subs = all.filter((c) => c.parent_id)
+        const grouped = {}
+        for (const s of subs) {
+          const list = grouped[s.parent_id] ?? []
+          list.push(s)
+          grouped[s.parent_id] = list
+        }
+        setClubs(parents)
+        setSubByParent(grouped)
+        setPendingIds(new Set((reqRes.data ?? []).map((r) => r.club_id)))
+      } catch (error) {
+        setLoadError(error.message || 'Unable to load communities.')
+      } finally {
+        setLoading(false)
       }
-      setClubs(parents)
-      setSubByParent(grouped)
-      setMyClubIds(new Set((mineRes.data ?? []).map((m) => m.club_id)))
-      setPendingIds(new Set((reqRes.data ?? []).map((r) => r.club_id)))
     })()
   }, [userId])
 
+  const myClubIds = new Set(chats.filter((chat) => chat.is_club).map((chat) => chat.club_id))
   const filtered = clubs.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
 
   async function requestJoin(club) {
@@ -92,7 +100,6 @@ function CommunitiesList({ isGuest, userId }) {
   }
 
   function row(club, indent = false) {
-    const memberCount = club.memberships?.[0]?.count ?? 0
     const joined = myClubIds.has(club.id)
     const pending = pendingIds.has(club.id)
     const subs = subByParent[club.id] ?? []
@@ -103,8 +110,7 @@ function CommunitiesList({ isGuest, userId }) {
           <div className="picker-grow">
             <div className="picker-name">{club.name}</div>
             <div className="picker-sub">
-              {memberCount} member{memberCount === 1 ? '' : 's'}
-              {club.description ? ` · ${club.description}` : ''}
+              {club.description || 'Community'}
               {subs.length > 0 ? ` · ${subs.length} sub-group${subs.length === 1 ? '' : 's'}` : ''}
             </div>
           </div>
@@ -144,10 +150,12 @@ function CommunitiesList({ isGuest, userId }) {
         autoFocus
       />
       <div className="picker-list">
-        {filtered.length === 0 && (
+        {loading && <div className="side-note">Loading communities...</div>}
+        {!loading && loadError && <div className="side-note">Could not load communities: {loadError}</div>}
+        {!loading && !loadError && filtered.length === 0 && (
           <div className="side-note">No communities yet — create the first one.</div>
         )}
-        {filtered.map((c) => row(c))}
+        {!loading && !loadError && filtered.map((c) => row(c))}
       </div>
     </div>
   )

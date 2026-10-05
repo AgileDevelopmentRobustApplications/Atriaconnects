@@ -16,14 +16,23 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
   const [pendingIds, setPendingIds] = useState(new Set())
   const [search, setSearch] = useState('')
   const [busyId, setBusyId] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   async function load() {
-    const [clubsRes, reqRes] = await Promise.all([
-      supabase.from('clubs').select('*, memberships(count)').eq('is_admission', false).order('created_at'),
-      user ? supabase.from('join_requests').select('club_id').eq('user_id', user.id).eq('status', 'pending') : { data: [] },
-    ])
-    setClubs(clubsRes.data ?? [])
-    setPendingIds(new Set((reqRes.data ?? []).map((r) => r.club_id)))
+    try {
+      const [clubsRes, reqRes] = await Promise.all([
+        supabase.from('clubs').select('*').order('created_at'),
+        user ? supabase.from('join_requests').select('club_id').eq('user_id', user.id).eq('status', 'pending') : { data: [] },
+      ])
+      if (clubsRes.error) throw clubsRes.error
+      setClubs(clubsRes.data ?? [])
+      setPendingIds(new Set((reqRes.data ?? []).map((r) => r.club_id)))
+    } catch (error) {
+      setLoadError(error.message || 'Unable to load communities.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -77,11 +86,12 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
         )}
       </div>
       <div className="picker-list">
-        {filtered.length === 0 && (
+        {loading && <div className="side-note">Loading communities...</div>}
+        {!loading && loadError && <div className="side-note">Could not load communities: {loadError}</div>}
+        {!loading && !loadError && filtered.length === 0 && (
           <div className="side-note">No communities yet — create the first one.</div>
         )}
-        {filtered.map((club) => {
-          const memberCount = club.memberships?.[0]?.count ?? 0
+        {!loading && !loadError && filtered.map((club) => {
           const joined = myClubIds.has(club.id)
           const pending = pendingIds.has(club.id)
           return (
@@ -90,8 +100,7 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
               <div className="picker-grow">
                 <div className="picker-name">{club.name}</div>
                 <div className="picker-sub">
-                  {memberCount} member{memberCount === 1 ? '' : 's'}
-                  {club.description ? ` · ${club.description}` : ''}
+                  {club.description || 'Community'}
                 </div>
               </div>
               {joined ? (
