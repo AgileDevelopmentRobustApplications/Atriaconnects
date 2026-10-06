@@ -36,7 +36,11 @@ export default [
       'no-useless-escape': 'warn',
       'react-refresh/only-export-components': [
         'warn',
-        { allowConstantExport: true },
+        {
+          allowConstantExport: true,
+          // Context modules export their provider plus a matching hook.
+          allowExportNames: ['ROLE_TAGS', 'useAuth', 'useChat', 'usePresence', 'useToast', 'useJoinRequests', 'useCanteen'],
+        },
       ],
     },
     settings: {

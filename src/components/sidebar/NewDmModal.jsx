@@ -51,11 +51,6 @@ export default function NewDmModal({ onClose }) {
     }
   }
 
-  const openModal = (type) => {
-    window.dispatchEvent(new CustomEvent('open-modal', { detail: type }))
-    onClose()
-  }
-
   return (
     <Modal title="New message" onClose={onClose}>
       <input

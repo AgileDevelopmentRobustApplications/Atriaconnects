@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import { formatChatTime } from '../../lib/format.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
+import { useJoinRequests } from '../../context/JoinRequestsContext.jsx'
 
 export default function ChatListItem({ chat }) {
   const { activeId, openConversation, statuses, ensureStatus } = useChat()
@@ -40,6 +41,13 @@ export default function ChatListItem({ chat }) {
       : 'You joined this community'
   }
 
+  const { countFor } = useJoinRequests()
+  // Badge the main chat (not the announcements twin) of a community with
+  // requests waiting; RLS only returns requests this user can review.
+  const requestCount =
+    chat.type === 'club_chat' || chat.type === 'group_chat'
+      ? countFor({ clubId: chat.club_id, groupId: chat.academic_group_id })
+      : 0
   const isActive = activeId === chat.conversation_id
   const hasUnread = chat.unread_count > 0
 
@@ -92,6 +100,15 @@ export default function ChatListItem({ chat }) {
             )}
             {previewText}
           </span>
+          {requestCount > 0 && (
+            <span
+              className="request-chip"
+              title={`${requestCount} pending join request${requestCount === 1 ? '' : 's'}`}
+            >
+              <Icon name="user" size={11} strokeWidth={2.5} />
+              {requestCount}
+            </span>
+          )}
           {hasUnread && (
             <span
               key={chat.unread_count}

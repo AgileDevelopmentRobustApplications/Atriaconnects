@@ -779,6 +779,47 @@ select option {
   color: var(--primary-text);
 }
 
+.icon-badge {
+  position: absolute;
+  top: 3px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--brand-lime);
+  color: var(--brand-ink);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 2px var(--card-elevated);
+  animation: pop-in 0.36s var(--ease-spring);
+}
+
+.icon-btn.has-requests {
+  color: var(--primary-text);
+}
+
+.request-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  animation: pop-in 0.36s var(--ease-spring);
+}
+
 .tab-badge {
   display: inline-flex;
   align-items: center;
@@ -1862,6 +1903,15 @@ input[type='search']::-webkit-search-decoration {
   grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
   gap: var(--sp-5);
   align-items: start;
+}
+
+.dashboard-card.requests-card {
+  border-color: color-mix(in srgb, var(--accent-strong) 60%, var(--border));
+  box-shadow: inset 3px 0 0 var(--accent-strong), var(--shadow-xs);
+}
+
+.requests-card .card-header-wrap .tab-badge {
+  margin-left: 0;
 }
 
 .dashboard-card {

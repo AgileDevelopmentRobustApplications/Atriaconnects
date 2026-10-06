@@ -5,6 +5,8 @@ import { usePresence } from '../../context/PresenceContext.jsx'
 import { useMessages, usePeerRead, useReactions } from '../../hooks/useMessages.js'
 import { useTyping } from '../../hooks/useTyping.js'
 import { useClub } from '../../hooks/useClub.js'
+import { useAcademicGroup } from '../../hooks/useAcademicGroup.js'
+import { useJoinRequests } from '../../context/JoinRequestsContext.jsx'
 import { statusById } from '../../lib/status.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
@@ -19,7 +21,8 @@ export default function ChatWindow({ openPanel }) {
 
   const conversationId = activeChat.conversation_id
   const isDm = activeChat.type === 'dm'
-  const isAnnouncements = activeChat.type === 'club_announcements'
+  const isAnnouncements =
+    activeChat.type === 'club_announcements' || activeChat.type === 'group_announcements'
   const isAdmission = activeChat.type === 'admission'
   // Faculty viewing a student's admission thread (owner shown as other_user_id)
   const adminOfAdmission = isAdmission && Boolean(activeChat.other_user_id)
@@ -28,16 +31,28 @@ export default function ChatWindow({ openPanel }) {
   const { reactions, toggleReaction } = useReactions(conversationId, messages)
   const { typingNames, sendTyping } = useTyping(conversationId)
   const peerReadAt = usePeerRead(isDm ? conversationId : null, activeChat.other_user_id)
-  const { members, myRole } = useClub(activeChat.club_id)
+  const clubId = activeChat.club_id ?? null
+  const groupId = activeChat.academic_group_id ?? null
+  const clubState = useClub(clubId)
+  const groupState = useAcademicGroup(groupId)
+  const members = clubId ? clubState.members : groupState.members
+  const myRole = clubId ? clubState.myRole : groupState.myRole
+  const isCommunity = Boolean(clubId || groupId)
+  const target = { clubId, groupId }
+  const { countFor } = useJoinRequests()
+  const canReview = isCommunity && (myRole === 'admin' || isEmployee)
+  const requestCount = canReview ? countFor(target) : 0
 
   useEffect(() => {
     if (activeChat.other_user_id) ensureStatus(activeChat.other_user_id)
   }, [activeChat.other_user_id, ensureStatus])
 
-  // The other conversation of the same club (chat <-> announcements toggle)
-  const sibling = activeChat.club_id
+  // The other conversation of the same club/group (chat <-> announcements toggle)
+  const sibling = isCommunity
     ? chats.find(
-        (c) => c.club_id === activeChat.club_id && c.conversation_id !== conversationId
+        (c) =>
+          c.conversation_id !== conversationId &&
+          ((clubId && c.club_id === clubId) || (groupId && c.academic_group_id === groupId))
       )
     : null
 
@@ -79,7 +94,7 @@ export default function ChatWindow({ openPanel }) {
 
   const lockMessage = isGuest
     ? 'Guests can only message the Admissions Office'
-    : 'Only club admins can post announcements'
+    : `Only ${clubId ? 'club' : 'group'} admins can post announcements`
 
   return (
     <div className="chat-window">
@@ -101,11 +116,11 @@ export default function ChatWindow({ openPanel }) {
             ) : undefined
           }
         />
-        {activeChat.club_id && !isGuest ? (
+        {isCommunity && !isGuest ? (
           <button
             className="chat-header-text is-clickable"
-            aria-label={`${activeChat.title} — view club info`}
-            onClick={() => openPanel(activeChat.club_id, 'members')}
+            aria-label={`${activeChat.title} — view ${clubId ? 'club' : 'group'} info`}
+            onClick={() => openPanel(target, 'members')}
           >
             <span className="chat-header-title">
               {isAnnouncements ? `${activeChat.title} — Announcements` : activeChat.title}
@@ -118,13 +133,32 @@ export default function ChatWindow({ openPanel }) {
             <span className="chat-header-sub">{subtitle}</span>
           </div>
         )}
-        {activeChat.club_id && !isGuest && (
+        {isCommunity && !isGuest && (
           <div className="chat-header-actions">
+            {canReview && (
+              <button
+                className={`icon-btn${requestCount > 0 ? ' has-requests' : ''}`}
+                aria-label={
+                  requestCount > 0
+                    ? `${requestCount} pending join request${requestCount === 1 ? '' : 's'}`
+                    : 'Join requests'
+                }
+                data-tip={requestCount > 0 ? `${requestCount} join request${requestCount === 1 ? '' : 's'}` : 'Join requests'}
+                onClick={() => openPanel(target, 'requests')}
+              >
+                <Icon name="user" />
+                {requestCount > 0 && (
+                  <span key={requestCount} className="icon-badge" aria-hidden="true">
+                    {requestCount}
+                  </span>
+                )}
+              </button>
+            )}
             {sibling && (
               <button
                 className="icon-btn"
-                aria-label={isAnnouncements ? 'Back to club chat' : 'Announcements'}
-                data-tip={isAnnouncements ? 'Club chat' : 'Announcements'}
+                aria-label={isAnnouncements ? 'Back to chat' : 'Announcements'}
+                data-tip={isAnnouncements ? 'Chat' : 'Announcements'}
                 onClick={() => openConversation(sibling.conversation_id)}
               >
                 <Icon name={isAnnouncements ? 'chat' : 'megaphone'} />
@@ -134,15 +168,15 @@ export default function ChatWindow({ openPanel }) {
               className="icon-btn"
               aria-label="Events"
               data-tip="Events"
-              onClick={() => openPanel(activeChat.club_id, 'events')}
+              onClick={() => openPanel(target, 'events')}
             >
               <Icon name="calendar" />
             </button>
             <button
               className="icon-btn"
-              aria-label="Club info"
-              data-tip="Club info"
-              onClick={() => openPanel(activeChat.club_id, 'members')}
+              aria-label={clubId ? 'Club info' : 'Group info'}
+              data-tip={clubId ? 'Club info' : 'Group info'}
+              onClick={() => openPanel(target, 'members')}
             >
               <Icon name="info" />
             </button>

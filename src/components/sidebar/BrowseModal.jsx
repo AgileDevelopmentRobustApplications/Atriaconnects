@@ -85,7 +85,7 @@ function CommunitiesList({ isGuest, userId }) {
     })()
   }, [userId])
 
-  const myClubIds = new Set(chats.filter((chat) => chat.is_club).map((chat) => chat.club_id))
+  const myClubIds = new Set(chats.filter((chat) => chat.club_id).map((chat) => chat.club_id))
   const filtered = clubs.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
 
   async function requestJoin(club) {

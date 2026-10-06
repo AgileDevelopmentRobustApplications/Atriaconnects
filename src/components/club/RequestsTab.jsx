@@ -1,46 +1,27 @@
-import { useCallback, useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase.js'
+import { useState } from 'react'
 import { formatChatTime } from '../../lib/format.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
-import { useToast } from '../../context/ToastContext.jsx'
+import { useJoinRequests } from '../../context/JoinRequestsContext.jsx'
 
-// Pending join requests for one club — visible to club admins and faculty
+// Pending join requests for one club or academic group — visible to its
+// admins and to staff. Data comes from JoinRequestsContext so every badge in
+// the app stays in sync after a decision.
 export default function RequestsTab({ clubId, groupId, onDecided }) {
-  const { showToast } = useToast()
-  const [requests, setRequests] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { pending, decide } = useJoinRequests()
   const [busyId, setBusyId] = useState(null)
 
-  const load = useCallback(async () => {
-    const { data } = await supabase
-      .from('join_requests')
-      .select('id, requested_at, profile:profiles(id, full_name, email, user_type)')
-      .eq(clubId ? 'club_id' : 'academic_group_id', clubId ?? groupId)
-      .eq('status', 'pending')
-      .order('requested_at')
-    setRequests(data ?? [])
-    setLoading(false)
-  }, [clubId, groupId])
+  const requests = pending.filter((r) =>
+    clubId ? r.club_id === clubId : r.academic_group_id === groupId
+  )
 
-  useEffect(() => {
-    load()
-  }, [load])
-
-  async function decide(id, approve) {
+  async function handleDecide(id, approve) {
     setBusyId(id)
-    const { error } = await supabase.rpc('decide_membership_request', { _request: id, _approve: approve })
+    const ok = await decide(id, approve)
     setBusyId(null)
-    if (error) {
-      showToast(error.message, 'error')
-      return
-    }
-    showToast(approve ? 'Member request approved!' : 'Member request declined', approve ? 'success' : 'info')
-    await load()
-    onDecided?.()
+    if (ok) onDecided?.()
   }
 
-  if (loading) return <div className="side-note">Loading requests…</div>
   if (requests.length === 0) {
     return (
       <div className="empty-box">
@@ -56,26 +37,26 @@ export default function RequestsTab({ clubId, groupId, onDecided }) {
   return (
     <div className="picker-list">
       {requests.map((r) => (
-        <div key={r.id} className="picker-item no-click">
-          <Avatar name={r.profile.full_name} size={40} />
+        <div key={r.id} className="picker-item no-click request-row">
+          <Avatar name={r.profile?.full_name} size={40} />
           <div className="picker-grow">
-            <div className="picker-name">{r.profile.full_name}</div>
+            <div className="picker-name">{r.profile?.full_name ?? 'Unknown user'}</div>
             <div className="picker-sub">
-              {r.profile.email} · requested {formatChatTime(r.requested_at)}
+              {r.profile?.email} · requested {formatChatTime(r.requested_at)}
             </div>
           </div>
           <div className="picker-actions">
             <button
               className="btn-small"
               disabled={busyId === r.id}
-              onClick={() => decide(r.id, true)}
+              onClick={() => handleDecide(r.id, true)}
             >
               <Icon name="check" size={14} /> Approve
             </button>
             <button
               className="btn-small danger"
               disabled={busyId === r.id}
-              onClick={() => decide(r.id, false)}
+              onClick={() => handleDecide(r.id, false)}
             >
               Reject
             </button>

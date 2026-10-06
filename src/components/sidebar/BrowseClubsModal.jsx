@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
@@ -26,7 +26,7 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const [clubsRes, reqRes] = await Promise.all([
         supabase.from('clubs').select('*').order('created_at'),
@@ -46,13 +46,13 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   useEffect(() => {
     load()
-  }, [])
+  }, [load])
 
-  const myClubIds = new Set(chats.filter((chat) => chat.is_club).map((chat) => chat.club_id))
+  const myClubIds = new Set(chats.filter((chat) => chat.club_id).map((chat) => chat.club_id))
   const filtered = clubs.filter((club) =>
     club.name.toLowerCase().includes(search.toLowerCase())
   )

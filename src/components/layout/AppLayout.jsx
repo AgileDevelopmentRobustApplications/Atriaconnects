@@ -8,6 +8,63 @@ import ChatWindow from '../chat/ChatWindow.jsx'
 import InfoPanel from '../common/InfoPanel.jsx'
 import InstallPwaCard from '../common/InstallPwaCard.jsx'
 import Icon from '../common/Icon.jsx'
+import Avatar from '../common/Avatar.jsx'
+import { useJoinRequests } from '../../context/JoinRequestsContext.jsx'
+import { formatChatTime } from '../../lib/format.js'
+
+// Requests this user can approve, surfaced on the home screen.
+function PendingRequestsCard() {
+  const { pending, decide } = useJoinRequests()
+  const [busyId, setBusyId] = useState(null)
+  if (pending.length === 0) return null
+
+  async function handleDecide(id, approve) {
+    setBusyId(id)
+    await decide(id, approve)
+    setBusyId(null)
+  }
+
+  return (
+    <section className="dashboard-card requests-card animate-fade-in" aria-label="Pending join requests">
+      <div className="card-header-wrap">
+        <Icon name="user" size={18} />
+        <h2>Waiting for your approval</h2>
+        <span className="tab-badge">{pending.length}</span>
+      </div>
+      <div className="picker-list">
+        {pending.slice(0, 6).map((r) => (
+          <div key={r.id} className="picker-item no-click request-row">
+            <Avatar name={r.profile?.full_name} size={40} />
+            <div className="picker-grow">
+              <div className="picker-name">{r.profile?.full_name ?? 'Unknown user'}</div>
+              <div className="picker-sub">
+                wants to join <strong>{r.club?.name ?? r.group?.name}</strong> ·{' '}
+                {formatChatTime(r.requested_at)}
+              </div>
+            </div>
+            <div className="picker-actions">
+              <button className="btn-small" disabled={busyId === r.id} onClick={() => handleDecide(r.id, true)}>
+                <Icon name="check" size={14} /> Approve
+              </button>
+              <button
+                className="btn-small danger"
+                disabled={busyId === r.id}
+                onClick={() => handleDecide(r.id, false)}
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      {pending.length > 6 && (
+        <p className="side-note">
+          +{pending.length - 6} more — open the community’s info panel to review them all.
+        </p>
+      )}
+    </section>
+  )
+}
 
 function DateTile({ date }) {
   const d = new Date(date)
@@ -100,6 +157,8 @@ function WelcomeDashboard() {
           </div>
         </header>
 
+        <PendingRequestsCard />
+
         <div className="dashboard-grid">
           <section className="dashboard-card events-card animate-fade-in delay-1">
             <div className="card-header-wrap">
@@ -190,13 +249,9 @@ function WelcomeDashboard() {
 
 export default function AppLayout() {
   const { activeChat } = useChat()
-  const [panel, setPanel] = useState(null) // { clubId, groupId, tab }
-
-  // Close the info panel when switching to a different conversation.
-  const activeConversationId = activeChat?.conversation_id
-  useEffect(() => {
-    setPanel(null)
-  }, [activeConversationId])
+  const [openPanel, setPanel] = useState(null) // { conversationId, clubId, groupId, tab }
+  // The panel belongs to the conversation it was opened from; switching chats hides it.
+  const panel = openPanel?.conversationId === activeChat?.conversation_id ? openPanel : null
 
   return (
     <div className={`app${activeChat ? ' chat-open' : ''}`}>
@@ -205,7 +260,9 @@ export default function AppLayout() {
         {activeChat ? (
           <ChatWindow
             key={activeChat.conversation_id}
-            openPanel={(clubId, tab) => setPanel({ clubId, tab })}
+            openPanel={({ clubId, groupId }, tab) =>
+              setPanel({ conversationId: activeChat.conversation_id, clubId, groupId, tab })
+            }
           />
         ) : (
           <WelcomeDashboard />

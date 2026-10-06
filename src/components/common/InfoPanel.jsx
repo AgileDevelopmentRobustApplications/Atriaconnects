@@ -12,6 +12,7 @@ import ResourcesTab from '../club/ResourcesTab.jsx'
 import RequestsTab from '../club/RequestsTab.jsx'
 import GroupMembersTab from '../academic/GroupMembersTab.jsx'
 import NewClubModal from '../sidebar/NewClubModal.jsx'
+import { useJoinRequests } from '../../context/JoinRequestsContext.jsx'
 
 // Polymorphic info panel — renders a club or academic group's info depending
 // on the props. Both panels share Members + Events (where applicable); groups
@@ -23,6 +24,8 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
   const { refreshChats, closeConversation } = useChat()
   const [tab, setTab] = useState(initialTab)
   const [subClubOpen, setSubClubOpen] = useState(false)
+  const { countFor } = useJoinRequests()
+  const requestCount = countFor({ clubId, groupId })
 
   const isClub = Boolean(clubId)
   const isGroup = Boolean(groupId)
@@ -110,6 +113,9 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
             onClick={() => setTab(t.id)}
           >
             {t.label}
+            {t.id === 'requests' && requestCount > 0 && (
+              <span className="tab-badge">{requestCount}</span>
+            )}
           </button>
         ))}
       </div>
@@ -143,7 +149,7 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
         </button>
       </div>
 
-      {subClubOpen && (
+      {subClubOpen && club && (
         <NewClubModal
           parentId={club.id}
           parentName={club.name}

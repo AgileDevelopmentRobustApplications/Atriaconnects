@@ -25,6 +25,7 @@ const TABS = [
 export default function AdminPage() {
   const { profile, employee, isHod, isSuperAdmin } = useAuth()
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [tab, setTab] = useState('overview')
   const [data, setData] = useState({
     profiles: [],
@@ -63,13 +64,29 @@ export default function AdminPage() {
         .order('starts_at', { ascending: false }),
       supabase
         .from('join_requests')
-        .select('id, requested_at, club:clubs(id, name), group:academic_groups(id, name), profile:profiles(id, full_name, email)')
+        .select('id, requested_at, club:clubs(id, name), group:academic_groups(id, name), profile:profiles!join_requests_user_id_fkey(id, full_name, email)')
         .eq('status', 'pending')
         .order('requested_at'),
       supabase.from('user_roles').select('*'),
       supabase.from('academic_groups').select('*').order('name'),
       supabase.from('academic_group_memberships').select('*'),
     ])
+
+    const failed = [
+      ['profiles', profilesRes],
+      ['employees', employeesRes],
+      ['memberships', membershipsRes],
+      ['clubs', clubsRes],
+      ['events', eventsRes],
+      ['join requests', requestsRes],
+      ['roles', userRolesRes],
+      ['academic groups', academicGroupsRes],
+      ['academic memberships', academicMembershipsRes],
+    ].filter(([, res]) => res.error)
+    failed.forEach(([name, res]) => console.error(`Admin panel: failed to load ${name}:`, res.error))
+    if (failed.length) {
+      showToast(`Couldn't load ${failed.map(([name]) => name).join(', ')} — some data may be missing`, 'error', 8000)
+    }
 
     setData({
       profiles: profilesRes.data ?? [],
@@ -83,7 +100,7 @@ export default function AdminPage() {
       academicMemberships: academicMembershipsRes.data ?? [],
     })
     setLoading(false)
-  }, [])
+  }, [showToast])
 
   useEffect(() => {
     loadAll()
@@ -353,9 +370,9 @@ function RequestsAdminTab({ requests, reload }) {
     <div className="picker-list">
       {requests.map((r) => (
         <div key={r.id} className="picker-item no-click">
-          <Avatar name={r.profile.full_name} size={40} />
+          <Avatar name={r.profile?.full_name} size={40} />
           <div className="picker-grow">
-            <div className="picker-name">{r.profile.full_name}</div>
+            <div className="picker-name">{r.profile?.full_name ?? 'Unknown user'}</div>
             <div className="picker-sub">
               wants to join <strong>{r.club?.name ?? r.group?.name}</strong> · {formatChatTime(r.requested_at)}
             </div>
@@ -383,7 +400,8 @@ function ClubsTab({ data, isHod, reload }) {
   const profileOf = (id) => data.profiles.find((p) => p.id === id)
 
   async function removeMember(club, userId) {
-    const _p = profileOf(userId)
+    const p = profileOf(userId)
+    if (!confirm(`Remove ${p?.full_name ?? 'this member'} from ${club.name}?`)) return
     const { error } = await supabase
       .from('memberships')
       .delete()
@@ -410,6 +428,7 @@ function ClubsTab({ data, isHod, reload }) {
   }
 
   async function deleteClub(club) {
+    if (!confirm(`Delete ${club.name} permanently? Its chats, events and memberships will be removed.`)) return
     const { error } = await supabase.from('clubs').delete().eq('id', club.id)
     if (error) showToast(error.message, 'error')
     else {
@@ -578,6 +597,7 @@ function FacultyTab({ data, isHod, reload }) {
   }
 
   async function removeEmployee(emp) {
+    if (!confirm(`Remove ${emp.profile?.full_name ?? 'this person'} from faculty?`)) return
     const { error } = await supabase.from('employees').delete().eq('user_id', emp.user_id)
     if (error) showToast(error.message, 'error')
     else {
@@ -663,7 +683,7 @@ function GroupsTab({ data, isHod, reload }) {
     e.preventDefault()
     if (!name.trim()) return
     setCreating(true)
-    const { data: _gid, error } = await supabase.rpc('create_academic_group', {
+    const { error } = await supabase.rpc('create_academic_group', {
       _name: name.trim(),
       _description: description.trim(),
       _parent: parentId === '' ? null : parentId
@@ -793,7 +813,7 @@ function GroupsTab({ data, isHod, reload }) {
               {open && (
                 <div className="admin-club-members">
                   {/* Add Member inline form */}
-                  <div className="faculty-add" style={{ padding: '8px 12px', background: 'var(--cream-2)', borderBottom: '1px solid var(--cream-3)' }}>
+                  <div className="admin-inline-add">
                     <select
                       value={addingUser[group.id] || ''}
                       onChange={(e) => setAddingUser(prev => ({ ...prev, [group.id]: e.target.value }))}

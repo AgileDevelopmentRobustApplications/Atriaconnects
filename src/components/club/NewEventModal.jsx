@@ -14,7 +14,6 @@ export default function NewEventModal({ onCreate, onClose, clubId = null }) {
 
   useEffect(() => {
     if (clubId) {
-      setTargetClubId(clubId)
       supabase
         .from('clubs')
         .select('id, name')

@@ -9,26 +9,26 @@ const STORAGE_KEY = 'pwa-install-dismissed'
 // the next visit.
 export default function InstallPwaCard() {
   const [evt, setEvt] = useState(null)
-  const [dismissed, setDismissed] = useState(false)
-  const [installed, setInstalled] = useState(false)
+  const [dismissed, setDismissed] = useState(() => sessionStorage.getItem(STORAGE_KEY) === '1')
+  // Already running in installed mode?
+  const [installed, setInstalled] = useState(
+    () => window.matchMedia('(display-mode: standalone)').matches
+  )
 
   useEffect(() => {
-    if (sessionStorage.getItem(STORAGE_KEY) === '1') setDismissed(true)
-    // Already running in installed mode.
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setInstalled(true)
-      return
-    }
+    if (installed) return
     const handler = (e) => {
       e.preventDefault()
       setEvt(e)
     }
+    const onInstalled = () => setInstalled(true)
     window.addEventListener('beforeinstallprompt', handler)
-    window.addEventListener('appinstalled', () => setInstalled(true))
+    window.addEventListener('appinstalled', onInstalled)
     return () => {
       window.removeEventListener('beforeinstallprompt', handler)
+      window.removeEventListener('appinstalled', onInstalled)
     }
-  }, [])
+  }, [installed])
 
   if (installed || dismissed || !evt) return null
 

@@ -127,7 +127,7 @@ export function ChatProvider({ children }) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [user, refreshChats, markRead])
+  }, [user, refreshChats, markRead, getProfile])
 
   const onNewMessage = useCallback((cb) => {
     messageListeners.current.add(cb)

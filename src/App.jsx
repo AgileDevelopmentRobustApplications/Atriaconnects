@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import { ChatProvider } from './context/ChatContext.jsx'
 import { PresenceProvider } from './context/PresenceContext.jsx'
+import { JoinRequestsProvider } from './context/JoinRequestsContext.jsx'
 import LoginPage from './components/auth/LoginPage.jsx'
 import WelcomePage from './components/auth/WelcomePage.jsx'
 import AppLayout from './components/layout/AppLayout.jsx'
@@ -66,7 +67,9 @@ export default function App() {
           <Protected>
             <ChatProvider>
               <PresenceProvider>
-                <AppLayout />
+                <JoinRequestsProvider>
+                  <AppLayout />
+                </JoinRequestsProvider>
               </PresenceProvider>
             </ChatProvider>
           </Protected>
