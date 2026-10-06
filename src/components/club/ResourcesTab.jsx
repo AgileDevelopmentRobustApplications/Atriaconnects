@@ -9,8 +9,14 @@ export default function ResourcesTab({ clubId }) {
   if (loading) return <div className="side-note">Loading resources…</div>
   if (resources.length === 0) {
     return (
-      <div className="side-note center">
-        No resources yet — files and images attached in the club chat will show up here.
+      <div className="empty-box">
+        <div className="empty-box-icon">
+          <Icon name="paperclip" size={22} />
+        </div>
+        <p className="empty-box-text">No shared files yet</p>
+        <p className="empty-box-sub">
+          Files and images attached in the club chat are collected here automatically.
+        </p>
       </div>
     )
   }

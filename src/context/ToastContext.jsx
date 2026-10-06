@@ -8,7 +8,7 @@ export function ToastProvider({ children }) {
 
   const showToast = useCallback((message, type = 'info', duration = 4000) => {
     const id = Date.now() + Math.random()
-    setToasts((prev) => [...prev, { id, message, type }])
+    setToasts((prev) => [...prev, { id, message, type, duration }])
 
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id))
@@ -22,9 +22,14 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="toast-container">
+      <div className="toast-container" aria-live="polite">
         {toasts.map((t) => (
-          <div key={t.id} className={`toast-card toast-${t.type}`}>
+          <div
+            key={t.id}
+            className={`toast-card toast-${t.type}`}
+            role={t.type === 'error' ? 'alert' : 'status'}
+            style={{ '--toast-duration': `${t.duration}ms` }}
+          >
             <div className={`toast-icon-wrap ${t.type}`}>
               {t.type === 'success' && <Icon name="check" size={16} />}
               {t.type === 'error' && <Icon name="x" size={16} />}
@@ -32,7 +37,7 @@ export function ToastProvider({ children }) {
               {t.type === 'info' && <Icon name="info" size={16} />}
             </div>
             <span className="toast-message">{t.message}</span>
-            <button className="toast-close" onClick={() => removeToast(t.id)} title="Dismiss notification">
+            <button className="toast-close" onClick={() => removeToast(t.id)} aria-label="Dismiss notification">
               <Icon name="x" size={14} />
             </button>
           </div>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { formatChatTime } from '../../lib/format.js'
 import Avatar from '../common/Avatar.jsx'
+import Icon from '../common/Icon.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 
 // Pending join requests for one club — visible to club admins and faculty
@@ -41,7 +42,15 @@ export default function RequestsTab({ clubId, groupId, onDecided }) {
 
   if (loading) return <div className="side-note">Loading requests…</div>
   if (requests.length === 0) {
-    return <div className="side-note center">No pending join requests.</div>
+    return (
+      <div className="empty-box">
+        <div className="empty-box-icon">
+          <Icon name="check" size={22} />
+        </div>
+        <p className="empty-box-text">You’re all caught up</p>
+        <p className="empty-box-sub">New join requests will appear here for approval.</p>
+      </div>
+    )
   }
 
   return (
@@ -55,20 +64,22 @@ export default function RequestsTab({ clubId, groupId, onDecided }) {
               {r.profile.email} · requested {formatChatTime(r.requested_at)}
             </div>
           </div>
-          <button
-            className="btn-small"
-            disabled={busyId === r.id}
-            onClick={() => decide(r.id, true)}
-          >
-            Approve
-          </button>
-          <button
-            className="btn-small danger"
-            disabled={busyId === r.id}
-            onClick={() => decide(r.id, false)}
-          >
-            Reject
-          </button>
+          <div className="picker-actions">
+            <button
+              className="btn-small"
+              disabled={busyId === r.id}
+              onClick={() => decide(r.id, true)}
+            >
+              <Icon name="check" size={14} /> Approve
+            </button>
+            <button
+              className="btn-small danger"
+              disabled={busyId === r.id}
+              onClick={() => decide(r.id, false)}
+            >
+              Reject
+            </button>
+          </div>
         </div>
       ))}
     </div>

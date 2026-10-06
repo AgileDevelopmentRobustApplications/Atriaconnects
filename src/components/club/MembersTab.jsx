@@ -20,7 +20,7 @@ export default function MembersTab({ clubState }) {
           <div className="picker-grow">
             <div className="picker-name">
               {m.profile.full_name}
-              {m.profile.id === user.id ? ' (you)' : ''}
+              {m.profile.id === user.id && <span className="picker-you"> · you</span>}
             </div>
             <div className="picker-sub">{m.profile.email}</div>
           </div>

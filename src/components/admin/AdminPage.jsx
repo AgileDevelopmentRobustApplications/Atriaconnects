@@ -4,7 +4,8 @@ import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 import { formatEventTime, formatChatTime } from '../../lib/format.js'
-import { statusById } from '../../lib/status.js'
+import { effectiveStatus, statusById } from '../../lib/status.js'
+import { usePresence } from '../../context/PresenceContext.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
 import AttendanceModal from './AttendanceModal.jsx'
@@ -87,6 +88,22 @@ export default function AdminPage() {
   useEffect(() => {
     loadAll()
   }, [loadAll])
+
+  // Keep statuses (and other profile edits) live while the panel is open.
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-profiles')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, (payload) => {
+        setData((d) => ({
+          ...d,
+          profiles: d.profiles.map((p) => (p.id === payload.new.id ? { ...p, ...payload.new } : p)),
+        }))
+      })
+      .subscribe()
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const employeeById = useMemo(
     () => new Map(data.employees.map((e) => [e.user_id, e])),
@@ -172,6 +189,7 @@ function OverviewTab({ data, employeeById }) {
 function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
   const { profile, roleIds } = useAuth()
   const { showToast } = useToast()
+  const { onlineIds, ready: presenceReady } = usePresence()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all') // all | guest | member | faculty
   const [editing, setEditing] = useState(null)
@@ -255,10 +273,18 @@ function UsersTab({ data, employeeById, isSuperAdmin, reload }) {
       <div className="picker-list">
         {filtered.map((p) => {
           const tier = tierOf(p)
-          const st = statusById(p.status)
+          const isOnline = onlineIds.has(p.id)
+          // Until presence has synced, fall back to the stored status.
+          const st = statusById(presenceReady ? effectiveStatus(p.status, isOnline) : p.status)
           return (
             <div key={p.id} className="picker-item no-click">
-              <Avatar name={p.full_name} url={p.avatar_url} size={40} online status={p.status} />
+              <Avatar
+                name={p.full_name}
+                url={p.avatar_url}
+                size={40}
+                online={presenceReady && isOnline}
+                status={p.status}
+              />
               <div className="picker-grow" style={{ cursor: 'pointer' }} onClick={() => toggleClickedName(p.id)}>
                 <div className={`picker-name${clickedNames.has(p.id) ? ' clicked' : ''}`}>{p.full_name}</div>
                 <div className="picker-sub">

@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 
 // Members list for academic groups. Staff (or group admins) can add/remove
 // members directly; requested memberships are reviewed in the Requests tab.
 export default function GroupMembersTab({ groupState, isAdmin }) {
   const { members, reload } = groupState
+  const { showToast } = useToast()
   const [search, setSearch] = useState('')
   const [candidates, setCandidates] = useState([])
   const [adding, setAdding] = useState(false)
@@ -29,10 +31,11 @@ export default function GroupMembersTab({ groupState, isAdmin }) {
       .insert({ group_id: groupState.group.id, user_id: userId, role: 'member' })
     setBusy(false)
     if (error) {
-      alert(error.message)
+      showToast(error.message, 'error')
       return
     }
     setCandidates((cs) => cs.filter((c) => c.id !== userId))
+    showToast('Member added', 'success')
     await reload()
   }
 
@@ -45,7 +48,7 @@ export default function GroupMembersTab({ groupState, isAdmin }) {
       .eq('group_id', groupState.group.id)
       .eq('user_id', userId)
     if (error) {
-      alert(error.message)
+      showToast(error.message, 'error')
       return
     }
     await reload()
@@ -58,7 +61,7 @@ export default function GroupMembersTab({ groupState, isAdmin }) {
       .update({ role: newRole })
       .eq('group_id', groupState.group.id)
       .eq('user_id', userId)
-    if (error) alert(error.message)
+    if (error) showToast(error.message, 'error')
     else await reload()
   }
 
@@ -77,7 +80,7 @@ export default function GroupMembersTab({ groupState, isAdmin }) {
         />
         {isAdmin && !adding && (
           <button className="btn-small" onClick={startAdd}>
-            + Add
+            <Icon name="plus" size={14} /> Add
           </button>
         )}
       </div>
@@ -117,7 +120,7 @@ export default function GroupMembersTab({ groupState, isAdmin }) {
               {isAdmin && (
                 <>
                   <button
-                    className="btn-small"
+                    className="btn-small secondary"
                     title="Toggle admin"
                     onClick={() => toggleAdmin(m.user_id, m.role)}
                   >
@@ -125,6 +128,7 @@ export default function GroupMembersTab({ groupState, isAdmin }) {
                   </button>
                   <button
                     className="icon-btn"
+                    aria-label={`Remove ${m.profile?.full_name ?? 'member'}`}
                     title="Remove"
                     onClick={() => removeUser(m.user_id)}
                   >

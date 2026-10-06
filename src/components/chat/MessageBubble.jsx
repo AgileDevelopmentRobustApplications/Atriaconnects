@@ -6,10 +6,14 @@ import { useAuth } from '../../context/AuthContext.jsx'
 function Ticks({ msg, peerReadAt }) {
   if (peerReadAt === undefined || peerReadAt === null) {
     // group chat or peer never opened: delivered (gray)
-    return <span className="ticks">✓✓</span>
+    return <span className="ticks" aria-label="Delivered">✓✓</span>
   }
   const read = new Date(peerReadAt) >= new Date(msg.created_at)
-  return <span className={`ticks${read ? ' read' : ''}`}>✓✓</span>
+  return (
+    <span className={`ticks${read ? ' read' : ''}`} aria-label={read ? 'Read' : 'Delivered'}>
+      ✓✓
+    </span>
+  )
 }
 
 function Attachment({ msg }) {
@@ -40,7 +44,7 @@ function Attachment({ msg }) {
   )
 }
 
-export default function MessageBubble({ msg, own, showSender, peerReadAt, reactions = [], onReact }) {
+export default function MessageBubble({ msg, own, isNew = false, showSender, peerReadAt, reactions = [], onReact }) {
   const { user } = useAuth()
 
   // Group reactions by emoji type
@@ -51,7 +55,7 @@ export default function MessageBubble({ msg, own, showSender, peerReadAt, reacti
   }, {})
 
   return (
-    <div className={`bubble-row${own ? ' own' : ''}`}>
+    <div className={`bubble-row${own ? ' own' : ''}${isNew ? ' is-new' : ''}`}>
       <div className={`bubble-container${own ? ' own' : ''}`}>
         {/* Hover Reactions Picker */}
         {onReact && user && (
@@ -62,6 +66,8 @@ export default function MessageBubble({ msg, own, showSender, peerReadAt, reacti
                 <button
                   key={emoji}
                   className={`bubble-action-btn${userHasReacted ? ' active' : ''}`}
+                  aria-label={`React with ${emoji}`}
+                  aria-pressed={userHasReacted}
                   onClick={() => onReact(msg.id, emoji)}
                 >
                   {emoji}

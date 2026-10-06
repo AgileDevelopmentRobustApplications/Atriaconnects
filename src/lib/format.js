@@ -1,11 +1,15 @@
 import { format, isToday, isYesterday, isThisYear } from 'date-fns'
 
-// Alethia.earth organic avatar palette using CSS variable tokens
+// Organic avatar palette drawn from the brand greens plus two earthy
+// companions. Fixed values (not theme tokens) so a person keeps the same
+// colour in both themes; all pass AA contrast with white initials.
 const AVATAR_COLORS = [
-  'var(--primary)',
-  'var(--primary-hover)',
-  'var(--text-secondary)',
-  'var(--border-strong)',
+  '#3b5442', // forest
+  '#2f5d57', // pine teal
+  '#56663a', // moss
+  '#41566b', // slate
+  '#7a5a36', // bark
+  '#5b4a6b', // heather
 ]
 
 

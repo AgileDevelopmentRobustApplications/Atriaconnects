@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { supabase } from '../../lib/supabase.js'
-import { STATUSES } from '../../lib/status.js'
+import { STATUSES, statusById } from '../../lib/status.js'
 import Modal from '../common/Modal.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
@@ -113,8 +113,10 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
 
   return (
     <Modal title="Settings & Campus Services" onClose={onClose} wide className="settings-modal">
-      <div className="settings-nav-tabs">
+      <div className="settings-nav-tabs" role="tablist">
         <button
+          role="tab"
+          aria-selected={tab === 'profile'}
           className={`settings-nav-tab${tab === 'profile' ? ' active' : ''}`}
           onClick={() => setTab('profile')}
         >
@@ -122,6 +124,8 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
           <span>Personal Info</span>
         </button>
         <button
+          role="tab"
+          aria-selected={tab === 'services'}
           className={`settings-nav-tab${tab === 'services' ? ' active' : ''}`}
           onClick={() => setTab('services')}
         >
@@ -143,7 +147,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                 url={avatarUrl}
                 color={avatarColor}
               />
-              <label className="upload-badge" title="Upload new photo">
+              <label className="upload-badge" title="Upload new photo" aria-label="Upload new photo">
                 <Icon name="camera" size={16} />
                 <input type="file" accept="image/*" onChange={handleFileUpload} disabled={uploading} hidden />
               </label>
@@ -151,7 +155,10 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
             <div className="settings-hero-info">
               <h3>{fullName || 'Your Name'}</h3>
               <p className="settings-email">{user?.email || profile?.email}</p>
-              <span className="settings-status-pill">{status.toUpperCase()}</span>
+              <span className="settings-status-pill">
+                <span className="status-swatch" style={{ background: statusById(status).color }} />
+                {statusById(status).label}
+              </span>
             </div>
           </div>
 
@@ -163,7 +170,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
             </div>
             <div className="settings-field-group">
               <div className="photo-actions">
-                <label className="btn-small">
+                <label className="btn-small secondary">
                   {uploading ? (
                     'Uploading…'
                   ) : (
@@ -201,6 +208,8 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                         type="button"
                         className={`swatch-btn${avatarColor === c ? ' active' : ''}`}
                         style={{ background: c }}
+                        aria-label={`Avatar colour ${c}`}
+                        aria-pressed={avatarColor === c}
                         onClick={() => setAvatarColor(c)}
                       />
                     ))}
@@ -222,6 +231,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                   key={s.id}
                   type="button"
                   className={`status-card${status === s.id ? ' selected' : ''}`}
+                  aria-pressed={status === s.id}
                   onClick={() => setStatus(s.id)}
                 >
                   <span className="status-swatch" style={{ background: s.color }} />
@@ -241,13 +251,15 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
               <button
                 type="button"
                 className={`theme-card${theme === 'light' ? ' selected' : ''}`}
-                onClick={() => toggleTheme('light')}
+                aria-pressed={theme === 'light'}
+                onClick={(e) => toggleTheme('light', { x: e.clientX, y: e.clientY })}
               >
                 <div className="theme-card-icon light">
                   <Icon name="sun" size={20} />
                 </div>
                 <div className="theme-card-text">
-                  <h4>Light Mode</h4>
+                  <h4>Light</h4>
+                  <p>Porcelain &amp; forest</p>
                 </div>
                 {theme === 'light' && <Icon name="check" size={16} className="theme-check" />}
               </button>
@@ -255,13 +267,15 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
               <button
                 type="button"
                 className={`theme-card${theme === 'dark' ? ' selected' : ''}`}
-                onClick={() => toggleTheme('dark')}
+                aria-pressed={theme === 'dark'}
+                onClick={(e) => toggleTheme('dark', { x: e.clientX, y: e.clientY })}
               >
                 <div className="theme-card-icon dark">
                   <Icon name="moon" size={20} />
                 </div>
                 <div className="theme-card-text">
-                  <h4>Dark Mode</h4>
+                  <h4>Dark</h4>
+                  <p>Deep moss &amp; lime</p>
                 </div>
                 {theme === 'dark' && <Icon name="check" size={16} className="theme-check" />}
               </button>
@@ -357,7 +371,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
           {success && <div className="auth-success">{success}</div>}
 
           <div className="settings-footer-actions">
-            <button type="button" className="btn-small danger" onClick={onClose}>
+            <button type="button" className="btn-secondary" onClick={onClose}>
               Cancel
             </button>
             <button type="submit" className="btn-primary" disabled={busy || uploading}>
@@ -395,7 +409,8 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
               </div>
             </div>
             <div className="quick-actions-grid">
-              <div
+              <button
+                type="button"
                 className="quick-action-card"
                 onClick={() => setBrowseModal(true)}
               >
@@ -404,8 +419,8 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                   <h4>Explore Clubs</h4>
                   <p>Discover & join communities</p>
                 </div>
-                <span className="action-arrow">→</span>
-              </div>
+                <Icon name="arrow-right" size={16} className="action-arrow" />
+              </button>
             </div>
           </div>
 

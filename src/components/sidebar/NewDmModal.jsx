@@ -14,6 +14,7 @@ export default function NewDmModal({ onClose }) {
   const { onlineIds } = usePresence()
   const { showToast } = useToast()
   const [people, setPeople] = useState([])
+  const [loaded, setLoaded] = useState(false)
   const [search, setSearch] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -23,7 +24,10 @@ export default function NewDmModal({ onClose }) {
       .select('id, full_name, email, avatar_color')
       .neq('id', user.id)
       .order('full_name')
-      .then(({ data }) => setPeople(data ?? []))
+      .then(({ data }) => {
+        setPeople(data ?? [])
+        setLoaded(true)
+      })
   }, [user.id])
 
   const filtered = people.filter(
@@ -62,15 +66,24 @@ export default function NewDmModal({ onClose }) {
         autoFocus
       />
       <div className="picker-list">
-        {filtered.length === 0 && <div className="side-note">No one found</div>}
+        {filtered.length === 0 && (
+          <div className="side-note">{!loaded ? 'Loading people…' : search ? `No one matches “${search}”.` : 'No one else here yet.'}</div>
+        )}
         {filtered.map((p) => (
-          <div key={p.id} className="picker-item" onClick={() => startDm(p.id)}>
+          <button
+            key={p.id}
+            type="button"
+            className="picker-item picker-button"
+            disabled={busy}
+            onClick={() => startDm(p.id)}
+          >
             <Avatar name={p.full_name} color={p.avatar_color} size={40} online={onlineIds.has(p.id)} />
-            <div>
+            <div className="picker-grow">
               <div className="picker-name">{p.full_name}</div>
               <div className="picker-sub">{p.email}</div>
             </div>
-          </div>
+            <Icon name="arrow-right" size={16} className="action-arrow" />
+          </button>
         ))}
       </div>
     </Modal>

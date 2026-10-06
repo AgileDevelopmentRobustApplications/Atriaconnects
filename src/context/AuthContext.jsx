@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
@@ -26,10 +27,45 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('theme', theme)
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'dark' ? '#0d1713' : '#3b5442')
   }, [theme])
 
-  const toggleTheme = (newTheme) => {
-    setThemeState(newTheme)
+  // Optional `origin` ({ x, y } in viewport px) animates the switch as a
+  // circular reveal from that point, where the View Transitions API exists.
+  const toggleTheme = (newTheme, origin) => {
+    if (newTheme === theme) return
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (!origin || !document.startViewTransition || reduceMotion) {
+      setThemeState(newTheme)
+      return
+    }
+    const transition = document.startViewTransition(() => {
+      flushSync(() => setThemeState(newTheme))
+      document.documentElement.setAttribute('data-theme', newTheme)
+    })
+    const radius = Math.hypot(
+      Math.max(origin.x, window.innerWidth - origin.x),
+      Math.max(origin.y, window.innerHeight - origin.y)
+    )
+    transition.ready
+      .then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${origin.x}px ${origin.y}px)`,
+              `circle(${radius}px at ${origin.x}px ${origin.y}px)`,
+            ],
+          },
+          {
+            duration: 520,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            pseudoElement: '::view-transition-new(root)',
+          }
+        )
+      })
+      .catch(() => {})
   }
 
   useEffect(() => {

@@ -69,9 +69,9 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
   }
 
   return (
-    <div className="club-panel">
+    <aside className="club-panel" aria-label={isGroup ? 'Group info' : 'Club info'}>
       <div className="club-panel-header">
-        <button className="icon-btn" onClick={onClose} title="Close">
+        <button className="icon-btn" onClick={onClose} aria-label="Close panel">
           <Icon name="x" />
         </button>
         <span>{isGroup ? 'Group info' : 'Club info'}</span>
@@ -94,16 +94,18 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
           {myRole === 'admin' ? ' · You are an admin' : ''}
         </p>
         {isClub && myRole === 'admin' && (
-          <button className="btn-small" style={{ marginTop: 8 }} onClick={() => setSubClubOpen(true)}>
-            + Create Sub-group
+          <button className="btn-small secondary" onClick={() => setSubClubOpen(true)}>
+            <Icon name="plus" size={14} /> Create sub-group
           </button>
         )}
       </div>
 
-      <div className="club-tabs">
+      <div className="club-tabs" role="tablist">
         {TABS.map((t) => (
           <button
             key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
             className={`club-tab${tab === t.id ? ' active' : ''}`}
             onClick={() => setTab(t.id)}
           >
@@ -112,7 +114,7 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
         ))}
       </div>
 
-      <div className="club-panel-body">
+      <div className="club-panel-body tab-pane" key={tab} role="tabpanel">
         {tab === 'members' &&
           (isClub ? (
             <MembersTab clubState={clubState} />
@@ -148,6 +150,6 @@ export default function InfoPanel({ clubId, groupId, initialTab = 'members', onC
           onClose={() => setSubClubOpen(false)}
         />
       )}
-    </div>
+    </aside>
   )
 }

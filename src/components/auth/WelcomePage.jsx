@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import Icon from '../common/Icon.jsx'
 import { supabase } from '../../lib/supabase.js'
@@ -146,7 +146,7 @@ export default function WelcomePage() {
               {busy ? 'Sending…' : 'Send setup link'}
             </button>
             <p className="auth-switch">
-              <a href="/login">Back to log in</a>
+              <Link to="/login">Back to log in</Link>
             </p>
           </form>
         )}

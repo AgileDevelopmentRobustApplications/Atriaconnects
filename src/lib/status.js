@@ -8,3 +8,7 @@ export const STATUSES = [
 ]
 
 export const statusById = (id) => STATUSES.find((s) => s.id === id) ?? STATUSES[0]
+
+// A stored status only means something while the person is connected. Anyone
+// not present on the site counts as out of office, whatever was last saved.
+export const effectiveStatus = (storedId, isOnline) => (isOnline ? storedId : 'out_of_office')

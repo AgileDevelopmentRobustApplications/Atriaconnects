@@ -53,20 +53,26 @@ export default function NewClubModal({ onClose, parentId = null, parentName = ''
   return (
     <Modal title={parentId ? `New sub-group in ${parentName}` : 'Create a club'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
-        <input
-          placeholder={parentId ? 'Sub-group name' : 'Club name (e.g. Robotics Club)'}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          maxLength={80}
-          required
-          autoFocus
-        />
-        <textarea
-          placeholder="What is this community about?"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-        />
+        <label>
+          Name
+          <input
+            placeholder={parentId ? 'Sub-group name' : 'e.g. Robotics Club'}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={80}
+            required
+            autoFocus
+          />
+        </label>
+        <label>
+          Description
+          <textarea
+            placeholder="What is this community about?"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          />
+        </label>
         {error && <div className="auth-error">{error}</div>}
         <button type="submit" className="btn-primary" disabled={busy || !name.trim()}>
           {busy ? 'Creating…' : parentId ? 'Create sub-group' : 'Create club'}

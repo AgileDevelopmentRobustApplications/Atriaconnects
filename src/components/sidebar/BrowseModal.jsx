@@ -21,7 +21,7 @@ export default function BrowseModal({ onClose }) {
 
   return (
     <Modal title="Browse" onClose={onClose} wide>
-      <div className="club-tabs" style={{ marginBottom: 12 }}>
+      <div className="club-tabs" role="tablist">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -40,6 +40,7 @@ export default function BrowseModal({ onClose }) {
 
 function CommunitiesList({ isGuest, userId }) {
   const { chats } = useChat()
+  const { showToast } = useToast()
   const [clubs, setClubs] = useState([])
   const [subByParent, setSubByParent] = useState({})
   const [pendingIds, setPendingIds] = useState(new Set())
@@ -94,9 +95,10 @@ function CommunitiesList({ isGuest, userId }) {
       .insert({ club_id: club.id, user_id: userId })
     setBusyId(null)
     if (error) {
-      alert(error.message)
+      showToast(error.message, 'error')
       return
     }
+    showToast(`Join request submitted for ${club.name}`, 'success')
     setPendingIds((p) => new Set([...p, club.id]))
   }
 
@@ -106,7 +108,7 @@ function CommunitiesList({ isGuest, userId }) {
     const subs = subByParent[club.id] ?? []
     return (
       <div key={club.id}>
-        <div className="picker-item no-click" style={indent ? { paddingLeft: 32 } : undefined}>
+        <div className={`picker-item no-click${indent ? ' is-indented' : ''}`}>
           <Avatar name={club.name} size={indent ? 32 : 44} />
           <div className="picker-grow">
             <div className="picker-name">{club.name}</div>
@@ -220,7 +222,7 @@ export function GroupsList({ isGuest, userId }) {
     const subs = subByParent[group.id] ?? []
     return (
       <div key={group.id}>
-        <div className="picker-item no-click" style={indent ? { paddingLeft: 32 } : undefined}>
+        <div className={`picker-item no-click${indent ? ' is-indented' : ''}`}>
           <Avatar name={group.name} size={indent ? 32 : 44} />
           <div className="picker-grow">
             <div className="picker-name">{group.name}</div>

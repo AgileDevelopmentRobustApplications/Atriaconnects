@@ -46,12 +46,11 @@ export default function NewEventModal({ onCreate, onClose, clubId = null }) {
     <Modal title="Schedule an event" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         {subClubs.length > 0 && (
-          <label style={{ display: 'block', marginBottom: 12 }}>
-            Host this event at:
+          <label>
+            Host this event at
             <select
               value={targetClubId || ''}
               onChange={(e) => setTargetClubId(e.target.value || null)}
-              style={{ width: '100%', marginTop: 4, padding: 8 }}
             >
               <option value={clubId}>This community (Main)</option>
               {subClubs.map((sub) => (
@@ -62,31 +61,47 @@ export default function NewEventModal({ onCreate, onClose, clubId = null }) {
             </select>
           </label>
         )}
-        <input
-          placeholder="Event title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          maxLength={120}
-          required
-          autoFocus
-        />
-        <input
-          type="datetime-local"
-          value={startsAt}
-          onChange={(e) => setStartsAt(e.target.value)}
-          required
-        />
-        <input
-          placeholder="Location (e.g. Seminar Hall 2)"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-        <textarea
-          placeholder="Details"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-        />
+        <label>
+          Title
+          <input
+            placeholder="e.g. Robotics workshop"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={120}
+            required
+            autoFocus
+          />
+        </label>
+        <label>
+          Date &amp; time
+          <input
+            type="datetime-local"
+            value={startsAt}
+            onChange={(e) => setStartsAt(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          <span>
+            Location <span className="field-optional">optional</span>
+          </span>
+          <input
+            placeholder="e.g. Seminar Hall 2"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </label>
+        <label>
+          <span>
+            Details <span className="field-optional">optional</span>
+          </span>
+          <textarea
+            placeholder="What should members know?"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          />
+        </label>
         {error && <div className="auth-error">{error}</div>}
         <button type="submit" className="btn-primary" disabled={busy || !title.trim() || !startsAt}>
           {busy ? 'Scheduling…' : 'Schedule event'}

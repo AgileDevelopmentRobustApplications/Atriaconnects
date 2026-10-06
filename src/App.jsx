@@ -7,6 +7,7 @@ import WelcomePage from './components/auth/WelcomePage.jsx'
 import AppLayout from './components/layout/AppLayout.jsx'
 import AdminPage from './components/admin/AdminPage.jsx'
 import NotFoundPage from './components/layout/NotFoundPage.jsx';
+import { useAutoAway } from './hooks/useAutoAway.js'
 import { Suspense, lazy } from 'react';
 const CanteenPage = lazy(() => import('./components/canteen/CanteenPage.jsx'));
 
@@ -40,6 +41,7 @@ function EmployeeOnly({ children }) {
 
 export default function App() {
   const { session, loading, profile } = useAuth()
+  useAutoAway()
 
   // First-login redirect to /welcome when must_reset_password is true.
   if (
@@ -75,7 +77,9 @@ export default function App() {
         element={
           <Protected>
             <EmployeeOnly>
-              <AdminPage />
+              <PresenceProvider>
+                <AdminPage />
+              </PresenceProvider>
             </EmployeeOnly>
           </Protected>
         }

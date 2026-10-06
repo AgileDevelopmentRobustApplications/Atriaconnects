@@ -107,7 +107,7 @@ export default function AddUserModal({ onCreated, onClose }) {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <div className="edit-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="edit-grid">
           <label>
             Semester
             <input

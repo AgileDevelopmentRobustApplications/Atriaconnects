@@ -73,10 +73,12 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
 
   return (
     <Modal title="Clubs & Communities" onClose={onClose} wide>
-      <div className="club-tabs" style={{ marginBottom: 12 }}>
+      <div className="club-tabs" role="tablist">
         {BROWSE_TABS.map((browseTab) => (
           <button
             key={browseTab.id}
+            role="tab"
+            aria-selected={tab === browseTab.id}
             className={`club-tab${tab === browseTab.id ? ' active' : ''}`}
             onClick={() => setTab(browseTab.id)}
           >
@@ -117,12 +119,23 @@ export default function BrowseClubsModal({ onClose, onCreateClub }) {
             )}
           </div>
           <div className="picker-list">
-            {loading && <div className="side-note">Loading communities...</div>}
+            {loading &&
+              [0, 1, 2].map((i) => (
+                <div key={i} className="skeleton-row" style={{ padding: '8px 10px' }}>
+                  <span className="skeleton skeleton-avatar" />
+                  <span className="skeleton-lines">
+                    <span className="skeleton skeleton-line" style={{ width: '40%' }} />
+                    <span className="skeleton skeleton-line" style={{ width: '65%' }} />
+                  </span>
+                </div>
+              ))}
             {!loading && loadError && (
               <div className="side-note">Could not load communities: {loadError}</div>
             )}
             {!loading && !loadError && filtered.length === 0 && (
-              <div className="side-note">No communities yet — create the first one.</div>
+              <div className="side-note">
+                {search ? `No communities match “${search}”.` : 'No communities yet — create the first one.'}
+              </div>
             )}
             {!loading &&
               !loadError &&

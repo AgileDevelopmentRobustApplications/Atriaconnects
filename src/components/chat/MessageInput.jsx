@@ -82,14 +82,17 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
       <button
         type="button"
         className="icon-btn attach-btn"
-        title="Attach a file"
+        aria-label={uploading ? 'Uploading file' : 'Attach a file'}
+        data-tip="Attach (max 10 MB)"
+        data-tip-pos="top"
         disabled={uploading}
         onClick={() => fileInputRef.current?.click()}
       >
-        <Icon name="paperclip" size={20} />
+        {uploading ? <span className="spinner spinner-sm" /> : <Icon name="paperclip" size={20} />}
       </button>
       <input
         className="message-text"
+        aria-label="Message"
         placeholder={uploading ? 'Uploading…' : 'Type a message'}
         value={text}
         disabled={uploading}
@@ -98,7 +101,7 @@ export default function MessageInput({ conversationId, onSend, onTyping }) {
           onTyping()
         }}
       />
-      <button type="submit" className="icon-btn send-btn" title="Send" disabled={uploading || !text.trim()}>
+      <button type="submit" className="icon-btn send-btn" aria-label="Send message" disabled={uploading || !text.trim()}>
         <Icon name="send" size={20} />
       </button>
     </form>

@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { formatEventTime } from '../../lib/format.js'
 import Icon from '../common/Icon.jsx'
@@ -23,15 +24,23 @@ export default function EventCard({ event, onRsvp, past = false }) {
 
   return (
     <div className={`event-card${past ? ' past' : ''}`}>
-      <div className="event-title">{event.title}</div>
-      <div className="event-when">
-        <Icon name="calendar" size={13} /> {formatEventTime(event.starts_at)}
-      </div>
-      {event.location && (
-        <div className="event-where">
-          <Icon name="pin" size={13} /> {event.location}
+      <div className="event-head">
+        <div className="date-tile" aria-hidden="true">
+          <span className="date-tile-month">{format(new Date(event.starts_at), 'MMM')}</span>
+          <span className="date-tile-day">{format(new Date(event.starts_at), 'd')}</span>
         </div>
-      )}
+        <div className="event-head-text">
+          <div className="event-title">{event.title}</div>
+          <div className="event-when">
+            <Icon name="clock" size={12} /> {formatEventTime(event.starts_at)}
+          </div>
+          {event.location && (
+            <div className="event-where">
+              <Icon name="pin" size={12} /> {event.location}
+            </div>
+          )}
+        </div>
+      </div>
       {event.description && <div className="event-desc">{event.description}</div>}
 
       {goingNames.length > 0 && (
@@ -52,16 +61,21 @@ export default function EventCard({ event, onRsvp, past = false }) {
       )}
 
       <div className="event-rsvps">
-        {OPTIONS.map((o) => (
-          <button
-            key={o.id}
-            className={`rsvp-btn${mine === o.id ? ' selected' : ''}`}
-            disabled={past || mine !== null}
-            onClick={() => onRsvp(event.id, o.id)}
-          >
-            {o.label} · {count(o.id)}
-          </button>
-        ))}
+        <div className="rsvp-group" role="group" aria-label="Your RSVP">
+          {OPTIONS.map((o) => (
+            <button
+              key={o.id}
+              className={`rsvp-btn${mine === o.id ? ' selected' : ''}`}
+              aria-pressed={mine === o.id}
+              disabled={past || mine !== null}
+              onClick={() => onRsvp(event.id, o.id)}
+            >
+              {mine === o.id && <Icon name="check" size={13} strokeWidth={2.6} />}
+              {o.label}
+              <span className="rsvp-count">{count(o.id)}</span>
+            </button>
+          ))}
+        </div>
       </div>
       {mine !== null && !past && (
         <div className="rsvp-locked">

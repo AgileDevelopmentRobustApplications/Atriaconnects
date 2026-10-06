@@ -6,13 +6,22 @@ import { supabase } from '../../lib/supabase.js'
 import Sidebar from '../sidebar/Sidebar.jsx'
 import ChatWindow from '../chat/ChatWindow.jsx'
 import InfoPanel from '../common/InfoPanel.jsx'
-import BrowseClubsModal from '../sidebar/BrowseClubsModal.jsx'
-import SettingsModal from '../sidebar/SettingsModal.jsx'
 import InstallPwaCard from '../common/InstallPwaCard.jsx'
 import Icon from '../common/Icon.jsx'
 
+function DateTile({ date }) {
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return null
+  return (
+    <div className="date-tile" aria-hidden="true">
+      <span className="date-tile-month">{format(d, 'MMM')}</span>
+      <span className="date-tile-day">{format(d, 'd')}</span>
+    </div>
+  )
+}
+
 function WelcomeDashboard() {
-  const { profile } = useAuth()
+  const { profile, isGuest } = useAuth()
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -45,24 +54,18 @@ function WelcomeDashboard() {
     return () => { active = false }
   }, [])
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return ''
+  const formatWhen = (dateStr) => {
     const d = new Date(dateStr)
     if (isNaN(d.getTime())) return ''
-    return d.toLocaleDateString(undefined, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    return format(d, 'EEE · h:mm a')
   }
 
+  // Sidebar owns these modals; it listens for this event.
   const triggerModal = (name) => {
     window.dispatchEvent(new CustomEvent('open-modal', { detail: name }))
   }
 
-  const firstName = profile?.full_name?.trim().split(/\s+/)[0] || 'Member'
+  const firstName = profile?.full_name?.trim().split(/\s+/)[0] || 'there'
 
   const greeting = () => {
     const hour = new Date().getHours()
@@ -71,77 +74,115 @@ function WelcomeDashboard() {
     return 'Good evening'
   }
 
+  const actions = [
+    { id: 'browse', icon: 'compass', title: 'Explore communities', sub: 'Find clubs and academic groups' },
+    ...(!isGuest
+      ? [{ id: 'dm', icon: 'chat', title: 'New message', sub: 'Start a direct conversation' }]
+      : []),
+    { id: 'profile', icon: 'settings', title: 'Settings', sub: 'Photo, status and appearance' },
+  ]
+
   return (
     <div className="dashboard-container">
-      {/* Header section */}
-      <header className="dashboard-header animate-fade-in">
-        <div className="dashboard-welcome">
-          <span className="waving-hand">👋</span>
+      <div className="dashboard-inner">
+        <header className="dashboard-header animate-fade-in">
           <div>
-            <h1>{greeting()}, {firstName}</h1>
-            <p className="dashboard-subtitle">{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
+            <div className="dashboard-eyebrow">
+              <span className="live-pulse" aria-hidden="true" />
+              {format(new Date(), 'EEEE, MMMM d')}
+            </div>
+            <h1>
+              {greeting()}, <span className="greeting-name">{firstName}</span>
+            </h1>
+            <p className="dashboard-subtitle">
+              Pick a chat from the sidebar, or catch up on what&apos;s coming up.
+            </p>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Grid Content */}
-      <div className="dashboard-grid">
-        {/* Events Card */}
-        <section className="dashboard-card events-card animate-fade-in delay-1">
-          <div className="card-header-wrap">
-            <Icon name="calendar" size={20} />
-            <h2>Upcoming Events</h2>
-          </div>
-          {loading ? (
-            <div className="dashboard-loading">Loading events...</div>
-          ) : events.length === 0 ? (
-            <div className="dashboard-empty-state">No upcoming events scheduled.</div>
-          ) : (
-            <div className="dashboard-list">
-              {events.map((ev) => (
-                <div key={ev.id} className="dashboard-item-row">
-                  <div className="item-badge">{ev.club?.name || 'Community'}</div>
-                  <div className="item-details">
-                    <h3>{ev.title}</h3>
-                    <p className="item-meta">
-                      <span>📍 {ev.location}</span>
-                      <span>📅 {formatDate(ev.starts_at)}</span>
-                    </p>
-                    {ev.description && <p className="item-desc">{ev.description}</p>}
+        <div className="dashboard-grid">
+          <section className="dashboard-card events-card animate-fade-in delay-1">
+            <div className="card-header-wrap">
+              <Icon name="calendar" size={18} />
+              <h2>Upcoming events</h2>
+              {!loading && events.length > 0 && (
+                <span className="card-header-count">Next {events.length}</span>
+              )}
+            </div>
+            {loading ? (
+              <div className="dashboard-list" aria-busy="true" aria-label="Loading events">
+                {[0, 1].map((i) => (
+                  <div key={i} className="dashboard-item-row">
+                    <span className="skeleton" style={{ width: 48, height: 50, borderRadius: 10 }} />
+                    <div className="skeleton-lines">
+                      <span className="skeleton skeleton-line" style={{ width: '30%' }} />
+                      <span className="skeleton skeleton-line" style={{ width: '70%', height: 13 }} />
+                      <span className="skeleton skeleton-line" style={{ width: '45%' }} />
+                    </div>
                   </div>
+                ))}
+              </div>
+            ) : events.length === 0 ? (
+              <div className="dashboard-empty-state">
+                <div className="empty-box-icon">
+                  <Icon name="calendar" size={20} />
                 </div>
+                <div>
+                  <strong>Nothing on the calendar</strong>
+                  When your communities schedule events, they&apos;ll show up here.
+                </div>
+              </div>
+            ) : (
+              <div className="dashboard-list">
+                {events.map((ev) => (
+                  <div key={ev.id} className="dashboard-item-row">
+                    <DateTile date={ev.starts_at} />
+                    <div className="item-details">
+                      <div className="item-badge">{ev.club?.name || 'Community'}</div>
+                      <h3>{ev.title}</h3>
+                      <p className="item-meta">
+                        <span>
+                          <Icon name="clock" size={12} /> {formatWhen(ev.starts_at)}
+                        </span>
+                        {ev.location && (
+                          <span>
+                            <Icon name="pin" size={12} /> {ev.location}
+                          </span>
+                        )}
+                      </p>
+                      {ev.description && <p className="item-desc">{ev.description}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="dashboard-card actions-card animate-fade-in delay-2">
+            <div className="card-header-wrap">
+              <Icon name="compass" size={18} />
+              <h2>Quick actions</h2>
+            </div>
+            <div className="actions-button-grid">
+              {actions.map((a) => (
+                <button key={a.id} className="action-card-btn" onClick={() => triggerModal(a.id)}>
+                  <span className="action-icon">
+                    <Icon name={a.icon} size={18} />
+                  </span>
+                  <div>
+                    <h3>{a.title}</h3>
+                    <p>{a.sub}</p>
+                  </div>
+                  <Icon name="arrow-right" size={16} className="action-arrow" />
+                </button>
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        </div>
 
-        {/* Quick Actions Card */}
-        <section className="dashboard-card actions-card animate-fade-in delay-3">
-          <div className="card-header-wrap">
-            <Icon name="compass" size={20} />
-            <h2>Quick Actions</h2>
-          </div>
-          <div className="actions-button-grid">
-            <button className="action-card-btn" onClick={() => triggerModal('browse')}>
-              <span className="action-icon">🔍</span>
-              <div>
-                <h3>Explore Clubs</h3>
-                <p>Find new communities</p>
-              </div>
-            </button>
-            <button className="action-card-btn" onClick={() => triggerModal('profile')}>
-              <span className="action-icon">⚙️</span>
-              <div>
-                <h3>Settings</h3>
-                <p>Update photo & password</p>
-              </div>
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <div className="dashboard-footer animate-fade-in delay-4">
-        <InstallPwaCard />
+        <div className="dashboard-footer animate-fade-in delay-3">
+          <InstallPwaCard />
+        </div>
       </div>
     </div>
   )
@@ -149,30 +190,30 @@ function WelcomeDashboard() {
 
 export default function AppLayout() {
   const { activeChat } = useChat()
-  const [panel, setPanel] = useState(null)
-  const [modal, setModal] = useState(null) // 'browse' | 'settings'
+  const [panel, setPanel] = useState(null) // { clubId, groupId, tab }
 
+  // Close the info panel when switching to a different conversation.
+  const activeConversationId = activeChat?.conversation_id
   useEffect(() => {
-    const handleOpenModal = (e) => {
-      if (e.detail === 'browse') setModal('browse')
-      else if (e.detail === 'settings' || e.detail === 'profile') setModal('settings')
-    }
-    window.addEventListener('open-modal', handleOpenModal)
-    return () => window.removeEventListener('open-modal', handleOpenModal)
-  }, [])
+    setPanel(null)
+  }, [activeConversationId])
 
   return (
     <div className={`app${activeChat ? ' chat-open' : ''}`}>
       <Sidebar />
-      <div className="main-pane">
+      <main className="main-pane">
         {activeChat ? (
-          <ChatWindow key={activeChat.conversation_id} openPanel={setPanel} />
+          <ChatWindow
+            key={activeChat.conversation_id}
+            openPanel={(clubId, tab) => setPanel({ clubId, tab })}
+          />
         ) : (
           <WelcomeDashboard />
         )}
-      </div>
+      </main>
       {panel && (
         <InfoPanel
+          key={`${panel.clubId ?? panel.groupId}:${panel.tab}`}
           clubId={panel.clubId}
           clubName=""
           groupId={panel.groupId}
@@ -180,8 +221,6 @@ export default function AppLayout() {
           onClose={() => setPanel(null)}
         />
       )}
-      {modal === 'browse' && <BrowseClubsModal onClose={() => setModal(null)} />}
-      {modal === 'settings' && <SettingsModal onClose={() => setModal(null)} />}
     </div>
   )
 }

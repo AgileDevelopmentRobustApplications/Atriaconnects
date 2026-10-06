@@ -40,10 +40,22 @@ export default function ChatListItem({ chat }) {
       : 'You joined this community'
   }
 
+  const isActive = activeId === chat.conversation_id
+  const hasUnread = chat.unread_count > 0
+
   return (
     <div
-      className={`chat-item${activeId === chat.conversation_id ? ' active' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-current={isActive ? 'true' : undefined}
+      className={`chat-item${isActive ? ' active' : ''}${hasUnread ? ' has-unread' : ''}`}
       onClick={() => openConversation(chat.conversation_id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          openConversation(chat.conversation_id)
+        }
+      }}
     >
       <Avatar
         name={chat.title}
@@ -64,10 +76,11 @@ export default function ChatListItem({ chat }) {
       <div className="chat-item-body">
         <div className="chat-item-top">
           <span className="chat-item-title">
-            {isAnn ? `${chat.title} — Announcements` : chat.title}
+            {chat.title}
+            {isAnn && <span className="chat-item-title-sub"> · Announcements</span>}
           </span>
           {chat.last_message_at && (
-            <span className={`chat-item-time${chat.unread_count > 0 ? ' unread' : ''}`}>
+            <span className={`chat-item-time${hasUnread ? ' unread' : ''}`}>
               {formatChatTime(chat.last_message_at)}
             </span>
           )}
@@ -79,7 +92,15 @@ export default function ChatListItem({ chat }) {
             )}
             {previewText}
           </span>
-          {chat.unread_count > 0 && <span className="unread-badge">{chat.unread_count}</span>}
+          {hasUnread && (
+            <span
+              key={chat.unread_count}
+              className="unread-badge"
+              aria-label={`${chat.unread_count} unread`}
+            >
+              {chat.unread_count}
+            </span>
+          )}
         </div>
       </div>
     </div>

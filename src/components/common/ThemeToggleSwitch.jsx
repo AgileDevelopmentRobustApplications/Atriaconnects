@@ -5,39 +5,32 @@ export default function ThemeToggleSwitch({ className = '' }) {
   const { theme, toggleTheme } = useAuth()
   const isDark = theme === 'dark'
 
-  const handleToggle = () => {
-    toggleTheme(isDark ? 'light' : 'dark')
-  }
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      handleToggle()
-    }
+  const handleToggle = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    toggleTheme(isDark ? 'light' : 'dark', {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    })
   }
 
   return (
-    <div
+    <button
+      type="button"
       role="switch"
       aria-checked={isDark}
-      aria-label="Toggle theme mode"
-      tabIndex={0}
+      aria-label="Dark mode"
       className={`theme-toggle-switch ${isDark ? 'is-dark' : 'is-light'}${className ? ` ${className}` : ''}`}
       onClick={handleToggle}
-      onKeyDown={handleKeyDown}
-      title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+      title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
-      {/* Icon positioning */}
-      <div className="switch-icon-wrap">
+      <span className="switch-icon-wrap">
         {isDark ? (
-          <Icon name="moon-stars" size={13} className="switch-icon moon" />
+          <Icon key="moon" name="moon" size={13} className="switch-icon moon" />
         ) : (
-          <Icon name="sun" size={13} className="switch-icon sun" />
+          <Icon key="sun" name="sun" size={13} className="switch-icon sun" />
         )}
-      </div>
-
-      {/* Sliding Knob */}
+      </span>
       <span className="switch-knob" />
-    </div>
+    </button>
   )
 }

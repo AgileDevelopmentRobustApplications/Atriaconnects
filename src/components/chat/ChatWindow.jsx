@@ -48,14 +48,19 @@ export default function ChatWindow({ openPanel }) {
   if (typingNames.length > 0) {
     subtitle = (
       <span className="typing-text">
-        {typingNames.slice(0, 2).join(', ')} {typingNames.length === 1 ? 'is' : 'are'} typing…
+        <span className="typing-dots" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        {typingNames.slice(0, 2).join(', ')} {typingNames.length === 1 ? 'is' : 'are'} typing
       </span>
     )
   } else if (isDm || adminOfAdmission) {
     subtitle = online ? (
       <span style={{ color: peerStatus.color, fontWeight: 600 }}>{peerStatus.label}</span>
     ) : (
-      'offline'
+      'Offline'
     )
   } else if (isAnnouncements) {
     subtitle = 'Announcements — only admins can post'
@@ -79,7 +84,7 @@ export default function ChatWindow({ openPanel }) {
   return (
     <div className="chat-window">
       <div className="chat-header">
-        <button className="icon-btn mobile-back" title="Back to chats" onClick={closeConversation}>
+        <button className="icon-btn mobile-back" aria-label="Back to chats" onClick={closeConversation}>
           <Icon name="back" />
         </button>
         <Avatar
@@ -96,22 +101,30 @@ export default function ChatWindow({ openPanel }) {
             ) : undefined
           }
         />
-        <div
-          className="chat-header-text"
-          onClick={() => activeChat.club_id && !isGuest && openPanel(activeChat.club_id, 'members')}
-          style={{ cursor: activeChat.club_id && !isGuest ? 'pointer' : 'default' }}
-        >
-          <div className="chat-header-title">
-            {isAnnouncements ? `${activeChat.title} — Announcements` : activeChat.title}
+        {activeChat.club_id && !isGuest ? (
+          <button
+            className="chat-header-text is-clickable"
+            aria-label={`${activeChat.title} — view club info`}
+            onClick={() => openPanel(activeChat.club_id, 'members')}
+          >
+            <span className="chat-header-title">
+              {isAnnouncements ? `${activeChat.title} — Announcements` : activeChat.title}
+            </span>
+            <span className="chat-header-sub">{subtitle}</span>
+          </button>
+        ) : (
+          <div className="chat-header-text">
+            <span className="chat-header-title">{activeChat.title}</span>
+            <span className="chat-header-sub">{subtitle}</span>
           </div>
-          <div className="chat-header-sub">{subtitle}</div>
-        </div>
+        )}
         {activeChat.club_id && !isGuest && (
           <div className="chat-header-actions">
             {sibling && (
               <button
                 className="icon-btn"
-                title={isAnnouncements ? 'Back to club chat' : 'Announcements'}
+                aria-label={isAnnouncements ? 'Back to club chat' : 'Announcements'}
+                data-tip={isAnnouncements ? 'Club chat' : 'Announcements'}
                 onClick={() => openConversation(sibling.conversation_id)}
               >
                 <Icon name={isAnnouncements ? 'chat' : 'megaphone'} />
@@ -119,14 +132,16 @@ export default function ChatWindow({ openPanel }) {
             )}
             <button
               className="icon-btn"
-              title="Events"
+              aria-label="Events"
+              data-tip="Events"
               onClick={() => openPanel(activeChat.club_id, 'events')}
             >
               <Icon name="calendar" />
             </button>
             <button
               className="icon-btn"
-              title="Club info"
+              aria-label="Club info"
+              data-tip="Club info"
               onClick={() => openPanel(activeChat.club_id, 'members')}
             >
               <Icon name="info" />
