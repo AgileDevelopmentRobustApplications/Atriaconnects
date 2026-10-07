@@ -1680,7 +1680,7 @@ select option {
   right: 32px;
   height: 3px;
   border-radius: 0 0 3px 3px;
-  background: linear-gradient(90deg, var(--brand-forest) 0 70%, var(--brand-lime) 70% 100%);
+  background: var(--brand-lime);
 }
 
 .auth-logo {
