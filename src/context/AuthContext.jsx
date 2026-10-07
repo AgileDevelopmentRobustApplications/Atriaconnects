@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { supabase } from '../lib/supabase'
+import { readStoredAccent } from '../lib/accents'
 
 const AuthContext = createContext(null)
 
@@ -24,13 +25,36 @@ export function AuthProvider({ children }) {
     return localStorage.getItem('theme') || 'light'
   })
 
+  const [accent, setAccentState] = useState(readStoredAccent)
+  const accentTimer = useRef(null)
+
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', theme === 'dark' ? '#0d1713' : '#3b5442')
-  }, [theme])
+    const root = document.documentElement
+    root.setAttribute('data-theme', theme)
+    root.setAttribute('data-accent', accent)
+    try {
+      localStorage.setItem('theme', theme)
+      localStorage.setItem('accent', accent)
+    } catch {
+      /* storage unavailable — preference lasts for this session only */
+    }
+    // Browser/OS chrome matches the sidebar brand bar of the active theme.
+    const chrome = getComputedStyle(root).getPropertyValue('--sidebar-brand-bg').trim()
+    if (chrome) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', chrome)
+  }, [theme, accent])
+
+  // Switch the accent colour; colours cross-fade briefly instead of snapping.
+  const setAccent = (id) => {
+    if (id === accent) return
+    const root = document.documentElement
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (!reduceMotion) {
+      root.classList.add('accent-switching')
+      clearTimeout(accentTimer.current)
+      accentTimer.current = setTimeout(() => root.classList.remove('accent-switching'), 450)
+    }
+    setAccentState(id)
+  }
 
   // Optional `origin` ({ x, y } in viewport px) animates the switch as a
   // circular reveal from that point, where the View Transitions API exists.
@@ -154,6 +178,8 @@ export function AuthProvider({ children }) {
     updateProfile,
     theme,
     toggleTheme,
+    accent,
+    setAccent,
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

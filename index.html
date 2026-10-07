@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#3b5442" />
     <script>
-      // Apply the saved theme before first paint to avoid a light flash in dark mode.
+      // Apply the saved theme + accent before first paint to avoid a light flash in dark mode.
       try {
         var t = localStorage.getItem('theme') || 'light'
-        document.documentElement.setAttribute('data-theme', t)
-        if (t === 'dark') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d1713')
+        var a = localStorage.getItem('accent') || 'green'
+        var known = ['green', 'maroon', 'navy', 'magenta', 'brown']
+        document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light')
+        document.documentElement.setAttribute('data-accent', known.indexOf(a) >= 0 ? a : 'green')
       } catch (e) {}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -1,4 +1,4 @@
-import { initials, colorFor } from '../../lib/format.js'
+import { initials, colorFor, isThemedAvatarColor } from '../../lib/format.js'
 import { statusById } from '../../lib/status.js'
 
 export default function Avatar({
@@ -31,7 +31,9 @@ export default function Avatar({
         style={{
           width: size,
           height: size,
-          background: color || colorFor(name),
+          // Only theme-token colours are honoured; legacy hex values (DB
+          // defaults, old picker) fall back to the themed palette.
+          background: isThemedAvatarColor(color) ? color : colorFor(name),
           fontSize: size * 0.36,
           display: url ? 'none' : 'flex',
         }}

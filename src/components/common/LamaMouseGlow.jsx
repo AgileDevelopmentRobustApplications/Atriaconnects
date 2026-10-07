@@ -1,5 +1,13 @@
 import { useEffect, useRef } from 'react'
 
+// "#3b5442" -> "59, 84, 66" for use inside rgba()
+function hexToRgb(hex, fallback) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim())
+  if (!m) return fallback
+  const n = parseInt(m[1], 16)
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`
+}
+
 // Interactive dot field behind the auth card. Dots spring away from the
 // cursor. The loop sleeps once every dot has settled and wakes on mouse move,
 // so an idle login page costs nothing; reduced-motion users get a static grid.
@@ -23,6 +31,16 @@ export default function LamaMouseGlow() {
     const MAX_DISPLACEMENT = 40 // Max displacement force
     const SPRING = 0.07 // Spring elasticity
     const DAMPING = 0.84 // Physics damping
+
+    // Dot colours follow the accent theme: deep shade in light, signal in dark.
+    let dotLight = '59, 84, 66'
+    let dotDark = '199, 245, 138'
+    const readColors = () => {
+      const css = getComputedStyle(document.documentElement)
+      dotLight = hexToRgb(css.getPropertyValue('--hue-deep'), dotLight)
+      dotDark = hexToRgb(css.getPropertyValue('--hue-signal'), dotDark)
+    }
+    readColors()
 
     // Mouse coordinates (default off-screen until mouse moves)
     const mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000 }
@@ -87,7 +105,7 @@ export default function LamaMouseGlow() {
 
         const activeRadius = 1 + p.force * 2.4
         const alpha = (isDark ? 0.13 : 0.1) + p.force * (isDark ? 0.75 : 0.6)
-        ctx.fillStyle = isDark ? `rgba(199, 245, 138, ${alpha})` : `rgba(59, 84, 66, ${alpha})`
+        ctx.fillStyle = `rgba(${isDark ? dotDark : dotLight}, ${alpha})`
         ctx.beginPath()
         ctx.arc(p.x, p.y, activeRadius, 0, Math.PI * 2)
         ctx.fill()
@@ -121,9 +139,15 @@ export default function LamaMouseGlow() {
       render()
     }
 
-    // Redraw when the theme flips so dot colour follows it.
-    const themeObserver = new MutationObserver(() => render())
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    // Redraw when the theme or accent changes so dot colour follows it.
+    const themeObserver = new MutationObserver(() => {
+      readColors()
+      render()
+    })
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'data-accent'],
+    })
 
     initPoints()
     render()

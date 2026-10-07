@@ -1,16 +1,15 @@
 import { format, isToday, isYesterday, isThisYear } from 'date-fns'
 
-// Organic avatar palette drawn from the brand greens plus two earthy
-// companions. Fixed values (not theme tokens) so a person keeps the same
-// colour in both themes; all pass AA contrast with white initials.
-const AVATAR_COLORS = [
-  '#3b5442', // forest
-  '#2f5d57', // pine teal
-  '#56663a', // moss
-  '#41566b', // slate
-  '#7a5a36', // bark
-  '#5b4a6b', // heather
-]
+// Generated avatars use theme tokens (index.css, --avatar-1…6), so they shift
+// with the selected theme colour while each person keeps the same slot.
+export const AVATAR_COLORS = [1, 2, 3, 4, 5, 6].map((n) => `var(--avatar-${n})`)
+
+// Colours that were written as database defaults or picked from the old fixed
+// palette. They predate theming, so they're treated as "no choice" and the
+// avatar follows the theme instead.
+export function isThemedAvatarColor(color) {
+  return typeof color === 'string' && color.startsWith('var(--avatar-')
+}
 
 
 export function colorFor(name = '') {

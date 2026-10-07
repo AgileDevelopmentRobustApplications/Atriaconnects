@@ -6,18 +6,10 @@ import Modal from '../common/Modal.jsx'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
 import CustomSelect from '../common/CustomSelect.jsx'
+import { ACCENTS, accentById } from '../../lib/accents.js'
+import { AVATAR_COLORS, colorFor, isThemedAvatarColor } from '../../lib/format.js'
 import BrowseClubsModal from './BrowseClubsModal.jsx'
 
-const AVATAR_COLORS = [
-  '#0B1E13',
-  '#10B981',
-  '#3B82F6',
-  '#8B5CF6',
-  '#EC4899',
-  '#F59E0B',
-  '#EF4444',
-  '#6366F1',
-]
 
 const YEAR_OPTIONS = [
   { value: '', label: 'Select Year' },
@@ -28,11 +20,13 @@ const YEAR_OPTIONS = [
 ]
 
 export default function SettingsModal({ onClose, initialTab = 'profile' }) {
-  const { profile, user, updateProfile, theme, toggleTheme } = useAuth()
+  const { profile, user, updateProfile, theme, toggleTheme, accent, setAccent } = useAuth()
   const [tab, setTab] = useState(initialTab) // 'profile' | 'services'
   const [status, setStatus] = useState(profile?.status ?? 'active')
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? '')
-  const [avatarColor, setAvatarColor] = useState(profile?.avatar_color ?? '#0B1E13')
+  const [avatarColor, setAvatarColor] = useState(() =>
+    isThemedAvatarColor(profile?.avatar_color) ? profile.avatar_color : colorFor(profile?.full_name ?? '')
+  )
   const [phone, setPhone] = useState(profile?.phone ?? '')
   const [department] = useState(profile?.department ?? '')
   const [branch] = useState(profile?.branch ?? '')
@@ -200,15 +194,16 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
 
               {!avatarUrl && (
                 <div className="field-row">
-                  <label className="field-label">Avatar Theme Color</label>
+                  <label className="field-label">Avatar tone</label>
+                  <span className="field-hint">Tones follow your theme colour.</span>
                   <div className="color-swatch-row">
-                    {AVATAR_COLORS.map((c) => (
+                    {AVATAR_COLORS.map((c, i) => (
                       <button
                         key={c}
                         type="button"
                         className={`swatch-btn${avatarColor === c ? ' active' : ''}`}
                         style={{ background: c }}
-                        aria-label={`Avatar colour ${c}`}
+                        aria-label={`Avatar tone ${i + 1}`}
                         aria-pressed={avatarColor === c}
                         onClick={() => setAvatarColor(c)}
                       />
@@ -259,7 +254,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                 </div>
                 <div className="theme-card-text">
                   <h4>Light</h4>
-                  <p>Porcelain &amp; forest</p>
+                  <p>Bright and airy</p>
                 </div>
                 {theme === 'light' && <Icon name="check" size={16} className="theme-check" />}
               </button>
@@ -275,10 +270,57 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
                 </div>
                 <div className="theme-card-text">
                   <h4>Dark</h4>
-                  <p>Deep moss &amp; lime</p>
+                  <p>Easy on the eyes</p>
                 </div>
                 {theme === 'dark' && <Icon name="check" size={16} className="theme-check" />}
               </button>
+            </div>
+
+            <div className="accent-picker">
+              <div className="accent-picker-head">
+                <span className="field-label" id="accent-label">Theme color</span>
+                <span className="accent-current">{accentById(accent).label}</span>
+              </div>
+              <div
+                className="accent-swatches"
+                role="radiogroup"
+                aria-labelledby="accent-label"
+                onKeyDown={(e) => {
+                  const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]
+                  if (!step) return
+                  e.preventDefault()
+                  const i = ACCENTS.findIndex((a) => a.id === accent)
+                  const next = ACCENTS[(i + step + ACCENTS.length) % ACCENTS.length]
+                  setAccent(next.id)
+                  e.currentTarget.querySelector(`[data-accent-id="${next.id}"]`)?.focus()
+                }}
+              >
+                {ACCENTS.map((a) => {
+                  const selected = accent === a.id
+                  return (
+                    <button
+                      key={a.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      tabIndex={selected ? 0 : -1}
+                      data-accent-id={a.id}
+                      className={`accent-swatch${selected ? ' selected' : ''}`}
+                      style={{ '--swatch-base': a.base, '--swatch-signal': a.signal }}
+                      onClick={() => setAccent(a.id)}
+                    >
+                      <span className="accent-chip" aria-hidden="true">
+                        <span className="accent-chip-dot" />
+                        {selected && <Icon name="check" size={16} strokeWidth={2.75} className="accent-chip-check" />}
+                      </span>
+                      <span className="accent-name">
+                        {a.label}
+                        {a.id === 'green' && <span className="accent-default">Default</span>}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
