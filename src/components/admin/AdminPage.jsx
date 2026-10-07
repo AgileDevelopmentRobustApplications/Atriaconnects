@@ -62,7 +62,7 @@ export default function AdminPage() {
         .order('starts_at', { ascending: false }),
       supabase
         .from('join_requests')
-        .select('id, requested_at, club:clubs(id, name), profile:profiles(id, full_name, email)')
+        .select('id, requested_at, club:clubs(id, name), profile:profiles!user_id(id, full_name, email)')
         .eq('status', 'pending')
         .order('requested_at'),
       supabase.from('user_roles').select('*'),
@@ -311,7 +311,7 @@ function RequestsAdminTab({ requests, reload }) {
 
   async function decide(id, approve) {
     setBusyId(id)
-    const { error } = await supabase.rpc('decide_join_request', { _request: id, _approve: approve })
+    const { error } = await supabase.rpc('decide_membership_request', { _request: id, _approve: approve })
     setBusyId(null)
     if (error) showToast(error.message, 'error')
     else {

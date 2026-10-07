@@ -14,7 +14,7 @@ export default function RequestsTab({ clubId, onDecided }) {
   const load = useCallback(async () => {
     const { data } = await supabase
       .from('join_requests')
-      .select('id, requested_at, profile:profiles(id, full_name, email, user_type)')
+      .select('id, requested_at, profile:profiles!user_id(id, full_name, email, user_type)')
       .eq('club_id', clubId)
       .eq('status', 'pending')
       .order('requested_at')
@@ -28,7 +28,7 @@ export default function RequestsTab({ clubId, onDecided }) {
 
   async function decide(id, approve) {
     setBusyId(id)
-    const { error } = await supabase.rpc('decide_join_request', { _request: id, _approve: approve })
+    const { error } = await supabase.rpc('decide_membership_request', { _request: id, _approve: approve })
     setBusyId(null)
     if (error) {
       showToast(error.message, 'error')
