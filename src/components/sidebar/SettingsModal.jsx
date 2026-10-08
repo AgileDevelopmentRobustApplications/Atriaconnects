@@ -8,7 +8,6 @@ import Icon from '../common/Icon.jsx'
 import CustomSelect from '../common/CustomSelect.jsx'
 import { ACCENTS, accentById } from '../../lib/accents.js'
 import { AVATAR_COLORS, colorFor, isThemedAvatarColor } from '../../lib/format.js'
-import BrowseClubsModal from './BrowseClubsModal.jsx'
 
 
 const YEAR_OPTIONS = [
@@ -19,9 +18,8 @@ const YEAR_OPTIONS = [
   { value: '4', label: 'Year 4 (7th/8th Sem)' },
 ]
 
-export default function SettingsModal({ onClose, initialTab = 'profile' }) {
+export default function SettingsModal({ onClose }) {
   const { profile, user, updateProfile, theme, toggleTheme, accent, setAccent } = useAuth()
-  const [tab, setTab] = useState(initialTab) // 'profile' | 'services'
   const [status, setStatus] = useState(profile?.status ?? 'active')
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? '')
   const [avatarColor, setAvatarColor] = useState(() =>
@@ -37,7 +35,6 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [browseModal, setBrowseModal] = useState(false)
 
   const fullName = profile?.full_name ?? ''
 
@@ -106,29 +103,7 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
   }
 
   return (
-    <Modal title="Settings & Campus Services" onClose={onClose} wide className="settings-modal">
-      <div className="settings-nav-tabs" role="tablist">
-        <button
-          role="tab"
-          aria-selected={tab === 'profile'}
-          className={`settings-nav-tab${tab === 'profile' ? ' active' : ''}`}
-          onClick={() => setTab('profile')}
-        >
-          <Icon name="user" size={16} />
-          <span>Personal Info</span>
-        </button>
-        <button
-          role="tab"
-          aria-selected={tab === 'services'}
-          className={`settings-nav-tab${tab === 'services' ? ' active' : ''}`}
-          onClick={() => setTab('services')}
-        >
-          <Icon name="compass" size={16} />
-          <span>Notifications</span>
-        </button>
-      </div>
-
-      {tab === 'profile' && (
+    <Modal title="Settings" onClose={onClose} wide className="settings-modal">
         <form onSubmit={handleSave} className="settings-form">
           {/* Preview Banner */}
           <div className="settings-hero">
@@ -421,54 +396,6 @@ export default function SettingsModal({ onClose, initialTab = 'profile' }) {
             </button>
           </div>
         </form>
-      )}
-
-      {tab === 'services' && (
-        <div className="services-tab-container">
-          {/* Upcoming Campus Events */}
-          <div className="dashboard-card events-card">
-            <div className="dashboard-card-header">
-              <div className="card-title-wrap">
-                <span className="card-icon-wrap"><Icon name="calendar" size={18} /></span>
-                <h3>Upcoming Events</h3>
-              </div>
-              <span className="pill-badge">0 Scheduled</span>
-            </div>
-            <div className="dashboard-card-body empty-box">
-              <div className="empty-box-icon">
-                <Icon name="calendar" size={28} />
-              </div>
-              <p className="empty-box-text">No upcoming campus events scheduled.</p>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="dashboard-card actions-card">
-            <div className="dashboard-card-header">
-              <div className="card-title-wrap">
-                <span className="card-icon-wrap"><Icon name="compass" size={18} /></span>
-                <h3>Quick Actions</h3>
-              </div>
-            </div>
-            <div className="quick-actions-grid">
-              <button
-                type="button"
-                className="quick-action-card"
-                onClick={() => setBrowseModal(true)}
-              >
-                <div className="action-card-icon clubs"><Icon name="search" size={20} /></div>
-                <div className="action-card-text">
-                  <h4>Explore Clubs</h4>
-                  <p>Discover & join communities</p>
-                </div>
-                <Icon name="arrow-right" size={16} className="action-arrow" />
-              </button>
-            </div>
-          </div>
-
-          {browseModal && <BrowseClubsModal onClose={() => setBrowseModal(false)} />}
-        </div>
-      )}
     </Modal>
   )
 }

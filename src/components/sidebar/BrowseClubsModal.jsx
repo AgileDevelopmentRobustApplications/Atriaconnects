@@ -14,14 +14,14 @@ const BROWSE_TABS = [
 ]
 
 // Browse communities and academic groups. Members can request to join; guests view only.
-export default function BrowseClubsModal({ onClose, onCreateClub }) {
+export default function BrowseClubsModal({ onClose, onCreateClub, initialTab = 'communities' }) {
   const { user, isGuest } = useAuth()
   const { chats } = useChat()
   const { showToast } = useToast()
   const [clubs, setClubs] = useState([])
   const [pendingIds, setPendingIds] = useState(new Set())
   const [search, setSearch] = useState('')
-  const [tab, setTab] = useState('communities')
+  const [tab, setTab] = useState(initialTab)
   const [busyId, setBusyId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')

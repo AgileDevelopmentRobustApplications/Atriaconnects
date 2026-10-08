@@ -8,6 +8,7 @@ import ChatWindow from '../chat/ChatWindow.jsx'
 import InfoPanel from '../common/InfoPanel.jsx'
 import InstallPwaCard from '../common/InstallPwaCard.jsx'
 import Icon from '../common/Icon.jsx'
+import DateTile from '../common/DateTile.jsx'
 import Avatar from '../common/Avatar.jsx'
 import { useJoinRequests } from '../../context/JoinRequestsContext.jsx'
 import { formatChatTime } from '../../lib/format.js'
@@ -63,17 +64,6 @@ function PendingRequestsCard() {
         </p>
       )}
     </section>
-  )
-}
-
-function DateTile({ date }) {
-  const d = new Date(date)
-  if (isNaN(d.getTime())) return null
-  return (
-    <div className="date-tile" aria-hidden="true">
-      <span className="date-tile-month">{format(d, 'MMM')}</span>
-      <span className="date-tile-day">{format(d, 'd')}</span>
-    </div>
   )
 }
 

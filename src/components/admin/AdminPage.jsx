@@ -11,22 +11,44 @@ import Icon from '../common/Icon.jsx'
 import AttendanceModal from './AttendanceModal.jsx'
 import UserEditModal from './UserEditModal.jsx'
 import AddUserModal from './AddUserModal.jsx'
+import AnnouncementsAdminTab from './AnnouncementsAdminTab.jsx'
 
-const TABS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'users', label: 'Users' },
-  { id: 'requests', label: 'Requests' },
-  { id: 'clubs', label: 'Communities' },
-  { id: 'events', label: 'Events' },
-  { id: 'faculty', label: 'Faculty' },
-  { id: 'groups', label: 'Academics'},
+const NAV = [
+  {
+    heading: 'Workspace',
+    items: [
+      { id: 'overview', label: 'Overview', icon: 'compass' },
+      { id: 'announcements', label: 'Announcements', icon: 'megaphone' },
+      { id: 'requests', label: 'Requests', icon: 'user' },
+    ],
+  },
+  {
+    heading: 'Manage',
+    items: [
+      { id: 'users', label: 'Users', icon: 'users' },
+      { id: 'clubs', label: 'Communities', icon: 'chat' },
+      { id: 'groups', label: 'Academics', icon: 'book' },
+      { id: 'events', label: 'Events', icon: 'calendar' },
+      { id: 'faculty', label: 'Faculty', icon: 'shield' },
+    ],
+  },
 ]
+const TAB_IDS = NAV.flatMap((g) => g.items.map((i) => i.id))
+const tabFromHash = () => {
+  const id = window.location.hash.slice(1)
+  return TAB_IDS.includes(id) ? id : 'overview'
+}
 
 export default function AdminPage() {
-  const { profile, employee, isHod, isSuperAdmin } = useAuth()
+  const { profile, roleIds, isSuperAdmin } = useAuth()
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const [tab, setTab] = useState('overview')
+  // Selected section lives in the URL hash so a refresh or link keeps it.
+  const [tab, setTabState] = useState(tabFromHash)
+  const setTab = (id) => {
+    setTabState(id)
+    window.history.replaceState(null, '', `#${id}`)
+  }
   const [data, setData] = useState({
     profiles: [],
     employees: [],
@@ -126,42 +148,63 @@ export default function AdminPage() {
     () => new Map(data.employees.map((e) => [e.user_id, e])),
     [data.employees]
   )
+  // The signed-in staff member's HOD/teacher record (employees table).
+  const employee = profile ? employeeById.get(profile.id) : null
+  // HOD-level actions (delete communities, manage faculty) — also open to the
+  // superadmin roles (Principal, IT Dept).
+  const isHod = employee?.role === 'hod' || isSuperAdmin
+  const ROLE_NAMES = { principal: 'Principal', itdept: 'IT Dept', faculty: 'Faculty' }
+  const roleLabel =
+    employee?.role === 'hod'
+      ? 'HOD'
+      : roleIds.map((r) => ROLE_NAMES[r]).filter(Boolean).join(', ') || 'Staff'
+  const totalChannels =
+    data.clubs.filter((c) => !c.is_admission).length + data.academicGroups.length
 
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <button className="icon-btn" title="Back to chats" onClick={() => navigate('/')}>
+        <button className="icon-btn" aria-label="Back to chats" data-tip="Back to chats" onClick={() => navigate('/')}>
           <Icon name="back" />
         </button>
         <Icon name="shield" size={20} />
         <span className="admin-title">Admin Panel</span>
         <span className="admin-me">
-          {profile?.full_name} · {employee?.role === 'hod' ? 'HOD' : 'Teacher'}
+          {profile?.full_name} · {roleLabel}
           {employee?.department ? ` · ${employee.department}` : ''}
         </span>
       </div>
 
-      <div className="admin-tabs">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            className={`club-tab${tab === t.id ? ' active' : ''}`}
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
-            {t.id === 'requests' && data.requests.length > 0 && (
-              <span className="tab-badge">{data.requests.length}</span>
-            )}
-          </button>
-        ))}
-      </div>
+      <div className="admin-shell">
+        <nav className="admin-nav" aria-label="Admin sections">
+          {NAV.map((group) => (
+            <div key={group.heading} className="admin-nav-group">
+              <div className="admin-nav-heading">{group.heading}</div>
+              {group.items.map((item) => {
+                const count = item.id === 'requests' ? data.requests.length : 0
+                return (
+                  <button
+                    key={item.id}
+                    className={`admin-nav-item${tab === item.id ? ' active' : ''}`}
+                    aria-current={tab === item.id ? 'page' : undefined}
+                    onClick={() => setTab(item.id)}
+                  >
+                    <Icon name={item.icon} size={17} />
+                    <span className="admin-nav-label">{item.label}</span>
+                    {count > 0 && <span className="tab-badge">{count}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
+        </nav>
 
-      <div className="admin-body">
+      <main className="admin-body" key={tab}>
         {loading ? (
           <div className="side-note center">Loading…</div>
         ) : (
           <>
-            {tab === 'overview' && <OverviewTab data={data} employeeById={employeeById} />}
+            {tab === 'overview' && <OverviewTab data={data} employeeById={employeeById} onOpen={setTab} />}
             {tab === 'users' && (
               <UsersTab data={data} employeeById={employeeById} isSuperAdmin={isSuperAdmin} reload={loadAll} />
             )}
@@ -170,35 +213,54 @@ export default function AdminPage() {
             {tab === 'events' && <EventsAdminTab events={data.events} reload={loadAll} />}
             {tab === 'faculty' && <FacultyTab data={data} isHod={isHod} reload={loadAll} />}
             {tab === 'groups' && <GroupsTab data={data} isHod={isHod} reload={loadAll} />}
+            {tab === 'announcements' && <AnnouncementsAdminTab totalChannels={totalChannels} />}
           </>
         )}
+      </main>
       </div>
     </div>
   )
 }
 
 /* ===== Overview ===== */
-function OverviewTab({ data, employeeById }) {
+function OverviewTab({ data, employeeById, onOpen }) {
   const now = new Date()
   const guests = data.profiles.filter((p) => p.user_type === 'guest' && !employeeById.has(p.id))
   const members = data.profiles.filter((p) => p.user_type === 'member' && !employeeById.has(p.id))
   const stats = [
-    { label: 'Students', value: members.length },
-    { label: 'Guests', value: guests.length },
-    { label: 'Faculty', value: data.employees.length },
-    { label: 'Communities', value: data.clubs.length },
-    { label: 'Pending requests', value: data.requests.length },
-    { label: 'Upcoming events', value: data.events.filter((e) => new Date(e.starts_at) >= now).length },
+    { label: 'Students', value: members.length, tab: 'users' },
+    { label: 'Guests', value: guests.length, tab: 'users' },
+    { label: 'Faculty', value: data.employees.length, tab: 'faculty' },
+    { label: 'Communities', value: data.clubs.length, tab: 'clubs' },
+    { label: 'Pending requests', value: data.requests.length, tab: 'requests', alert: data.requests.length > 0 },
+    {
+      label: 'Upcoming events',
+      value: data.events.filter((e) => new Date(e.starts_at) >= now).length,
+      tab: 'events',
+    },
   ]
   return (
-    <div className="stat-grid">
-      {stats.map((s) => (
-        <div key={s.label} className="stat-card">
-          <div className="stat-value">{s.value}</div>
-          <div className="stat-label">{s.label}</div>
+    <>
+      <div className="admin-section-head">
+        <div>
+          <h2>Overview</h2>
+          <p>Campus at a glance. Select a card to open that section.</p>
         </div>
-      ))}
-    </div>
+      </div>
+      <div className="stat-grid">
+        {stats.map((s) => (
+          <button
+            key={s.label}
+            className={`stat-card${s.alert ? ' is-alert' : ''}`}
+            onClick={() => onOpen(s.tab)}
+          >
+            <div className="stat-value">{s.value}</div>
+            <div className="stat-label">{s.label}</div>
+            <Icon name="arrow-right" size={15} className="action-arrow" />
+          </button>
+        ))}
+      </div>
+    </>
   )
 }
 
