@@ -248,9 +248,11 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const onNotifications = location.pathname === '/notifications'
   const onService = Boolean(SERVICES[location.pathname])
-  const committeeId = location.pathname.startsWith('/management/')
-    ? decodeURIComponent(location.pathname.split('/')[2] ?? '')
-    : null
+  // /management/:id (committee) and /clubs/:id (club) share CommitteePage.
+  const committeeId =
+    location.pathname.startsWith('/management/') || location.pathname.startsWith('/clubs/')
+      ? decodeURIComponent(location.pathname.split('/')[2] ?? '')
+      : null
   const onPage = onNotifications || onService || Boolean(committeeId)
 
   // Opening a chat (e.g. from the sidebar) while a page is showing leaves it.

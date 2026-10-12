@@ -79,6 +79,7 @@ export default function App() {
         <Route path="/shop" element={null} />
         <Route path="/canteen" element={null} />
         <Route path="/management/:committeeId" element={null} />
+        <Route path="/clubs/:clubId" element={null} />
       </Route>
       <Route
         path="/admin"

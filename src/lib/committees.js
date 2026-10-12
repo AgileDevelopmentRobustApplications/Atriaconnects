@@ -5,9 +5,16 @@
 
 let cache = null
 
+// Committees (kind: 'committee') followed by student clubs (kind: 'club',
+// from src/data/clubs.json — no member list, but a logo, handle and bio).
 export function loadCommittees() {
   if (!cache) {
-    cache = import('../data/committees.json').then((mod) => (mod.default ?? mod).committees)
+    cache = Promise.all([import('../data/committees.json'), import('../data/clubs.json')]).then(
+      ([c, k]) => [
+        ...(c.default ?? c).committees.map((x) => ({ ...x, kind: 'committee' })),
+        ...(k.default ?? k).clubs.map((x) => ({ ...x, kind: 'club', icon: 'users', members: [] })),
+      ]
+    )
   }
   return cache
 }
@@ -53,7 +60,8 @@ export function filterCommittees(committees, query) {
   const q = query.trim().toLowerCase()
   return committees
     .map((committee) => {
-      if (!q || committee.name.toLowerCase().includes(q)) return { committee, people: [] }
+      const text = `${committee.name} ${committee.short} ${committee.handle ?? ''}`.toLowerCase()
+      if (!q || text.includes(q)) return { committee, people: [] }
       const people = committee.members.filter((m) => m.name.toLowerCase().includes(q))
       return people.length ? { committee, people } : null
     })

@@ -18,7 +18,7 @@ import { useLatestCircularAt } from '../../hooks/useLatestCircular.js'
 // The chat list is split into sections, picked from a row of icons; only the
 // selected section is shown, under its name as a heading.
 const SECTIONS = [
-  { id: 'dms', label: 'DMs', title: 'Direct messages', icon: 'chat', types: ['dm', 'admission'] },
+  { id: 'dms', label: 'DMs', title: 'Direct messages', icon: 'chat', types: ['dm'] },
   {
     id: 'academics',
     label: 'Academics',
@@ -35,16 +35,8 @@ const SECTIONS = [
   },
   // College committees directory (cards → /management/:id).
   { id: 'management', label: 'Management', title: 'Management', types: [], directory: true, icon: 'briefcase' },
-  // Placeholder until this channel exists; it shows a "coming soon" panel.
-  {
-    id: 'frontdesk',
-    label: 'Front desk',
-    title: 'Front desk',
-    types: [],
-    comingSoon: true,
-    icon: 'headset',
-    blurb: 'Reach the front desk for campus help, visitor passes and general enquiries.',
-  },
+  // Admissions Office threads (one per student/guest; staff see every enquiry).
+  { id: 'frontdesk', label: 'Front desk', title: 'Front desk', icon: 'headset', types: ['admission'] },
 ]
 const SECTION_KEY = 'sidebar-section'
 const sectionOf = (chat) => SECTIONS.find((s) => s.types.includes(chat?.type))?.id
@@ -63,7 +55,9 @@ export default function Sidebar() {
   const { chats, chatsLoading, activeChat, closeConversation } = useChat()
   const navigate = useNavigate()
   const pathname = useLocation().pathname
-  const openCommitteeId = pathname.startsWith('/management/') ? pathname.split('/')[2] : null
+  // Committee (/management/:id) or club (/clubs/:id) page currently open.
+  const openCommitteeId =
+    pathname.startsWith('/management/') || pathname.startsWith('/clubs/') ? pathname.split('/')[2] : null
   const onNotifications = pathname === '/notifications'
   // Footer pages (Notifications, Shop, Canteen) open in the main pane.
   const openPage = (path) => {
@@ -150,7 +144,7 @@ export default function Sidebar() {
   // Committees load on first visit to Management (kept out of the main bundle).
   const [committees, setCommittees] = useState(null)
   useEffect(() => {
-    if (section !== 'management' && !openCommitteeId) return
+    if (section !== 'management' && section !== 'communities' && !openCommitteeId) return
     let active = true
     loadCommittees().then((list) => active && setCommittees(list))
     return () => {
@@ -158,8 +152,16 @@ export default function Sidebar() {
     }
   }, [section, openCommitteeId])
   const committeeItems = committees ? filterCommittees(committees, search) : null
+  // Committees show under Management; student clubs under Communities.
+  const committeeOnly = committeeItems?.filter((i) => i.committee.kind !== 'club') ?? null
+  const clubItems = committeeItems?.filter((i) => i.committee.kind === 'club') ?? null
 
   const current = SECTIONS.find((s) => s.id === section)
+  const searchLabel = current.directory
+    ? 'Search committees or people'
+    : section === 'communities'
+    ? 'Search chats or clubs'
+    : 'Search chats'
   const visible = filtered.filter((c) => current.types.includes(c.type))
   const stats = Object.fromEntries(
     SECTIONS.map((s) => [
@@ -265,8 +267,8 @@ export default function Sidebar() {
           <input
             ref={searchRef}
             type="search"
-            aria-label={current.directory ? 'Search committees or people' : 'Search chats'}
-            placeholder={current.directory ? 'Search committees or people' : 'Search chats'}
+            aria-label={searchLabel}
+            placeholder={searchLabel}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => {
@@ -332,21 +334,20 @@ export default function Sidebar() {
       <div className="sidebar-section-heading" key={`heading-${section}`}>
         <h2 id="chat-section-heading">{current.title}</h2>
         {current.directory ? (
-          committeeItems && (
+          committeeOnly && (
             <span className="sidebar-section-meta">
               {search
-                ? `${committeeItems.length} match${committeeItems.length === 1 ? '' : 'es'}`
-                : `${committeeItems.length} committees`}
+                ? `${committeeOnly.length} match${committeeOnly.length === 1 ? '' : 'es'}`
+                : `${committeeOnly.length} committees`}
             </span>
           )
-        ) : current.comingSoon ? (
-          <span className="sidebar-section-meta">Soon</span>
         ) : (
           !chatsLoading && (
             <span className="sidebar-section-meta">
               {search
                 ? `${visible.length} match${visible.length === 1 ? '' : 'es'}`
                 : `${visible.length} chat${visible.length === 1 ? '' : 's'}`}
+              {section === 'communities' && clubItems && !search ? ` · ${clubItems.length} clubs` : ''}
             </span>
           )
         )}
@@ -361,13 +362,14 @@ export default function Sidebar() {
         {current.directory && (
           <CommitteeGrid
             key={section}
-            items={committeeItems}
+            items={committeeOnly}
             search={search}
             activeId={openCommitteeId}
+            showLabels={false}
             onOpen={(id) => openPage(`/management/${id}`)}
           />
         )}
-        {chatsLoading && !current.directory && !current.comingSoon && (
+        {chatsLoading && !current.directory && (
           <div aria-busy="true" aria-label="Loading chats">
             {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} className="skeleton-row" style={{ opacity: 1 - i * 0.16 }}>
@@ -380,26 +382,17 @@ export default function Sidebar() {
             ))}
           </div>
         )}
-        {current.comingSoon && (
-          <div className="sidebar-empty sidebar-soon" key={section}>
-            <span className="sidebar-soon-icon">
-              <Icon name={current.icon} size={24} strokeWidth={1.8} />
-            </span>
-            <span className="sidebar-soon-tag">Coming soon</span>
-            <span>{current.blurb}</span>
-          </div>
-        )}
-        {!chatsLoading && !current.comingSoon && !current.directory && (
+        {!chatsLoading && !current.directory && (
           <>
             <div className="chat-section" key={section}>
               {visible.map((chat) => (
                 <ChatListItem key={chat.conversation_id} chat={chat} />
               ))}
             </div>
-            {visible.length === 0 && (
+            {visible.length === 0 && !(section === 'communities' && search && clubItems?.length) && (
               <div className="sidebar-empty">
                 <Icon
-                  name={search ? 'search' : section === 'dms' ? 'chat' : section === 'academics' ? 'book' : 'users'}
+                  name={search ? 'search' : current.icon}
                   size={28}
                   strokeWidth={1.6}
                 />
@@ -410,6 +403,10 @@ export default function Sidebar() {
                     ? 'No direct messages yet'
                     : section === 'academics'
                     ? 'No academic groups yet'
+                    : section === 'frontdesk'
+                    ? isEmployee
+                      ? 'No enquiries yet'
+                      : 'Admissions Office'
                     : 'No communities yet'}
                 </strong>
                 <span>
@@ -418,7 +415,13 @@ export default function Sidebar() {
                         .map((s) => `${stats[s.id].matches} in ${s.label}`)
                         .join(' · ') || 'Try a different name.'
                     : section === 'dms'
-                    ? 'Start a one-to-one conversation with anyone on campus.'
+                    ? isGuest
+                      ? 'Guests can message the Admissions Office from Front desk.'
+                      : 'Start a one-to-one conversation with anyone on campus.'
+                    : section === 'frontdesk'
+                    ? isEmployee
+                      ? 'Messages from students and guests to the Admissions Office will appear here.'
+                      : 'Your private thread with the Admissions Office will appear here.'
                     : section === 'academics'
                     ? 'Class groups you belong to will appear here. Staff add members, or you can request to join.'
                     : 'Clubs you join will appear here.'}
@@ -428,7 +431,12 @@ export default function Sidebar() {
                     <Icon name="plus" size={14} /> New message
                   </button>
                 )}
-                {!search && section !== 'dms' && (
+                {!search && section === 'dms' && isGuest && (
+                  <button className="btn-small" onClick={() => setSection('frontdesk')}>
+                    <Icon name="headset" size={14} /> Go to Front desk
+                  </button>
+                )}
+                {!search && (section === 'academics' || section === 'communities') && (
                   <button
                     className="btn-small"
                     onClick={() =>
@@ -439,6 +447,14 @@ export default function Sidebar() {
                   </button>
                 )}
               </div>
+            )}
+            {section === 'communities' && (clubItems === null || clubItems.length > 0) && (
+              <CommitteeGrid
+                items={clubItems}
+                search={search}
+                activeId={openCommitteeId}
+                onOpen={(id) => openPage(`/clubs/${id}`)}
+              />
             )}
           </>
         )}

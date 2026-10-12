@@ -1514,10 +1514,28 @@ select option {
 /* Management: committee cards (sidebar) */
 .committee-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-1) var(--sp-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-1) var(--sp-3);
   animation: fade-up 0.24s var(--ease-out);
+}
+
+.committee-group-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--sp-2) var(--sp-1) var(--sp-2);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--sidebar-text-muted);
+}
+
+.committee-group-label span {
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: 0.8;
 }
 
 .committee-card,
@@ -1534,7 +1552,7 @@ select option {
   justify-content: space-between;
   gap: 4px;
   min-width: 0;
-  padding: 10px;
+  padding: var(--sp-3);
   text-align: left;
   background: var(--sidebar-input-bg);
   border: 1px solid var(--sidebar-border);
@@ -1568,8 +1586,8 @@ select option {
 }
 
 .committee-card-icon {
-  width: 30px;
-  height: 30px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -1591,7 +1609,7 @@ select option {
 
 .committee-card-name {
   width: 100%;
-  font-size: 11.5px;
+  font-size: var(--fs-sm);
   font-weight: 650;
   line-height: 1.25;
   letter-spacing: -0.01em;
@@ -1608,7 +1626,7 @@ select option {
 }
 
 .committee-card-count {
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   color: var(--sidebar-text-muted);
   font-variant-numeric: tabular-nums;
@@ -1750,6 +1768,41 @@ select option {
   flex-shrink: 0;
 }
 
+/* "Message" text button on each committee person */
+.person-dm {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  margin-top: 6px;
+  margin-left: -6px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  color: var(--link);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.person-dm:hover:not(:disabled) {
+  background: var(--primary-soft);
+}
+
+.person-dm:disabled {
+  color: var(--text-placeholder);
+  font-weight: 500;
+  cursor: default;
+}
+
+.person-dm.is-self {
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: default;
+}
+
 .committee-source {
   margin-top: var(--sp-8);
   font-size: var(--fs-2xs);
@@ -1757,9 +1810,148 @@ select option {
   text-align: center;
 }
 
-@media (max-width: 380px) {
-  .committee-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Club cards: logo fills the upper part on a white tile (logos are made for
+   light backgrounds, and some are transparent) */
+.committee-card.is-club {
+  justify-content: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+}
+
+.committee-card-logo {
+  /* a square tile (height from the card, width from aspect-ratio), so square
+     logos fill it edge to edge instead of letterboxing */
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: 1;
+  max-width: 100%;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-ink) 6%, transparent);
+}
+
+.committee-card-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.committee-card.is-club:hover .committee-card-logo img {
+  transform: scale(1.04);
+}
+
+.committee-card.is-club .committee-card-name {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  font-size: var(--fs-xs);
+  padding: 0 4px;
+  text-align: center;
+}
+
+/* Club page */
+.page-header-icon.has-logo {
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.page-header-icon.has-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.club-profile {
+  padding-top: var(--sp-10);
+}
+
+.club-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  text-align: center;
+  padding: var(--sp-8) var(--sp-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(600px 220px at 50% 0%, color-mix(in srgb, var(--hue-soft) 80%, transparent), transparent 75%),
+    var(--card);
+  animation: rise-in 0.45s var(--ease-out) both;
+}
+
+.club-hero-logo {
+  width: 132px;
+  height: 132px;
+  margin-bottom: var(--sp-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: var(--shadow-md), 0 0 0 1px var(--border);
+}
+
+/* Wordmark logos: keep the whole image inside the circle (a square fits in a
+   circle at ~71% of its width), on the logo's own background colour */
+.committee-card-logo.is-inset img,
+.club-hero-logo.is-inset img,
+.page-header-icon.is-inset img {
+  width: 76%;
+  height: 76%;
+}
+
+.club-hero-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.club-hero h2 {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+}
+
+.club-hero-handle {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--primary-text);
+}
+
+.club-hero p {
+  max-width: 460px;
+  margin: var(--sp-2) 0 var(--sp-4);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.club-hero .btn-secondary {
+  text-decoration: none;
+}
+
+.club-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+
+.club-hero-actions > * {
+  min-height: 42px;
+}
+
+@media (max-width: 420px) {
+  .club-hero-actions {
+    flex-direction: column;
+    align-self: stretch;
   }
 }
 
@@ -3037,24 +3229,6 @@ input[type='search']::-webkit-search-decoration {
   font-weight: 600;
 }
 
-.sidebar-soon {
-  padding-top: var(--sp-10);
-  animation: fade-up 0.28s var(--ease-out);
-}
-
-.sidebar-soon-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  margin-bottom: var(--sp-1);
-  border-radius: 30%;
-  background: var(--primary-soft);
-  color: var(--primary-text);
-  animation: float-soft 4s ease-in-out infinite;
-}
-
 .sidebar-soon-tag {
   display: inline-flex;
   align-items: center;
@@ -3066,10 +3240,6 @@ input[type='search']::-webkit-search-decoration {
   border: 1px solid color-mix(in srgb, var(--accent-strong) 50%, transparent);
   font-size: var(--fs-xs);
   font-weight: 600;
-}
-
-.sidebar-soon > span:last-child {
-  max-width: 240px;
 }
 
 .sidebar-empty .btn-small {

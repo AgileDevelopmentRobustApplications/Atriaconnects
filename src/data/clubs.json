@@ -1,0 +1,91 @@
+{
+  "source": "club_info.docx (entries 1–9 and 12; 10 and 11 intentionally omitted). Logos from the 'club logos' folder, resized into public/clubs/. Wordmark logos set logoInset (+ logoBg) so circular crops don't clip their text.",
+  "clubs": [
+    {
+      "id": "club-iste",
+      "name": "ISTE Atria Student Chapter",
+      "short": "ISTE Atria",
+      "handle": "iste.atria",
+      "logo": "/clubs/iste.png",
+      "description": "ISTE Atria Student Chapter — fostering tech innovation and community through workshops, hackathons and events."
+    },
+    {
+      "id": "club-cca",
+      "name": "Cultural Committee of Atria",
+      "short": "CCA",
+      "handle": "cca",
+      "logo": "/clubs/cca.png",
+      "description": "Cultural Committee of Atria IT."
+    },
+    {
+      "id": "club-gdg",
+      "name": "GDG Atria",
+      "short": "GDG Atria",
+      "handle": "gdg.atria",
+      "logo": "/clubs/gdg.png",
+      "description": "Elevating tech excellence: unleashing innovation one code at a time. #GDGAIT #GDGINDIA"
+    },
+    {
+      "id": "club-afl",
+      "name": "Atria Football League",
+      "short": "Atria FL",
+      "handle": "atriafl",
+      "logo": "/clubs/afl.png",
+      "description": "The Fall 2026 season of Atria's premier football competition is underway!"
+    },
+    {
+      "id": "club-atria-foundation",
+      "name": "The Atria Foundation",
+      "short": "Atria Foundation",
+      "handle": "atriafoundation",
+      "logo": "/clubs/atria-foundation.png",
+      "description": "Non-profit organisation — Humane for Humanity #LoveAll. Committed to a hunger-free Bangalore; 1.5 crore+ meals served to date.",
+      "logoInset": true,
+      "logoBg": "#ffffff"
+    },
+    {
+      "id": "club-rotaract",
+      "name": "Rotaract Club of Atria",
+      "short": "Rotaract",
+      "handle": "rotaract_atria",
+      "logo": "/clubs/rotaract.png",
+      "description": "Rotaract Club of Atria Institute of Technology — RI District 3191, Zone Mirage.",
+      "logoInset": true,
+      "logoBg": "#000000"
+    },
+    {
+      "id": "club-aws-sbg",
+      "name": "AWS Student Builder Group",
+      "short": "AWS SBG",
+      "handle": "awssbg.atria",
+      "logo": "/clubs/aws-sbg.png",
+      "description": "Bridging the gap from campus to cloud. Official AWS Student Builder Group at Atria Institute of Technology."
+    },
+    {
+      "id": "club-oscode",
+      "name": "OS Code",
+      "short": "OS Code",
+      "handle": "oscode_ait",
+      "logo": "/clubs/oscode.png",
+      "description": "Software tech club. Code – Create – Collaborate. Building ideas into reality."
+    },
+    {
+      "id": "club-green-innovators",
+      "name": "Green Innovators",
+      "short": "Green Innovators",
+      "handle": "green_innovators.ait",
+      "logo": "/clubs/green-innovators.png",
+      "description": "Innovating for a greener tomorrow. Sustainable ideas, smart solutions. Small steps, big impact."
+    },
+    {
+      "id": "club-ieee-ras",
+      "name": "IEEE RAS Atria",
+      "short": "IEEE RAS",
+      "handle": "atria_ieee.ras",
+      "logo": "/clubs/ieee-ras.png",
+      "description": "IEEE Robotics & Automation Society — official robotics chapter. Automation and innovation through workshops, projects and events.",
+      "logoInset": true,
+      "logoBg": "#ffffff"
+    }
+  ]
+}
