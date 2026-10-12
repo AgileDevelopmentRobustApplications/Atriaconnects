@@ -9,8 +9,6 @@ import AppLayout from './components/layout/AppLayout.jsx'
 import AdminPage from './components/admin/AdminPage.jsx'
 import NotFoundPage from './components/layout/NotFoundPage.jsx';
 import { useAutoAway } from './hooks/useAutoAway.js'
-import { Suspense, lazy } from 'react';
-const CanteenPage = lazy(() => import('./components/canteen/CanteenPage.jsx'));
 
 function Protected({ children }) {
   const { session, loading } = useAuth()
@@ -61,8 +59,9 @@ export default function App() {
         path="/welcome"
         element={session ? <WelcomePage /> : <WelcomePage />}
       />
+      {/* Chat app shell. "/" and "/notifications" share it (a pathless layout
+          route), so switching between them keeps chats and realtime alive. */}
       <Route
-        path="/"
         element={
           <Protected>
             <ChatProvider>
@@ -74,7 +73,12 @@ export default function App() {
             </ChatProvider>
           </Protected>
         }
-      />
+      >
+        <Route path="/" element={null} />
+        <Route path="/notifications" element={null} />
+        <Route path="/shop" element={null} />
+        <Route path="/canteen" element={null} />
+      </Route>
       <Route
         path="/admin"
         element={
@@ -84,16 +88,6 @@ export default function App() {
                 <AdminPage />
               </PresenceProvider>
             </EmployeeOnly>
-          </Protected>
-        }
-      />
-      <Route
-        path="/canteen"
-        element={
-          <Protected>
-            <Suspense fallback={<div className="full-center"><div className="spinner" /></div>}>
-              <CanteenPage />
-            </Suspense>
           </Protected>
         }
       />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
@@ -7,6 +8,9 @@ import Sidebar from '../sidebar/Sidebar.jsx'
 import ChatWindow from '../chat/ChatWindow.jsx'
 import InfoPanel from '../common/InfoPanel.jsx'
 import InstallPwaCard from '../common/InstallPwaCard.jsx'
+import NotificationsPage from '../notifications/NotificationsPage.jsx'
+import ServicePage from '../services/ServicePage.jsx'
+import { SERVICES } from '../../lib/services.js'
 import Icon from '../common/Icon.jsx'
 import DateTile from '../common/DateTile.jsx'
 import Avatar from '../common/Avatar.jsx'
@@ -239,15 +243,31 @@ function WelcomeDashboard() {
 
 export default function AppLayout() {
   const { activeChat } = useChat()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const onNotifications = location.pathname === '/notifications'
+  const onService = Boolean(SERVICES[location.pathname])
+  const onPage = onNotifications || onService
+
+  // Opening a chat (e.g. from the sidebar) while a page is showing leaves it.
+  const activeId = activeChat?.conversation_id
+  useEffect(() => {
+    if (activeId && window.location.pathname !== '/') navigate('/')
+  }, [activeId, navigate])
+
   const [openPanel, setPanel] = useState(null) // { conversationId, clubId, groupId, tab }
   // The panel belongs to the conversation it was opened from; switching chats hides it.
   const panel = openPanel?.conversationId === activeChat?.conversation_id ? openPanel : null
 
   return (
-    <div className={`app${activeChat ? ' chat-open' : ''}`}>
+    <div className={`app${onPage ? ' page-open' : activeChat ? ' chat-open' : ''}`}>
       <Sidebar />
       <main className="main-pane">
-        {activeChat ? (
+        {onNotifications ? (
+          <NotificationsPage />
+        ) : onService ? (
+          <ServicePage key={location.pathname} path={location.pathname} />
+        ) : activeChat ? (
           <ChatWindow
             key={activeChat.conversation_id}
             openPanel={({ clubId, groupId }, tab) =>
@@ -258,7 +278,7 @@ export default function AppLayout() {
           <WelcomeDashboard />
         )}
       </main>
-      {panel && (
+      {panel && !onPage && (
         <InfoPanel
           key={`${panel.clubId ?? panel.groupId}:${panel.tab}`}
           clubId={panel.clubId}

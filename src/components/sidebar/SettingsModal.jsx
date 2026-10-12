@@ -19,7 +19,8 @@ const YEAR_OPTIONS = [
 ]
 
 export default function SettingsModal({ onClose }) {
-  const { profile, user, updateProfile, theme, toggleTheme, accent, setAccent } = useAuth()
+  const { profile, user, updateProfile, theme, toggleTheme, accent, setAccent, signOut, isGuest } = useAuth()
+  const [signingOut, setSigningOut] = useState(false)
   const [status, setStatus] = useState(profile?.status ?? 'active')
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? '')
   const [avatarColor, setAvatarColor] = useState(() =>
@@ -382,6 +383,42 @@ export default function SettingsModal({ onClose }) {
                 />
               </div>
             </div>
+          </div>
+
+          <div className="settings-section settings-account">
+            <div className="settings-section-title">
+              <Icon name="key" size={16} />
+              <span>Account</span>
+            </div>
+            <div className="settings-account-row">
+              <div className="settings-account-info">
+                <span className="settings-account-label">Signed in as</span>
+                <span className="settings-account-email">
+                  {isGuest ? `${fullName || 'Guest'} (guest)` : user?.email || profile?.email}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="btn-small danger settings-logout"
+                disabled={signingOut}
+                onClick={async () => {
+                  setSigningOut(true)
+                  try {
+                    await signOut()
+                  } catch {
+                    setSigningOut(false)
+                  }
+                }}
+              >
+                <Icon name="logout" size={15} />
+                {signingOut ? 'Logging out…' : 'Log out'}
+              </button>
+            </div>
+            {isGuest && (
+              <span className="field-hint">
+                <Icon name="info" size={12} /> Guest sessions can’t be recovered after you log out.
+              </span>
+            )}
           </div>
 
           {error && <div className="auth-error">{error}</div>}

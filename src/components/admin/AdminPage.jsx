@@ -12,6 +12,7 @@ import AttendanceModal from './AttendanceModal.jsx'
 import UserEditModal from './UserEditModal.jsx'
 import AddUserModal from './AddUserModal.jsx'
 import AnnouncementsAdminTab from './AnnouncementsAdminTab.jsx'
+import CircularsAdminTab from './CircularsAdminTab.jsx'
 
 const NAV = [
   {
@@ -19,6 +20,7 @@ const NAV = [
     items: [
       { id: 'overview', label: 'Overview', icon: 'compass' },
       { id: 'announcements', label: 'Announcements', icon: 'megaphone' },
+      { id: 'circulars', label: 'Circulars', icon: 'file' },
       { id: 'requests', label: 'Requests', icon: 'user' },
     ],
   },
@@ -214,6 +216,7 @@ export default function AdminPage() {
             {tab === 'faculty' && <FacultyTab data={data} isHod={isHod} reload={loadAll} />}
             {tab === 'groups' && <GroupsTab data={data} isHod={isHod} reload={loadAll} />}
             {tab === 'announcements' && <AnnouncementsAdminTab totalChannels={totalChannels} />}
+            {tab === 'circulars' && <CircularsAdminTab />}
           </>
         )}
       </main>
