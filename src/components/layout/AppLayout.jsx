@@ -10,6 +10,7 @@ import InfoPanel from '../common/InfoPanel.jsx'
 import InstallPwaCard from '../common/InstallPwaCard.jsx'
 import NotificationsPage from '../notifications/NotificationsPage.jsx'
 import ServicePage from '../services/ServicePage.jsx'
+import CommitteePage from '../management/CommitteePage.jsx'
 import { SERVICES } from '../../lib/services.js'
 import Icon from '../common/Icon.jsx'
 import DateTile from '../common/DateTile.jsx'
@@ -247,7 +248,10 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const onNotifications = location.pathname === '/notifications'
   const onService = Boolean(SERVICES[location.pathname])
-  const onPage = onNotifications || onService
+  const committeeId = location.pathname.startsWith('/management/')
+    ? decodeURIComponent(location.pathname.split('/')[2] ?? '')
+    : null
+  const onPage = onNotifications || onService || Boolean(committeeId)
 
   // Opening a chat (e.g. from the sidebar) while a page is showing leaves it.
   const activeId = activeChat?.conversation_id
@@ -267,6 +271,8 @@ export default function AppLayout() {
           <NotificationsPage />
         ) : onService ? (
           <ServicePage key={location.pathname} path={location.pathname} />
+        ) : committeeId ? (
+          <CommitteePage key={committeeId} committeeId={committeeId} />
         ) : activeChat ? (
           <ChatWindow
             key={activeChat.conversation_id}

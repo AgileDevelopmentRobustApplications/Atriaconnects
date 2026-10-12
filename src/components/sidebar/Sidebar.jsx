@@ -6,6 +6,8 @@ import { STATUSES, statusById } from '../../lib/status.js'
 import Avatar from '../common/Avatar.jsx'
 import Icon from '../common/Icon.jsx'
 import ChatListItem from './ChatListItem.jsx'
+import CommitteeGrid from '../management/CommitteeGrid.jsx'
+import { filterCommittees, loadCommittees } from '../../lib/committees.js'
 import NewDmModal from './NewDmModal.jsx'
 import NewClubModal from './NewClubModal.jsx'
 import BrowseClubsModal from './BrowseClubsModal.jsx'
@@ -31,16 +33,9 @@ const SECTIONS = [
     icon: 'users',
     types: ['club_chat', 'club_announcements'],
   },
-  // Placeholders until these channels exist; they show a "coming soon" panel.
-  {
-    id: 'management',
-    label: 'Management',
-    title: 'Management',
-    types: [],
-    comingSoon: true,
-    icon: 'briefcase',
-    blurb: 'A direct line to college management for queries, approvals and updates.',
-  },
+  // College committees directory (cards → /management/:id).
+  { id: 'management', label: 'Management', title: 'Management', types: [], directory: true, icon: 'briefcase' },
+  // Placeholder until this channel exists; it shows a "coming soon" panel.
   {
     id: 'frontdesk',
     label: 'Front desk',
@@ -68,6 +63,7 @@ export default function Sidebar() {
   const { chats, chatsLoading, activeChat, closeConversation } = useChat()
   const navigate = useNavigate()
   const pathname = useLocation().pathname
+  const openCommitteeId = pathname.startsWith('/management/') ? pathname.split('/')[2] : null
   const onNotifications = pathname === '/notifications'
   // Footer pages (Notifications, Shop, Canteen) open in the main pane.
   const openPage = (path) => {
@@ -151,6 +147,18 @@ export default function Sidebar() {
       c.last_sender_id !== profile?.id &&
       new Date(c.last_message_at).getTime() > newsSeenAt
   )
+  // Committees load on first visit to Management (kept out of the main bundle).
+  const [committees, setCommittees] = useState(null)
+  useEffect(() => {
+    if (section !== 'management' && !openCommitteeId) return
+    let active = true
+    loadCommittees().then((list) => active && setCommittees(list))
+    return () => {
+      active = false
+    }
+  }, [section, openCommitteeId])
+  const committeeItems = committees ? filterCommittees(committees, search) : null
+
   const current = SECTIONS.find((s) => s.id === section)
   const visible = filtered.filter((c) => current.types.includes(c.type))
   const stats = Object.fromEntries(
@@ -257,8 +265,8 @@ export default function Sidebar() {
           <input
             ref={searchRef}
             type="search"
-            aria-label="Search chats"
-            placeholder="Search chats"
+            aria-label={current.directory ? 'Search committees or people' : 'Search chats'}
+            placeholder={current.directory ? 'Search committees or people' : 'Search chats'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => {
@@ -323,7 +331,15 @@ export default function Sidebar() {
 
       <div className="sidebar-section-heading" key={`heading-${section}`}>
         <h2 id="chat-section-heading">{current.title}</h2>
-        {current.comingSoon ? (
+        {current.directory ? (
+          committeeItems && (
+            <span className="sidebar-section-meta">
+              {search
+                ? `${committeeItems.length} match${committeeItems.length === 1 ? '' : 'es'}`
+                : `${committeeItems.length} committees`}
+            </span>
+          )
+        ) : current.comingSoon ? (
           <span className="sidebar-section-meta">Soon</span>
         ) : (
           !chatsLoading && (
@@ -342,7 +358,16 @@ export default function Sidebar() {
         role="tabpanel"
         aria-labelledby="chat-section-heading"
       >
-        {chatsLoading && (
+        {current.directory && (
+          <CommitteeGrid
+            key={section}
+            items={committeeItems}
+            search={search}
+            activeId={openCommitteeId}
+            onOpen={(id) => openPage(`/management/${id}`)}
+          />
+        )}
+        {chatsLoading && !current.directory && !current.comingSoon && (
           <div aria-busy="true" aria-label="Loading chats">
             {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} className="skeleton-row" style={{ opacity: 1 - i * 0.16 }}>
@@ -364,7 +389,7 @@ export default function Sidebar() {
             <span>{current.blurb}</span>
           </div>
         )}
-        {!chatsLoading && !current.comingSoon && (
+        {!chatsLoading && !current.comingSoon && !current.directory && (
           <>
             <div className="chat-section" key={section}>
               {visible.map((chat) => (
@@ -389,7 +414,7 @@ export default function Sidebar() {
                 </strong>
                 <span>
                   {search
-                    ? SECTIONS.filter((s) => !s.comingSoon && s.id !== section && stats[s.id].matches > 0)
+                    ? SECTIONS.filter((s) => s.types.length > 0 && s.id !== section && stats[s.id].matches > 0)
                         .map((s) => `${stats[s.id].matches} in ${s.label}`)
                         .join(' · ') || 'Try a different name.'
                     : section === 'dms'

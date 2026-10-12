@@ -222,6 +222,50 @@ const PATHS = {
       <polyline points="12 6 12 12 16 14" />
     </>
   ),
+  scale: (
+    <>
+      <path d="M12 3v18" />
+      <path d="M5 21h14" />
+      <path d="M3 7h18" />
+      <path d="m6 7-3 7a3 3 0 0 0 6 0z" />
+      <path d="m18 7-3 7a3 3 0 0 0 6 0z" />
+    </>
+  ),
+  trophy: (
+    <>
+      <path d="M8 21h8" />
+      <path d="M12 17v4" />
+      <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
+      <path d="M17 5h2a2 2 0 0 1 0 4h-2" />
+      <path d="M7 5H5a2 2 0 0 0 0 4h2" />
+    </>
+  ),
+  music: (
+    <>
+      <path d="M9 18V5l12-2v13" />
+      <circle cx="6" cy="18" r="3" />
+      <circle cx="18" cy="16" r="3" />
+    </>
+  ),
+  home: (
+    <>
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </>
+  ),
+  lightbulb: (
+    <>
+      <path d="M9 18h6" />
+      <path d="M10 22h4" />
+      <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <polyline points="22 6 12 13 2 6" />
+    </>
+  ),
   store: (
     <>
       <path d="M3 9 4.5 4h15L21 9" />

@@ -1,0 +1,2259 @@
+{
+ "source": "Atria Institute of Technology — Committee Details page (https://atria.edu.in/campus-life/committees/), via Atria_Committee_Directory.xlsx",
+ "committees": [
+  {
+   "id": "academic-administrative-committee",
+   "name": "Academic & Administrative Committee",
+   "short": "Academic & Administrative",
+   "icon": "book",
+   "members": [
+    {
+     "name": "Dr Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Vasanthi Satyananda",
+     "designation": "Dean - IQAC",
+     "role": "Convener",
+     "email": "deaniqac@atria.edu.in",
+     "phone": "9886027716"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Member",
+     "email": "viceprincipal@atria.edu.in",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "daenacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Surendra H J",
+     "designation": "Assoc. Dean (R&D) and HOD, Civil Dept.",
+     "role": "Member",
+     "email": "deanresearch@atria.edu.in",
+     "phone": "9945015853"
+    },
+    {
+     "name": "Dr. Sampada H K",
+     "designation": "Assoc. Dean (SW)",
+     "role": "Member",
+     "email": "student_welfare@atria.edu.in",
+     "phone": "9916958940"
+    },
+    {
+     "name": "Dr. Raghunandan H J",
+     "designation": "Assoc. Dean (CDC)",
+     "role": "Member",
+     "email": "adean_cdc@atria.edu.in",
+     "phone": "9902596651"
+    },
+    {
+     "name": "Dr. Devi Kannan",
+     "designation": "Prof. & HOD, CSE Dept.",
+     "role": "Member",
+     "email": "cse_hod@atria.edu.in",
+     "phone": "9460279588"
+    },
+    {
+     "name": "Dr. Deepak N R",
+     "designation": "Prof. & HOD, ISE Dept.",
+     "role": "Member",
+     "email": "ise_hod@atria.edu.in",
+     "phone": "9449632581"
+    },
+    {
+     "name": "Dr. Keshavamurthy",
+     "designation": "Prof. & Head – ECE Dept.",
+     "role": "Member",
+     "email": "ece_hod@atria.edu.in",
+     "phone": "9844662014"
+    },
+    {
+     "name": "Dr. Srinivasa Chari",
+     "designation": "Prof. & HOD, ME Dept.",
+     "role": "Member",
+     "email": "mech_hod@atria.edu.in",
+     "phone": "9538435005"
+    },
+    {
+     "name": "Dr. Rashmi Singh Roy",
+     "designation": "HOD - MBA Dept.",
+     "role": "Member",
+     "email": "mba_hod@atria.edu.in",
+     "phone": "8971320068"
+    },
+    {
+     "name": "Dr. Mamatha T",
+     "designation": "Prof. & HOD, MCA Dept.",
+     "role": "Member",
+     "email": "mca_hod@atria.edu.in",
+     "phone": "7760847216"
+    },
+    {
+     "name": "Dr. Manjunath G A",
+     "designation": "Prof., BSH Dept.",
+     "role": "Member",
+     "email": "manjunath.j_mech@atria.edu.in",
+     "phone": "7026723766"
+    },
+    {
+     "name": "Mr. John Worth",
+     "designation": "Director, Admission",
+     "role": "Member",
+     "email": "johnworth_admission@atria.edu.in",
+     "phone": "9845243094"
+    },
+    {
+     "name": "Mrs. Indrani P V",
+     "designation": "Asst. Manager, Accounts",
+     "role": "Member",
+     "email": "indrani_accounts@atria.edu.in",
+     "phone": "8970800470"
+    },
+    {
+     "name": "Ms. Mary Sangeetha",
+     "designation": "Head - HR",
+     "role": "Member",
+     "email": "sangeetha_hr@atria.edu.in",
+     "phone": "9611754157"
+    },
+    {
+     "name": "Dr. Usha S P",
+     "designation": "Head - Library",
+     "role": "Member",
+     "email": "library@atria.edu.in",
+     "phone": "7760085351"
+    },
+    {
+     "name": "Mr. Thirumurty",
+     "designation": "Physical Education Instructor",
+     "role": "Member",
+     "email": "thirumurthy_sports@atria.edu.in",
+     "phone": "7899439668"
+    }
+   ]
+  },
+  {
+   "id": "budget-purchase-committee",
+   "name": "Budget & Purchase Committee",
+   "short": "Budget & Purchase",
+   "icon": "file",
+   "members": [
+    {
+     "name": "Sri K Nagaraju",
+     "designation": "Trustee, ASKB Group",
+     "role": "Management"
+    },
+    {
+     "name": "Mr. Kaushik Raju",
+     "designation": "Director Technical",
+     "role": "Management"
+    },
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairman",
+     "email": "principal@atria.edu",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Mrs. Indrani P V",
+     "designation": "Assistant Manager - Accounts",
+     "role": "Convener",
+     "email": "indrani@atria.edu",
+     "phone": "8970800470"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Member",
+     "email": "viceprincipal@atria.edu",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Vasanthi Satyananda",
+     "designation": "Dean (IQAC)",
+     "role": "Member",
+     "email": "vasanthi.s@atria.edu",
+     "phone": "9886027716"
+    },
+    {
+     "name": "Dr. Devi Kannan",
+     "designation": "Prof. & HOD, CSE Dept.",
+     "role": "Member",
+     "email": "csehod@atria.edu",
+     "phone": "9460279588"
+    },
+    {
+     "name": "Dr. Deepak N R",
+     "designation": "Prof. & HOD, ISE Dept.",
+     "role": "Member",
+     "email": "isehod@atria.edu",
+     "phone": "9449632581"
+    },
+    {
+     "name": "Dr. Jagadeesh H S",
+     "designation": "Prof. & Head, ECE Dept.",
+     "role": "Member",
+     "email": "ecehod@atria.edu",
+     "phone": "9480101286"
+    },
+    {
+     "name": "Dr. Venkate Gowda C",
+     "designation": "HOD, ME Dept.",
+     "role": "Member",
+     "email": "mechhod@atria.edu",
+     "phone": "9964360346"
+    },
+    {
+     "name": "Dr. H J Surendra",
+     "designation": "HOD, Civil Dept.",
+     "role": "Member",
+     "email": "surendra@atria.edu",
+     "phone": "9945015853"
+    },
+    {
+     "name": "Dr. Neena Prasad",
+     "designation": "HOD, MBA Dept.",
+     "role": "Member",
+     "email": "mbahod@atria.edu",
+     "phone": "9980160405"
+    },
+    {
+     "name": "Dr. Mamatha T",
+     "designation": "HOD, MCA Dept.",
+     "role": "Member",
+     "email": "mcahod@atria.edu",
+     "phone": "7760847216"
+    },
+    {
+     "name": "Dr. Punith Kumar D N",
+     "designation": "HOD, BSH Dept.",
+     "role": "Member",
+     "email": "bsehod@atria.edu",
+     "phone": "9632200551"
+    },
+    {
+     "name": "Dr. Usha S P",
+     "designation": "Head, Library",
+     "role": "Member",
+     "email": "librarian@atria.edu",
+     "phone": "7760085351"
+    },
+    {
+     "name": "Mr. Sukesha R",
+     "designation": "Manager, IT",
+     "role": "Member",
+     "email": "sukesha.r@atria.edu",
+     "phone": "8971195674"
+    },
+    {
+     "name": "Mr. Manoj Kumar",
+     "designation": "Manager, Stores",
+     "role": "Member",
+     "email": "manoj.kumar@atria.edu",
+     "phone": "8147942045"
+    }
+   ]
+  },
+  {
+   "id": "examination-committee",
+   "name": "Examination Committee",
+   "short": "Examination",
+   "icon": "check",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Controller of Examination (CoE)",
+     "role": "Convener",
+     "email": "coe_exam@atria.edu.in",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Anand Kumar K S",
+     "designation": "Assoc. Prof., ISE",
+     "role": "Member",
+     "email": "anandkumar_ise@atria.edu.in",
+     "phone": "9916778008"
+    },
+    {
+     "name": "Dr. Ravi Kumar J",
+     "designation": "Prof., CSE",
+     "role": "Member",
+     "email": "ravikumar_cse@atria.edu.in",
+     "phone": "9740023767"
+    },
+    {
+     "name": "Dr. Rajanna L",
+     "designation": "Prof., ME",
+     "role": "Member",
+     "email": "rajanna_mech@atria.edu.in",
+     "phone": "8088837622"
+    },
+    {
+     "name": "Mr. Prasad S R",
+     "designation": "Asst. Prof., ECE",
+     "role": "Member",
+     "email": "prasad_ece@atria.edu.in",
+     "phone": "9886708494"
+    },
+    {
+     "name": "Dr. Mariyan Richard",
+     "designation": "Assoc. Prof., MCA",
+     "role": "Member",
+     "email": "mariyan_mca@atria.edu.in",
+     "phone": "8880128424"
+    },
+    {
+     "name": "Mrs. Madhu Shree P R",
+     "designation": "Asst. Prof., MBA",
+     "role": "Member",
+     "email": "madhushree_mba@atria.edu.in",
+     "phone": "9743601109"
+    },
+    {
+     "name": "Mr. Mahesh K S",
+     "designation": "Asst. Prof., BSE & H",
+     "role": "Member",
+     "email": "mahesh_bs@atria.edu.in",
+     "phone": "9743807598"
+    },
+    {
+     "name": "Mr. Sachin K G",
+     "designation": "Asst. Prof., CV",
+     "role": "Member",
+     "email": "sachin_civil@atria.edu.in",
+     "phone": "9740720496"
+    }
+   ]
+  },
+  {
+   "id": "grievance-redressal-committee",
+   "name": "Grievance Redressal Committee",
+   "short": "Grievance Redressal",
+   "icon": "scale",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Sampada H K",
+     "designation": "Assoc. Dean (SW)",
+     "role": "Convener",
+     "email": "student_welfare@atria.edu.in",
+     "phone": "9916958940"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Member",
+     "email": "viceprincipal@atria.edu.in",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "daenacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Surendra H J",
+     "designation": "Assoc. Dean (R&D) and HOD, Civil Dept.",
+     "role": "Member",
+     "email": "deanresearch@atria.edu.in",
+     "phone": "9945015853"
+    },
+    {
+     "name": "Dr. Devi Kannan",
+     "designation": "Prof & HOD, CSE Dept.",
+     "role": "Member",
+     "email": "cse_hod@atria.edu.in",
+     "phone": "9460279588"
+    },
+    {
+     "name": "Dr. Deepak N R",
+     "designation": "Prof. & HOD - ISE Dept.",
+     "role": "Member",
+     "email": "ise_hod@atria.edu.in",
+     "phone": "9449632581"
+    },
+    {
+     "name": "Dr. Srinivasa Chari",
+     "designation": "Prof & HOD, ME Dept.",
+     "role": "Member",
+     "email": "mech_hod@atria.edu.in",
+     "phone": "9538435005"
+    },
+    {
+     "name": "Dr. Archana Motta",
+     "designation": "Asst. Prof. Dept. of MBA",
+     "role": "Member",
+     "email": "archana_mba@atria.edu.in",
+     "phone": "9448936454"
+    },
+    {
+     "name": "Mr. Mohammed Anas",
+     "designation": "Student (ME)",
+     "role": "Member",
+     "email": "mdanas76777@gmail.com",
+     "phone": "8762276777"
+    },
+    {
+     "name": "Ms. Rakshitha C",
+     "designation": "Student (ECE)",
+     "role": "Member",
+     "email": "Rakshitharakshi348@gmail.com",
+     "phone": "6363420466"
+    },
+    {
+     "name": "Mr. Thirumurthy",
+     "designation": "Physical Education Director",
+     "role": "Member",
+     "email": "Thirumurthy_Sports@atria.edu.in",
+     "phone": "7899439668"
+    },
+    {
+     "name": "Mr. Uttam R",
+     "designation": "Advocate",
+     "role": "Member",
+     "email": "Uttamrajesh2000@gmail.com",
+     "phone": "9599937229"
+    }
+   ]
+  },
+  {
+   "id": "anti-ragging-committee",
+   "name": "Anti-Ragging Committee",
+   "short": "Anti-Ragging",
+   "icon": "shield",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Sampada H K",
+     "designation": "Assoc. Dean (SW)",
+     "role": "Convener",
+     "email": "student_welfare@atria.edu.in",
+     "phone": "9916958940"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Member",
+     "email": "viceprincipal@atria.edu.in",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "daenacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Surendra H J",
+     "designation": "Assoc. Dean (R&D) and HOD, Civil Dept.",
+     "role": "Member",
+     "email": "deanresearch@atria.edu.in",
+     "phone": "9945015853"
+    },
+    {
+     "name": "Dr. Vasanthi Satyananda",
+     "designation": "Dean - IQAC",
+     "role": "Member",
+     "email": "deaniqac@atria.edu.in",
+     "phone": "9886027716"
+    },
+    {
+     "name": "Dr. Devi Kannan",
+     "designation": "Prof & HOD, CSE Dept.",
+     "role": "Member",
+     "email": "cse_hod@atria.edu.in",
+     "phone": "9460279588"
+    },
+    {
+     "name": "Dr. Deepak N R",
+     "designation": "Prof. & HOD - ISE Dept.",
+     "role": "Member",
+     "email": "ise_hod@atria.edu.in",
+     "phone": "9449632581"
+    },
+    {
+     "name": "Dr. Keshavamurthy",
+     "designation": "Prof. & Head - ECE Dept.",
+     "role": "Member",
+     "email": "ece_hod@atria.edu.in",
+     "phone": "9844662014"
+    },
+    {
+     "name": "Dr. Srinivasa Chari",
+     "designation": "Prof & HOD, ME Dept.",
+     "role": "Member",
+     "email": "mech_hod@atria.edu.in",
+     "phone": "9538435005"
+    },
+    {
+     "name": "Dr. Rashmi Singh Roy",
+     "designation": "HOD - MBA Dept.",
+     "role": "Member",
+     "email": "mba_hod@atria.edu.in",
+     "phone": "8971320068"
+    },
+    {
+     "name": "Dr. Mamatha T",
+     "designation": "Prof & HOD, MCA Dept.",
+     "role": "Member",
+     "email": "mca_hod@atria.edu.in",
+     "phone": "7760847216"
+    },
+    {
+     "name": "Mr. Byra",
+     "designation": "Inspector - Hebbal Police Station",
+     "role": "Member"
+    },
+    {
+     "name": "Mr. Yashwanth Reddy V",
+     "designation": "Institute Student Welfare Coordinator",
+     "role": "Member",
+     "email": "yashwanthreddy_mca@atri.edu.in",
+     "phone": "9353298831"
+    },
+    {
+     "name": "Mr. Thirthesha",
+     "designation": "Warden Boys Hostel",
+     "role": "Member",
+     "email": "thirthesha_hostel@atria.edu.in",
+     "phone": "8050068189"
+    },
+    {
+     "name": "Ms. Sindhu C S",
+     "designation": "Warden Girls Hostel",
+     "role": "Member",
+     "email": "sindhucs_hostel@atria.edu.in",
+     "phone": "8867980544"
+    },
+    {
+     "name": "Mr. Manoj Kumar",
+     "designation": "Student",
+     "role": "Member",
+     "email": "manojkpkumar910@gmail.com",
+     "phone": "8904163490"
+    },
+    {
+     "name": "Ms. Nishitha T",
+     "designation": "Student",
+     "role": "Member",
+     "email": "nishithat12@gmail.com",
+     "phone": "8296896561"
+    },
+    {
+     "name": "Mr. K N Chiranthan",
+     "designation": "Student",
+     "role": "Member",
+     "email": "chiranthanGowda41@gmail.com",
+     "phone": "8867255936"
+    }
+   ]
+  },
+  {
+   "id": "anti-sexual-harassment-committee",
+   "name": "Anti-Sexual Harassment Committee",
+   "short": "Anti-Sexual Harassment",
+   "icon": "shield",
+   "members": [
+    {
+     "name": "Dr Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Priti Mishra",
+     "designation": "Prof. & HOD- ISE Dept.",
+     "role": "Member",
+     "email": "isehod@atria.edu",
+     "phone": "9449632581"
+    },
+    {
+     "name": "Dr. Devi Kannan",
+     "designation": "Prof & HOD, CSE Dept.",
+     "role": "Member",
+     "email": "csehod@atria.edu",
+     "phone": "9460279588"
+    },
+    {
+     "name": "Dr. Vasanthi Satyananda",
+     "designation": "Professor, ECE Dept",
+     "role": "Member",
+     "email": "vasanthi@atria.edu",
+     "phone": "9886027716"
+    },
+    {
+     "name": "Dr. Joyti Metan",
+     "designation": "Asso.Prof-ISE",
+     "role": "Member",
+     "email": "joti.m@atria.edu",
+     "phone": "9901499699"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Prof,BSC HOD & Vice Principal",
+     "role": "Member",
+     "email": "bsehod@atria.edu",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Mrs. Madhushree",
+     "designation": "Asst. Professor, MBA Dept.",
+     "role": "Member",
+     "email": "madhushree.pr@atria.edu",
+     "phone": "9743601109"
+    },
+    {
+     "name": "Mrs. Farhana kausar",
+     "designation": "Asst. Professor, CSE Dept.",
+     "role": "Member",
+     "email": "farhanakausar@atria.edu",
+     "phone": "9591760580"
+    },
+    {
+     "name": "Mrs. Shobha P C",
+     "designation": "Asst. Professor, ECE Dept.",
+     "role": "Member",
+     "email": "shobha.pc@atria.edu",
+     "phone": "9480037921"
+    }
+   ]
+  },
+  {
+   "id": "cicc-committee",
+   "name": "CICC Committee",
+   "short": "CICC",
+   "icon": "shield",
+   "members": [
+    {
+     "name": "Dr. Rakhi S",
+     "designation": "Assoc. Professor, ECE",
+     "role": "Chairperson",
+     "email": "rakhi_ece@atria.edu.in",
+     "phone": "9845466815"
+    },
+    {
+     "name": "Dr. Prasuna VNP",
+     "designation": "Assoc. Professor, ECE",
+     "role": "Convener",
+     "email": "prasuna_ece@atria.edu.in",
+     "phone": "9880598093"
+    },
+    {
+     "name": "Dr. Sampada H K",
+     "designation": "Assoc. Dean (SW)",
+     "role": "Member",
+     "email": "student_welfare@atria.edu.in",
+     "phone": "9916958940"
+    },
+    {
+     "name": "Dr. Ramesh Nuthakki",
+     "designation": "Assoc. Professor, ECE",
+     "role": "Member",
+     "email": "ramesh_ece@atria.edu.in",
+     "phone": "9448476272"
+    },
+    {
+     "name": "Ms. Chitra Honnatti",
+     "designation": "Lab Instructor, BSH&E",
+     "role": "Member",
+     "email": "chitra_bs@atria.edu.in",
+     "phone": "8970535510"
+    },
+    {
+     "name": "Ms. Jayanthi P",
+     "designation": "Lab Instructor, ISE",
+     "role": "Member",
+     "email": "jayanthi_administration@atria.edu.in",
+     "phone": "8147761981"
+    },
+    {
+     "name": "Mrs. Pushpa Y",
+     "designation": "Research Scholar",
+     "role": "Member",
+     "email": "pushpa.y@atria.edu",
+     "phone": "9845533382"
+    },
+    {
+     "name": "Mr. Maaz Ahmad Khan",
+     "designation": "Student",
+     "role": "Member",
+     "email": "Maaz.ahmad@gmail.com",
+     "phone": "6363870130"
+    },
+    {
+     "name": "Ms. Abhilasha Kanavi",
+     "designation": "Student",
+     "role": "Member",
+     "email": "abhilashakanavi.239@gmail.com",
+     "phone": "7019665826"
+    },
+    {
+     "name": "Dr. Winne Evangeline S",
+     "designation": "Medical Practitioner",
+     "role": "Member",
+     "email": "dr.w.evangeline.s@gmail.com",
+     "phone": "6362637514"
+    },
+    {
+     "name": "Ms. Geetha M",
+     "designation": "NGO",
+     "role": "Member",
+     "email": "geeth_ssa@yahoo.co.in",
+     "phone": "6361441985"
+    }
+   ]
+  },
+  {
+   "id": "ipr-cell-executive-committee",
+   "name": "IPR Cell - Executive Committee",
+   "short": "IPR Cell - Executive",
+   "icon": "key",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Jyothi Methan",
+     "designation": "Assoc. Prof. Dept of ISE",
+     "role": "Convener",
+     "email": "jyothi_ise@atria.edu.in",
+     "phone": "9901499699"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "daenacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Mr. Hemanth Kumar",
+     "designation": "Executive Secretary, KSCST",
+     "role": "Member",
+     "email": "office.kscst@iisc.ac.in",
+     "phone": "080-2334165"
+    },
+    {
+     "name": "Dr. Vasanthi Satyananda",
+     "designation": "Dean - IQAC",
+     "role": "Member",
+     "email": "deaniqac@atria.edu.in",
+     "phone": "9886027716"
+    },
+    {
+     "name": "Dr. Surendra H J",
+     "designation": "Assoc. Dean (R&D) and HOD, Civil Dept.",
+     "role": "Member",
+     "email": "deanresearch@atria.edu.in",
+     "phone": "9945015853"
+    },
+    {
+     "name": "Dr. Devi Kannan",
+     "designation": "Prof & HOD, CSE Dept.",
+     "role": "Member",
+     "email": "cse_hod@atria.edu.in",
+     "phone": "9460279588"
+    },
+    {
+     "name": "Dr. Deepak N R",
+     "designation": "Prof. & HOD, ISE Dept.",
+     "role": "Member",
+     "email": "ise_hod@atria.edu.in",
+     "phone": "9449632581"
+    },
+    {
+     "name": "Dr. Keshavamurthy",
+     "designation": "Prof. & Head – ECE Dept.",
+     "role": "Member",
+     "email": "ece_hod@atria.edu.in",
+     "phone": "9844662014"
+    },
+    {
+     "name": "Dr. Srinivasa Chari",
+     "designation": "Prof & HOD, ME Dept.",
+     "role": "Member",
+     "email": "mech_hod@atria.edu.in",
+     "phone": "9538435005"
+    },
+    {
+     "name": "Dr. Rashmi Singh Roy",
+     "designation": "HOD - MBA Dept.",
+     "role": "Member",
+     "email": "mba_hod@atria.edu.in",
+     "phone": "8971320068"
+    },
+    {
+     "name": "Dr. Mamatha T",
+     "designation": "Prof & HOD, MCA Dept.",
+     "role": "Member",
+     "email": "mca_hod@atria.edu.in",
+     "phone": "7760847216"
+    },
+    {
+     "name": "Dr. Manjunath G A",
+     "designation": "Prof, BSH Dept.",
+     "role": "Member",
+     "email": "manjunath.j_mech@atria.edu.in",
+     "phone": "7026723766"
+    }
+   ]
+  },
+  {
+   "id": "ipr-cell-advisory-committee",
+   "name": "IPR Cell - Advisory Committee",
+   "short": "IPR Cell - Advisory",
+   "icon": "key",
+   "members": [
+    {
+     "name": "Dr. Ananda Kumar K S",
+     "designation": "Assoc. Prof. Dept. of ISE",
+     "role": "Member",
+     "email": "anandakumar_ise@atria.edu.in",
+     "phone": "9916778008"
+    },
+    {
+     "name": "Dr. Prasuna N",
+     "designation": "Asst. Prof. ECE",
+     "role": "Member",
+     "email": "prasuna_ece@atria.edu.in",
+     "phone": "9880598093"
+    },
+    {
+     "name": "Dr. Vijaya Sarathy R",
+     "designation": "Assoc. Prof. Civil",
+     "role": "Member",
+     "email": "vijayasarathy_civil@atria.edu",
+     "phone": "8870092762"
+    },
+    {
+     "name": "Dr. Santhosh Kumar Panda",
+     "designation": "Asst. Prof. ME",
+     "role": "Member",
+     "email": "santhoshkumar_mech@atria.edu.in",
+     "phone": "8763590778"
+    },
+    {
+     "name": "Dr. Sravan Kumar T",
+     "designation": "Asst. Prof. BS&H",
+     "role": "Member",
+     "email": "sravan_bs@atria.edu.in",
+     "phone": "9940791562"
+    },
+    {
+     "name": "Dr. Richa Das",
+     "designation": "Assoc. Prof. MBA",
+     "role": "Member",
+     "email": "richadas_mba@atria.edu.in",
+     "phone": "8757120957"
+    },
+    {
+     "name": "Ms. Geetha N",
+     "designation": "Asst. Prof. CSE",
+     "role": "Member",
+     "email": "geetha_cse@atria.edu.in",
+     "phone": "9632162161"
+    },
+    {
+     "name": "Mr. Nagarjun M G",
+     "designation": "Project Associate, KSCST",
+     "role": "Member",
+     "email": "nagarjunmg05@gmail.com",
+     "phone": "9353261006"
+    },
+    {
+     "name": "Mr. Vivek Anand Sagar",
+     "designation": "IP Attorney and Consultant, KSCST",
+     "role": "Member",
+     "email": "educell@kscst.org.in",
+     "phone": "9916590318"
+    }
+   ]
+  },
+  {
+   "id": "sports-committee",
+   "name": "Sports Committee",
+   "short": "Sports",
+   "icon": "trophy",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Mr. Thirumurthy M",
+     "designation": "Physical Education Director",
+     "role": "Convener",
+     "email": "thirumurthy_sports@atria.edu.in",
+     "phone": "7899439668"
+    },
+    {
+     "name": "Ms. Shylaja K",
+     "designation": "Physical Education Director",
+     "role": "Co-Convener",
+     "email": "Shylaja_sports@atria.edu.in",
+     "phone": "9611015240"
+    },
+    {
+     "name": "Mr. Anand Kumar",
+     "designation": "Asst. Prof, Civil Dept.",
+     "role": "Member",
+     "email": "anandkumar_ise@atria.edu.in",
+     "phone": "9743903116"
+    },
+    {
+     "name": "Mr. Goutam R",
+     "designation": "Asst. Prof, CSE Dept.",
+     "role": "Member",
+     "email": "goutam_cse@atria.edu.in",
+     "phone": "9739349431"
+    },
+    {
+     "name": "Mr. Jayanth U",
+     "designation": "Asst. Prof, ECE Dept.",
+     "role": "Member",
+     "email": "jayanth_ece@atria.edu.in",
+     "phone": "9035743515"
+    },
+    {
+     "name": "Mr. Rahul Sajjan",
+     "designation": "Asst. Prof, ISE Dept.",
+     "role": "Member",
+     "email": "rahul_ise@atria.edu.in",
+     "phone": "8217690330"
+    },
+    {
+     "name": "Mr. Chethan C S",
+     "designation": "Asst. Prof, ME Dept.",
+     "role": "Member",
+     "email": "chethan._mech@atria.edu.in",
+     "phone": "9964571572"
+    },
+    {
+     "name": "Mrs. Indira S",
+     "designation": "Asst. Prof, BSE Dept.",
+     "role": "Member",
+     "email": "indira_bs@atria.edu.in",
+     "phone": "9664571572"
+    },
+    {
+     "name": "Mrs. Rajimol K P",
+     "designation": "Asst. Prof, MBA Dept.",
+     "role": "Member",
+     "email": "rajimol_mba@atria.edu.in",
+     "phone": "9738941871"
+    },
+    {
+     "name": "Ms. Priyanka Pande",
+     "designation": "Asst. Prof, MCA Dept.",
+     "role": "Member",
+     "email": "priyanka_mca@atria.edu.in",
+     "phone": "9324982710"
+    },
+    {
+     "name": "Mr. Nishanth R",
+     "designation": "Student",
+     "role": "Member",
+     "email": "nishanthgayathri01@gmail.com",
+     "phone": "8217226402"
+    },
+    {
+     "name": "Mr. Prabhath C S",
+     "designation": "Student",
+     "role": "Member",
+     "email": "Prabhathcs22@gmail.com",
+     "phone": "8762330638"
+    },
+    {
+     "name": "Mr. Chirayu N Hudar",
+     "designation": "Student",
+     "role": "Member",
+     "email": "chirayu.n.hudar@gmail.com",
+     "phone": "8951455884"
+    }
+   ]
+  },
+  {
+   "id": "cultural-committee",
+   "name": "Cultural Committee",
+   "short": "Cultural",
+   "icon": "music",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Archana R Motta",
+     "designation": "Asst. Prof. MBA Dept.",
+     "role": "Convener",
+     "email": "archana_mba@atria.edu.in",
+     "phone": "9448936454"
+    },
+    {
+     "name": "Mr. Bhaskar M K",
+     "designation": "Asst. Prof. ECE Dept.",
+     "role": "Co-Convener",
+     "email": "bhaskar_ece@atria.edu.in",
+     "phone": "9741594742"
+    },
+    {
+     "name": "Ms. Sahana S M",
+     "designation": "Cultural Coordination",
+     "role": "Member",
+     "email": "sahana_administration@atria.edu.in",
+     "phone": "9035428507"
+    },
+    {
+     "name": "Mr. Jerin Raju John",
+     "designation": "Asst. Professor, Mech Dept.",
+     "role": "Member",
+     "email": "jerinrajujohn_mech@atria.edu.in",
+     "phone": "9400264194"
+    },
+    {
+     "name": "Mrs. Jeslin G",
+     "designation": "Asst. Professor, BSE Dept.",
+     "role": "Member",
+     "email": "jeslin_bs@atria.edu.in",
+     "phone": "8197746545"
+    },
+    {
+     "name": "Mrs. Shruthi B",
+     "designation": "Asst. Professor, ISE Dept.",
+     "role": "Member",
+     "email": "Shruthi_ise@atria.edu.in",
+     "phone": "9916970792"
+    },
+    {
+     "name": "Mrs. Sharmila",
+     "designation": "Asst. Prof., Civil Dept.",
+     "role": "Member",
+     "email": "Sharmila_civil@atria.edu.in",
+     "phone": "7676257603"
+    },
+    {
+     "name": "Ms. Pushpavathi",
+     "designation": "Asst. Professor, MCA Dept.",
+     "role": "Member",
+     "email": "pushpavathi_mca@atria.edu.in",
+     "phone": "7899062435"
+    },
+    {
+     "name": "Ms. Pavithra S",
+     "designation": "Asst. Professor, CSE Dept.",
+     "role": "Member",
+     "email": "pavithra_cse@atria.edu.in",
+     "phone": "7795945793"
+    },
+    {
+     "name": "Mr. Prajwal R",
+     "designation": "Student (ECE)",
+     "role": "Member",
+     "email": "prajwalsharma724@gmail.com",
+     "phone": "7406519941"
+    },
+    {
+     "name": "Ms. Neha",
+     "designation": "Student (CSD)",
+     "role": "Member",
+     "email": "Neha30k6@gmail.com",
+     "phone": "9663289993"
+    },
+    {
+     "name": "Mr. Manikanta",
+     "designation": "Student (CSE)",
+     "role": "Member",
+     "email": "Manikantamani80628@gmail.com",
+     "phone": "8105634186"
+    },
+    {
+     "name": "Mr. Pavan",
+     "designation": "Student (ISE)",
+     "role": "Member",
+     "email": "pavannarayanchinu@gmail.com",
+     "phone": "8050383941"
+    },
+    {
+     "name": "Mr. Rakesh",
+     "designation": "Student (Civil)",
+     "role": "Member",
+     "email": "Rakeshnayak212023@gmail.com",
+     "phone": "7892857646"
+    },
+    {
+     "name": "Mr. Md Anas",
+     "designation": "Student (Mech)",
+     "role": "Member",
+     "email": "Mdanas76777@gmail.com",
+     "phone": "8762276777"
+    },
+    {
+     "name": "V. Rohit Kumar",
+     "designation": "Student (MBA)",
+     "role": "Member",
+     "email": "VRKrohithkumar1999@gmail.com",
+     "phone": "8747040809"
+    },
+    {
+     "name": "Chandan S",
+     "designation": "Student (MCA)",
+     "role": "Member",
+     "email": "Chandan912003@gmail.com",
+     "phone": "6362921525"
+    }
+   ]
+  },
+  {
+   "id": "library-committee",
+   "name": "Library Committee",
+   "short": "Library",
+   "icon": "book",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Usha S P",
+     "designation": "Chief Librarian",
+     "role": "Convener",
+     "email": "Usha_library@atria.edu.in",
+     "phone": "7760085351"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Member",
+     "email": "viceprincipal@atria.edu.in",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Vasanthi Satyananda",
+     "designation": "Dean (IQAC)",
+     "role": "Member",
+     "email": "vasanthi_iqac@atria.edu.in",
+     "phone": "9886027716"
+    },
+    {
+     "name": "Mr. Rambabu Rajaboopathy",
+     "designation": "Asst. Prof., ECE",
+     "role": "Member",
+     "email": "rambabu_ece@atria.edu.in",
+     "phone": "8970724049"
+    },
+    {
+     "name": "Mrs. Poornima T",
+     "designation": "Asst. Prof., CSE",
+     "role": "Member",
+     "email": "poornima_cse@atria.edu.in",
+     "phone": "9739922049"
+    },
+    {
+     "name": "Mrs. Yogitha",
+     "designation": "Asst. Prof., ISE",
+     "role": "Member",
+     "email": "yogitha_ise@atria.edu.in",
+     "phone": "9535031282"
+    },
+    {
+     "name": "Mr. Jerin Raju John",
+     "designation": "Asst. Prof., ME",
+     "role": "Member",
+     "email": "jerinraju_mech@atria.edu.in",
+     "phone": "9400264194"
+    },
+    {
+     "name": "Mrs. Jayanthi",
+     "designation": "Asst. Prof., CIVIL",
+     "role": "Member",
+     "email": "jayanthi_civil@atria.edu.in",
+     "phone": "7395811379"
+    },
+    {
+     "name": "Dr. Nagendra Naik K",
+     "designation": "Asst. Prof., BS&H",
+     "role": "Member",
+     "email": "nagendra_bs@atria.edu.in",
+     "phone": "9845439445"
+    },
+    {
+     "name": "Mrs. Devaki S",
+     "designation": "Asst. Prof., MBA",
+     "role": "Member",
+     "email": "devaki_mba@atria.edu.in",
+     "phone": "8095170098"
+    },
+    {
+     "name": "Ms. Apoorva M",
+     "designation": "Asst. Prof., MCA",
+     "role": "Member",
+     "email": "apoorva_mca@atria.edu.in",
+     "phone": "7899100196"
+    },
+    {
+     "name": "Ms. Beauty Sahani",
+     "designation": "Student, ECE Dept.",
+     "role": "Member",
+     "email": "sahanibeauty2004@gmail.com",
+     "phone": "7525943400"
+    }
+   ]
+  },
+  {
+   "id": "hostel-committee",
+   "name": "Hostel Committee",
+   "short": "Hostel",
+   "icon": "home",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Chief Warden, Girls Hostel",
+     "email": "viceprincipal@atria.edu.in",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Surendra H J",
+     "designation": "Professor, Civil Dept.",
+     "role": "Chief Warden, Boys Hostel",
+     "email": "surendra_civil@atria.edu.in",
+     "phone": "9945015853"
+    },
+    {
+     "name": "Mr. Thirthesh",
+     "designation": "Warden, Boys Hostel",
+     "role": "Member",
+     "email": "thirthesha_hostel@atria.edu.in",
+     "phone": "8050068189"
+    },
+    {
+     "name": "Ms. Sindhu",
+     "designation": "Warden, Girls Hostel",
+     "role": "Member",
+     "email": "sindhucs_hostel@atria.edu.in",
+     "phone": "8867980544"
+    },
+    {
+     "name": "Mr. Subbaraju",
+     "designation": "Mess In Charge",
+     "role": "Member",
+     "email": "subbaraju_hostel@atria.edu.in",
+     "phone": "9448085875"
+    },
+    {
+     "name": "Mr. Shivakumar",
+     "designation": "Supervisor - Boys Hostel",
+     "role": "Member",
+     "email": "shivakumar.s@atria.edu",
+     "phone": "9916110977"
+    },
+    {
+     "name": "Ms. Sujatha",
+     "designation": "Supervisor - Girls Hostel",
+     "role": "Member",
+     "email": "Sujatha_hostel@atria.edu.in",
+     "phone": "7338677840"
+    },
+    {
+     "name": "Mr. Vinay Kumar",
+     "designation": "Facility Manager",
+     "role": "Member",
+     "email": "facility@atria.edu.in",
+     "phone": "9980008237"
+    },
+    {
+     "name": "Mr. Vishwanath",
+     "designation": "Security Agency - General Manager, Network Directive Services",
+     "role": "Member",
+     "email": "info@networkda.com",
+     "phone": "9880732605"
+    },
+    {
+     "name": "Mr. Raghu M",
+     "designation": "House Keeping Head",
+     "role": "Member",
+     "email": "raghum17@gmail.com",
+     "phone": "9945364181"
+    }
+   ]
+  },
+  {
+   "id": "sc-st-welfare-committee",
+   "name": "SC/ST Welfare Committee",
+   "short": "SC/ST Welfare",
+   "icon": "users",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Ms. Malini R",
+     "designation": "Assistant Prof. ISE",
+     "role": "Convener",
+     "email": "malini_ise@atria.edu.in",
+     "phone": "9008199894"
+    },
+    {
+     "name": "Ms. Pavitra S",
+     "designation": "Assistant Prof. CSE",
+     "role": "Member",
+     "email": "pavithra_cse@atria.edu.in",
+     "phone": "7795945793"
+    },
+    {
+     "name": "Ms. Sonia S B",
+     "designation": "Assistant Prof. ISE",
+     "role": "Member",
+     "email": "sonia_ise@atria.edu.in",
+     "phone": "8197396564"
+    },
+    {
+     "name": "Ms. Megha Shree N",
+     "designation": "Assistant Prof. CSE",
+     "role": "Member",
+     "email": "meghashree_cse@atria.edu.in",
+     "phone": "9480298680"
+    },
+    {
+     "name": "Mr. Prashanth Kumar S",
+     "designation": "Assistant Prof. Mech",
+     "role": "Member",
+     "email": "prashanthkumar_mech@atria.edu.in",
+     "phone": "7892602431"
+    },
+    {
+     "name": "Ms. Priyankashri K N",
+     "designation": "Assistant Prof. CV",
+     "role": "Member",
+     "email": "priyankashri_civil@atria.edu.in",
+     "phone": "8951915989"
+    },
+    {
+     "name": "Mr. Nagendra Naik K",
+     "designation": "Assistant Prof. BSE",
+     "role": "Member",
+     "email": "nagendra_bs@atria.edu.in",
+     "phone": "9845439445"
+    },
+    {
+     "name": "Ms. Poornima K A",
+     "designation": "Assistant Prof. Scholarship",
+     "role": "Member",
+     "email": "scholarships@atria.edu.in",
+     "phone": "7259268058"
+    },
+    {
+     "name": "Mr. Ganesh V",
+     "designation": "Student - 1AT22IS033",
+     "role": "Member",
+     "email": "gani65135@gmail.com",
+     "phone": "7411150869"
+    },
+    {
+     "name": "Mr. Shreyas P M",
+     "designation": "Student - 1AT22CS033",
+     "role": "Member",
+     "email": "shreyas.pm@studentmail.com",
+     "phone": "9876543210"
+    },
+    {
+     "name": "Ms. Rakshitha G L",
+     "designation": "Student - 1AT23IS131",
+     "role": "Member",
+     "email": "rakshithar673@gmail.com",
+     "phone": "8088265780"
+    },
+    {
+     "name": "Ms. Chandana K Naik",
+     "designation": "Student - 1AT23EC046",
+     "role": "Member",
+     "email": "cbujji206@gmail.com",
+     "phone": "7760784689"
+    },
+    {
+     "name": "Mr. Dheeraj R",
+     "designation": "Student - 1AT24IS053",
+     "role": "Member",
+     "email": "dheerudheerajr@gmail.com",
+     "phone": "9071568954"
+    },
+    {
+     "name": "Mr. Aravind L",
+     "designation": "Student - 1AT24CS023",
+     "role": "Member",
+     "email": "shivaaravindaravind@gmail.com",
+     "phone": "9741285526"
+    }
+   ]
+  },
+  {
+   "id": "nss-committee",
+   "name": "NSS Committee",
+   "short": "NSS",
+   "icon": "users",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Program Officer",
+     "email": "viceprincipal@atria.edu",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Nagendra Naik K",
+     "designation": "Asst Professor, BSH",
+     "role": "Convener",
+     "email": "nagendra.nk@atria.edu",
+     "phone": "9845439445"
+    },
+    {
+     "name": "Mr. Chethan P B",
+     "designation": "Asst Professor, BSH",
+     "role": "Co-Convener",
+     "email": "chethan.pb@atria.edu",
+     "phone": "9740283732"
+    },
+    {
+     "name": "Mr. Dileep Kumar E",
+     "designation": "Asst Professor, CSE",
+     "role": "Member",
+     "email": "dileepkumar_cse@atria.edu.in",
+     "phone": "9845439445"
+    },
+    {
+     "name": "Ms. Prasad S R",
+     "designation": "Asst Professor, ECE",
+     "role": "Member",
+     "email": "prasad.sr@atria.edu",
+     "phone": "9886708494"
+    },
+    {
+     "name": "Mr. S Vinothkumar",
+     "designation": "Asst Professor, ISE",
+     "role": "Member",
+     "email": "vinothkumar.s@atria.edu",
+     "phone": "9066500010"
+    },
+    {
+     "name": "Mr. H M Puneeth",
+     "designation": "Asst Professor, ME",
+     "role": "Member",
+     "email": "puneeth.hm@atria.edu",
+     "phone": "9632381480"
+    }
+   ]
+  },
+  {
+   "id": "magazine-newsletter-committee",
+   "name": "Magazine/Newsletter Committee",
+   "short": "Magazine/Newsletter",
+   "icon": "file",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Ms. Ankita Chaubey",
+     "designation": "Asst. Prof. (MBA)",
+     "role": "Convener",
+     "email": "ankita_mba@atria.edu.in",
+     "phone": "9008012412"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Guru Basava Aradya",
+     "designation": "Assoc. Dean (MBA)",
+     "role": "Member",
+     "email": "Gurubasav_mba@atria.edu.in",
+     "phone": "9845824067"
+    },
+    {
+     "name": "Mrs. Shilpa M N",
+     "designation": "Asst. Prof. (ECE)",
+     "role": "Member",
+     "email": "shilpa_ece@atria.edu.in",
+     "phone": "8197244808"
+    },
+    {
+     "name": "Prof. Bhavya B S",
+     "designation": "Asst. Prof. (BSH)",
+     "role": "Member",
+     "email": "bhavya_bs@atria.edu.in",
+     "phone": "8660338452"
+    },
+    {
+     "name": "Mr. Sharath Babu",
+     "designation": "Asst. Prof. (ISE)",
+     "role": "Member",
+     "email": "sharathbabu_ise@atria.edu.in",
+     "phone": "7200023815"
+    },
+    {
+     "name": "Prof. Shambbavi S",
+     "designation": "Asst. Prof. (CSE)",
+     "role": "Member",
+     "email": "Shambbavi_cse@atria.edu.in",
+     "phone": "8073569987"
+    },
+    {
+     "name": "Mr. Jerin Raju John",
+     "designation": "Asst. Prof. (ME)",
+     "role": "Member",
+     "email": "Jerinraju_mech@atria.edu.in",
+     "phone": "9400264194"
+    },
+    {
+     "name": "Mrs. Priyankashri K N",
+     "designation": "Asst. Prof. (CV)",
+     "role": "Member",
+     "email": "priyankashri_civil@atria.edu.in",
+     "phone": "7892951823"
+    },
+    {
+     "name": "Ms. Apoorva M",
+     "designation": "Asst. Prof. (MCA)",
+     "role": "Member",
+     "email": "Apoorva_mca@atria.edu.in",
+     "phone": "7899100196"
+    },
+    {
+     "name": "Ms. Sanjana J",
+     "designation": "Student (CSE)",
+     "role": "Member",
+     "email": "sj0785333@gmail.com",
+     "phone": "9967720706"
+    },
+    {
+     "name": "Ms. Joy Princy",
+     "designation": "Student (CSD)",
+     "role": "Member",
+     "email": "1AT24CD035@atria.edu",
+     "phone": "9448593831"
+    },
+    {
+     "name": "Ms. Hema",
+     "designation": "Student (ISE)",
+     "role": "Member",
+     "email": "1AT24IS068@atria.edu",
+     "phone": "6360839873"
+    },
+    {
+     "name": "Ms. Madhuri G",
+     "designation": "Student (ME)",
+     "role": "Member",
+     "email": "1at24me011@atria.edu",
+     "phone": "7975625021"
+    }
+   ]
+  },
+  {
+   "id": "placement-training-cell",
+   "name": "Placement / Training Cell",
+   "short": "Placement / Training Cell",
+   "icon": "briefcase",
+   "members": [
+    {
+     "name": "Dr Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Raghunandan G H",
+     "designation": "Assoc Dean and Head - CDC",
+     "role": "Convener",
+     "email": "adean_cdc@atria.edu.in",
+     "phone": "8792965212"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Mrs. Monisha R",
+     "designation": "Placement Co-ordinator",
+     "role": "Co-Convener",
+     "email": "monisha_cdc@atria.edu.in",
+     "phone": "8892311509"
+    },
+    {
+     "name": "Ms. Harshitha S",
+     "designation": "Asst. Prof. CSE Dept.",
+     "role": "Member",
+     "email": "harshitha_cse@atria.edu.in",
+     "phone": "8073515368"
+    },
+    {
+     "name": "Mr. Amaresha K",
+     "designation": "Asst. Prof. ISE Dept.",
+     "role": "Member",
+     "email": "amaresh_ise@atria.edu.in",
+     "phone": "9319718743"
+    },
+    {
+     "name": "Mr. Annappa C",
+     "designation": "Asst. Prof. ECE Dept.",
+     "role": "Member",
+     "email": "annappa_ece@atria.edu.in",
+     "phone": "8431748462"
+    },
+    {
+     "name": "Mr. Akash Biradar",
+     "designation": "Asst. Prof. ME Dept.",
+     "role": "Member",
+     "email": "akash_mech@atria.edu.in",
+     "phone": "9964824617"
+    },
+    {
+     "name": "Mr. Harshith K S",
+     "designation": "Asst. Prof. Civil Dept.",
+     "role": "Member",
+     "email": "harshith_civil@atria.edu.in",
+     "phone": "9900668511"
+    },
+    {
+     "name": "Dr. Rashmi Singh Roy",
+     "designation": "Assoc. Prof. MBA Dept.",
+     "role": "Member",
+     "email": "rashmisingh_mba@atria.edu.in",
+     "phone": "8971320068"
+    },
+    {
+     "name": "Ms. Ammrisha Chowdhury",
+     "designation": "Asst. Prof. MCA Dept.",
+     "role": "Member",
+     "email": "ammrisha_mca@atria.edu.in",
+     "phone": "7899100196"
+    }
+   ]
+  },
+  {
+   "id": "alumni-committee",
+   "name": "Alumni Committee",
+   "short": "Alumni",
+   "icon": "users",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. Rakhi S",
+     "designation": "Asst. Prof., ECE Dept.",
+     "role": "Alumni Co-ordinator",
+     "email": "rakhi_ece@atria.edu.in",
+     "phone": "9845466815"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "deanacademics@atria.edu",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Sampada H K",
+     "designation": "Assoc. Dean (SW)",
+     "role": "Member",
+     "email": "student_welfare@atria.edu.in",
+     "phone": "9916958940"
+    },
+    {
+     "name": "Mr. James Melvin",
+     "designation": "CEO, IT",
+     "role": "Vice President",
+     "email": "melvinebenzer@gmail.com",
+     "phone": "9886008107"
+    },
+    {
+     "name": "Mr. Tharun GT",
+     "designation": "Project Engineer, IT",
+     "role": "President",
+     "email": "tharun.gt@gmail.com",
+     "phone": "9972215515"
+    },
+    {
+     "name": "Mr. Mohammed Ameenulla",
+     "designation": "Senior Trainer",
+     "role": "Treasurer",
+     "email": "ameen.m@atria.edu",
+     "phone": "9731034310"
+    },
+    {
+     "name": "Mr. Azmathulla",
+     "designation": "Entrepreneur",
+     "role": "Chief Mentor",
+     "email": "mcazmat@gmail.com",
+     "phone": "9986967855"
+    },
+    {
+     "name": "Mr. Prashanth Venkataesh",
+     "designation": "Product Manager",
+     "role": "Secretary",
+     "email": "reachprashanthvenkatesh@gmail.com",
+     "phone": "9663770961"
+    },
+    {
+     "name": "Mr. Rajesh S",
+     "designation": "Structural Engineer",
+     "role": "Joint Secretary",
+     "email": "builtechoysters@yahoo.com",
+     "phone": "8861766626"
+    },
+    {
+     "name": "Mr. Sridhar C",
+     "designation": "Manager, Banking",
+     "role": "Joint Treasurer",
+     "email": "sridhar@gmail.com",
+     "phone": "9986776986"
+    },
+    {
+     "name": "Mr. Bharath Kumar",
+     "designation": "Senior Technical Officer",
+     "role": "Member",
+     "email": "Bharathkumar23@gmail.com",
+     "phone": "7760402798"
+    },
+    {
+     "name": "Mr. Arvind R",
+     "designation": "Associate Consultant",
+     "role": "Member",
+     "email": "093007.r.arvind@gmail.com",
+     "phone": "8892784080"
+    },
+    {
+     "name": "Mr. Sanjay Sooryavamshe",
+     "designation": "Senior Associate, IT",
+     "role": "Member",
+     "email": "Sanjay.s@gmail.com",
+     "phone": "9686336971"
+    },
+    {
+     "name": "Mr. Prashanth R",
+     "designation": "Team Lead, IT",
+     "role": "Member",
+     "email": "Prshanthrgmail.com",
+     "phone": "7899134556"
+    },
+    {
+     "name": "Mr. Rakesh H M",
+     "designation": "Senior Member, IT",
+     "role": "Member",
+     "email": "hmrakesh@gmail.com",
+     "phone": "9620458100"
+    },
+    {
+     "name": "Mr. Ujjayani Shukla",
+     "designation": "Assistant Professor",
+     "role": "Member",
+     "email": "shukla@gmail.com",
+     "phone": "9663774385"
+    },
+    {
+     "name": "Mr. Sanjay Kumar",
+     "designation": "CAE Analyst",
+     "role": "Member",
+     "email": "sanjaykumar@gmail.com",
+     "phone": "9742649485"
+    },
+    {
+     "name": "Ms. Chandrashree C",
+     "designation": "Software Engineer",
+     "role": "Member",
+     "email": "chandrashree@gmail.com",
+     "phone": "8123003220"
+    },
+    {
+     "name": "Mrs. Vijayalakshmi S",
+     "designation": "Asst. Prof., ISE Dept.",
+     "role": "Member",
+     "email": "vijayalakshmi.s_ise@atria.edu.in",
+     "phone": "8861335590"
+    },
+    {
+     "name": "Mr. Akash Biradar",
+     "designation": "Asst. Prof., ME Dept.",
+     "role": "Member",
+     "email": "akash_mech@atria.edu.in",
+     "phone": "8951732535"
+    },
+    {
+     "name": "Mrs. Archana R Motta",
+     "designation": "Asst. Prof., MBA Dept.",
+     "role": "Member",
+     "email": "archana_mba@atria.edu.in",
+     "phone": "9448936454"
+    },
+    {
+     "name": "Mr. Yashwanth Reddy V",
+     "designation": "Asst. Prof., MCA",
+     "role": "Member",
+     "email": "yashwanthreddy_mca@atria.edu.in",
+     "phone": "9353298831"
+    },
+    {
+     "name": "Mr. Sachin KG",
+     "designation": "Asst. Prof., Civil",
+     "role": "Member",
+     "email": "sachin_civil@atria.edu.in",
+     "phone": "9740720496"
+    },
+    {
+     "name": "Ms. Meghashree N",
+     "designation": "Asst. Prof., CSE",
+     "role": "Member",
+     "email": "meghashree_cse@atria.edu.in",
+     "phone": "9480298680"
+    },
+    {
+     "name": "Ms. Harika M",
+     "designation": "Student",
+     "role": "Member",
+     "email": "harikam704@gmail.com",
+     "phone": "8088339559"
+    },
+    {
+     "name": "Nikhil P Karamadi",
+     "designation": "Student",
+     "role": "Member",
+     "email": "nikhilkaramadi28@gmail.com",
+     "phone": "90513292714"
+    }
+   ]
+  },
+  {
+   "id": "entrepreneurship-development-ed-cell",
+   "name": "Entrepreneurship Development (ED) Cell",
+   "short": "Entrepreneurship Development (ED) Cell",
+   "icon": "lightbulb",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Chairperson",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Ms. Ankita Chaubey",
+     "designation": "Asst. Prof. (MBA)",
+     "role": "Convener",
+     "email": "ankita_mba@atria.edu.in",
+     "phone": "9008012412"
+    },
+    {
+     "name": "Dr. Ravichandra K R",
+     "designation": "Dean - Academics",
+     "role": "Member",
+     "email": "daenacademics@atria.edu.in",
+     "phone": "9880523462"
+    },
+    {
+     "name": "Dr. Nalinakshi N",
+     "designation": "Vice Principal",
+     "role": "Member",
+     "email": "viceprincipal@atria.edu.in",
+     "phone": "8861562682"
+    },
+    {
+     "name": "Dr. Surendra H J",
+     "designation": "Assoc. Dean (R&D) and HOD, Civil Dept.",
+     "role": "Member",
+     "email": "deanresearch@atria.edu.in",
+     "phone": "9945015853"
+    },
+    {
+     "name": "Dr. Devi Kannan",
+     "designation": "Prof & HOD, CSE Dept.",
+     "role": "Member",
+     "email": "cse_hod@atria.edu.in",
+     "phone": "9460279588"
+    },
+    {
+     "name": "Dr. Deepak N R",
+     "designation": "Prof. & HOD - ISE Dept.",
+     "role": "Member",
+     "email": "ise_hod@atria.edu.in",
+     "phone": "9449632581"
+    },
+    {
+     "name": "Dr. Keshavamurthy",
+     "designation": "Prof. & Head - ECE Dept.",
+     "role": "Member",
+     "email": "ece_hod@atria.edu.in",
+     "phone": "9844662014"
+    },
+    {
+     "name": "Dr. Srinivasa Chari",
+     "designation": "Prof & HOD, ME Dept.",
+     "role": "Member",
+     "email": "mech_hod@atria.edu.in",
+     "phone": "9538435005"
+    },
+    {
+     "name": "Dr. Rashmi Singh Roy",
+     "designation": "HOD - MBA Dept.",
+     "role": "Member",
+     "email": "mba_hod@atria.edu.in",
+     "phone": "8971320068"
+    },
+    {
+     "name": "Dr. Mamatha T",
+     "designation": "Prof & HOD, MCA Dept.",
+     "role": "Member",
+     "email": "mca_hod@atria.edu.in",
+     "phone": "7760847216"
+    }
+   ]
+  },
+  {
+   "id": "iic-committee",
+   "name": "IIC Committee",
+   "short": "IIC",
+   "icon": "lightbulb",
+   "members": [
+    {
+     "name": "Dr. Rajesha S",
+     "designation": "Principal",
+     "role": "Head of the Institute",
+     "email": "principal@atria.edu.in",
+     "phone": "9845748949"
+    },
+    {
+     "name": "Dr. K S Ananda Kumar",
+     "designation": "Associate Prof, ISE",
+     "role": "President",
+     "email": "anandakumar_ise@atria.edu.in",
+     "phone": "9916778008"
+    },
+    {
+     "name": "Dr. Pradeep Kumar B P",
+     "designation": "Professor, CSD",
+     "role": "Vice President",
+     "email": "pradeepkumar_cse@atria.edu.in",
+     "phone": "9743674503"
+    },
+    {
+     "name": "Ms. Chaitra R",
+     "designation": "Asst. Prof, ISE",
+     "role": "Convener",
+     "email": "chaitra_ise@atria.edu.in",
+     "phone": "9353011146"
+    },
+    {
+     "name": "Dr. Vasanthi S",
+     "designation": "Dean - IQAC",
+     "role": "NIRF Coordinator",
+     "email": "deaniqac@atria.edu.in",
+     "phone": "9886027716"
+    },
+    {
+     "name": "Dr. Ramesh Chandra",
+     "designation": "Associate Prof, MBA",
+     "role": "Start-up Activity Coordinator",
+     "email": "rameshchandra_mba@atria.edu.in",
+     "phone": "6305891272"
+    },
+    {
+     "name": "Dr. Jyoti Metan",
+     "designation": "Associate Prof, ISE",
+     "role": "IPR Activity Coordinator",
+     "email": "jyothi_ise@atria.edu.in",
+     "phone": "9901499699"
+    },
+    {
+     "name": "Dr. Manjunath Megalamani",
+     "designation": "Asst. Prof, BS&H",
+     "role": "SIH Coordinator",
+     "email": "manjunath_bs@atria.edu.in",
+     "phone": "9036946531"
+    },
+    {
+     "name": "Mr. Tejas J",
+     "designation": "Asst. Prof, BS&H",
+     "role": "Member",
+     "email": "tejas_bs@atria.edu.in",
+     "phone": "7760523253"
+    },
+    {
+     "name": "Dr. Srinivasa Chari V",
+     "designation": "HoD, ME",
+     "role": "Innovation Activity Coordinator",
+     "email": "hod_mech@atria.edu.in",
+     "phone": "9538435005"
+    },
+    {
+     "name": "Dr. Gayatri Joshi",
+     "designation": "Asst. Prof, ECE",
+     "role": "IIC R&D Coordinator and Member",
+     "email": "gayatri_ece@atria.edu.in",
+     "phone": "7259274620"
+    },
+    {
+     "name": "Ms. Shruthi B",
+     "designation": "Asst. Prof, ISE",
+     "role": "Internship Coordinator",
+     "email": "shruthi_ise@atria.edu.in",
+     "phone": "9916970792"
+    },
+    {
+     "name": "Mr. Yashwanth Reddy",
+     "designation": "Asst. Prof, MCA",
+     "role": "Social Media Coordinator & Member",
+     "email": "yashwanthreddy_mca@atria.edu.in",
+     "phone": "9353298831"
+    },
+    {
+     "name": "Mr. G B Janardhana Swamy",
+     "designation": "Asst. Prof, NIE, Mysore",
+     "role": "External Expert – Eco System Enabler",
+     "email": "gbjanardhanaswamy@nie.ac.in",
+     "phone": "9844366119"
+    },
+    {
+     "name": "Mr. Sreenivasa Ramanujam K",
+     "designation": "Dean - Training & Placements, Ramaiah Institute of Technology, Bangalore",
+     "role": "Expert from Academia & Industry",
+     "email": "ramanujamks2022@gmail.com",
+     "phone": "8147002870"
+    },
+    {
+     "name": "Dr. Shivanna D M",
+     "designation": "Founder, Udugiri Technological Solutions, Bangalore",
+     "role": "IP Expert / Patent Expert",
+     "email": "dmshivu@gmail.com",
+     "phone": "9900506684"
+    },
+    {
+     "name": "Mr. Abhijeet Jain N",
+     "designation": "CEO & Co-founder, FindInbox Pvt Ltd",
+     "role": "Startup / Alumni Entrepreneur",
+     "email": "abhijith@findinbox.com",
+     "phone": "9591241474"
+    },
+    {
+     "name": "Ms. Vijayalakshmi V",
+     "designation": "Asst. Prof, CSE",
+     "role": "ATL Coordinator & Member",
+     "email": "vijayalakshmi.vv@atria.edu",
+     "phone": "9945086352"
+    },
+    {
+     "name": "Ms. Ankita Chaubey",
+     "designation": "Asst. Prof, MBA",
+     "role": "E-Cell Coordinator",
+     "email": "ankita_mba@atria.edu.in",
+     "phone": "9008012412"
+    },
+    {
+     "name": "Dr. R Vijaya Sarathy",
+     "designation": "Associate Prof, CV",
+     "role": "Member",
+     "email": "vijaysarathy_cv@atria.edu.in",
+     "phone": "8870092762"
+    },
+    {
+     "name": "Ms. Rajimol K P",
+     "designation": "HoD, MBA",
+     "role": "Member",
+     "email": "rajimol_mba@atria.edu.in",
+     "phone": "9738941871"
+    },
+    {
+     "name": "Mr. Sridhar D R",
+     "designation": "Asst. Prof, ME",
+     "role": "Member",
+     "email": "sridhar_mech@atria.edu.in",
+     "phone": "9448794465"
+    },
+    {
+     "name": "Ms. Shilpa",
+     "designation": "Asst. Prof, BSE&H",
+     "role": "Member",
+     "email": "shilpa_bs@atria.edu.in",
+     "phone": "7022640988"
+    },
+    {
+     "name": "Ms. Vaishnavi",
+     "designation": "Asst. Prof, BSE&H",
+     "role": "Member",
+     "email": "vaishnavi_bs@atria.edu.in",
+     "phone": "8446204904"
+    },
+    {
+     "name": "Mr. Gourav V Navada",
+     "designation": "Student",
+     "role": "Student Innovation Coordinator",
+     "email": "vgauravnavada@gmail.com",
+     "phone": "8310416479"
+    },
+    {
+     "name": "Ms. Mrudula R",
+     "designation": "Student",
+     "role": "Student Startup Coordinator",
+     "email": "mrudularchandra@gmail.com",
+     "phone": "8073164227"
+    },
+    {
+     "name": "Ms. Raksha Navule",
+     "designation": "Student",
+     "role": "Student Internship Coordinator",
+     "email": "rakshanavhule@gmail.com",
+     "phone": "9071909697"
+    },
+    {
+     "name": "Mr. Tarun M",
+     "designation": "Student",
+     "role": "Student IPR Coordinator",
+     "email": "tarunmanjunath03@gmail.com",
+     "phone": "9945136952"
+    },
+    {
+     "name": "Mr. Nawaz Ahammed",
+     "designation": "Student",
+     "role": "Student Social Media Coordinator",
+     "email": "nawazahmedkhan@gmail.com",
+     "phone": "8660212495"
+    },
+    {
+     "name": "Mr. P Hemant",
+     "designation": "Student",
+     "role": "Student School Activity Coordinator",
+     "email": "phemant73730@gmail.com",
+     "phone": "9742573730"
+    },
+    {
+     "name": "Ms. Sampada Mahesh",
+     "designation": "Student",
+     "role": "Student Yukti Coordinator",
+     "email": "rathodsampada88@gmail.com",
+     "phone": "6360002716"
+    }
+   ]
+  }
+ ]
+}

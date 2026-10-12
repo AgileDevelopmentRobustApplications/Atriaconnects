@@ -78,6 +78,7 @@ export default function App() {
         <Route path="/notifications" element={null} />
         <Route path="/shop" element={null} />
         <Route path="/canteen" element={null} />
+        <Route path="/management/:committeeId" element={null} />
       </Route>
       <Route
         path="/admin"
