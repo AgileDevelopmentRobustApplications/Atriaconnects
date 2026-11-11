@@ -67,3 +67,12 @@ export function filterCommittees(committees, query) {
     })
     .filter(Boolean)
 }
+
+// Addresses that may belong to one directory person. Some entries use the
+// truncated "@atria.edu"; their accounts were created on "@atria.edu.in"
+// (supabase/manual/create_committee_accounts.sql), so try both, exact first.
+export function emailCandidates(email) {
+  const e = (email ?? '').trim().toLowerCase()
+  if (!e) return []
+  return e.endsWith('@atria.edu') ? [e, `${e}.in`] : [e]
+}

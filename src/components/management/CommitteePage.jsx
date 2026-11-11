@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loadCommittees, splitMembers } from '../../lib/committees.js'
+import { emailCandidates, loadCommittees, splitMembers } from '../../lib/committees.js'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useChat } from '../../context/ChatContext.jsx'
@@ -33,21 +33,26 @@ export default function CommitteePage({ committeeId }) {
 
   // Match directory people to app accounts by email so "Message" can open a DM.
   const emailKey = committee
-    ? [...new Set(committee.members.map((m) => m.email?.toLowerCase()).filter(Boolean))].sort().join(',')
+    ? [...new Set(committee.members.flatMap((m) => emailCandidates(m.email)))].sort().join(',')
     : ''
   useEffect(() => {
     if (!emailKey) return
     let active = true
     const emails = emailKey.split(',')
-    supabase
-      .from('profiles')
-      .select('id, email')
-      .in('email', emails)
-      .then(({ data, error }) => {
-        if (!active) return
-        if (error) console.error('Committee: failed to match accounts', error)
-        setAccounts(new Map((data ?? []).map((p) => [p.email.toLowerCase(), p.id])))
-      })
+    ;(async () => {
+      // find_directory_accounts (migration 038) resolves college emails for any
+      // signed-in user; profiles are otherwise only visible within shared clubs.
+      let { data, error } = await supabase.rpc('find_directory_accounts', { _emails: emails })
+      let rows = (data ?? []).map((r) => [r.email, r.user_id])
+      if (error) {
+        // Before 038 is applied: plain lookup (works for staff, who see all profiles).
+        ;({ data, error } = await supabase.from('profiles').select('id, email').in('email', emails))
+        rows = (data ?? []).map((p) => [p.email.toLowerCase(), p.id])
+      }
+      if (!active) return
+      if (error) console.error('Committee: failed to match accounts', error)
+      setAccounts(new Map(rows))
+    })()
     return () => {
       active = false
     }
@@ -55,8 +60,8 @@ export default function CommitteePage({ committeeId }) {
 
   // What the Message button can do for one person.
   function dmFor(person) {
-    const email = person.email?.toLowerCase()
-    const profileId = email ? accounts?.get(email) : null
+    const email = person.email?.trim().toLowerCase()
+    const profileId = emailCandidates(email).map((e) => accounts?.get(e)).find(Boolean) ?? null
     if (accounts === null) return null
     if (profileId && profileId === user?.id) return { state: 'self' }
     if (!profileId) return { state: 'none' }
@@ -274,7 +279,7 @@ function DmButton({ person, dm }) {
 }
 
 function PersonCard({ person, lead = false, dm }) {
-  const { name, designation, role, email, phone } = person
+  const { name, designation, role, email } = person
   return (
     <article className={`person-card${lead ? ' is-lead' : ''}`}>
       <Avatar name={name.replace(/^(dr|mr|mrs|ms|prof|sri|smt)\.?\s+/i, '')} size={lead ? 44 : 40} />
@@ -284,18 +289,11 @@ function PersonCard({ person, lead = false, dm }) {
           {role && !/^member$/i.test(role) && <span className="person-role">{role}</span>}
         </div>
         {designation && <span className="person-designation">{designation}</span>}
-        {(email || phone) && (
+        {email && (
           <div className="person-contact">
-            {email && (
-              <a href={`mailto:${email}`} title={`Email ${name}`}>
-                <Icon name="mail" size={13} /> <span>{email}</span>
-              </a>
-            )}
-            {phone && (
-              <a href={`tel:${phone.replace(/\s+/g, '')}`} title={`Call ${name}`}>
-                <Icon name="phone" size={13} /> <span>{phone}</span>
-              </a>
-            )}
+            <a href={`mailto:${email}`} title={`Email ${name}`}>
+              <Icon name="mail" size={13} /> <span>{email}</span>
+            </a>
           </div>
         )}
         <DmButton person={person} dm={dm} />

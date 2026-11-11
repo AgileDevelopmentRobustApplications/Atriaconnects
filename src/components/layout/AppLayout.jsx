@@ -117,7 +117,7 @@ function WelcomeDashboard() {
     window.dispatchEvent(new CustomEvent('open-modal', { detail: name }))
   }
 
-  const firstName = profile?.full_name?.trim().split(/\s+/)[0] || 'there'
+  const fullName = profile?.full_name?.trim() || 'there'
 
   const greeting = () => {
     const hour = new Date().getHours()
@@ -144,7 +144,7 @@ function WelcomeDashboard() {
               {format(new Date(), 'EEEE, MMMM d')}
             </div>
             <h1>
-              {greeting()}, <span className="greeting-name">{firstName}</span>
+              {greeting()}, <span className="greeting-name">{fullName}</span>
             </h1>
             <p className="dashboard-subtitle">
               Pick a chat from the sidebar, or catch up on what&apos;s coming up.

@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import data from '../data/committees.json';
 import clubData from '../data/clubs.json';
-import { filterCommittees, loadCommittees, splitMembers, roleRank } from '../lib/committees.js';
+import { emailCandidates, filterCommittees, loadCommittees, splitMembers, roleRank } from '../lib/committees.js';
 
 const { committees } = data;
 
@@ -61,5 +61,14 @@ describe('club directory', () => {
     expect(all).toHaveLength(30);
     expect(all.slice(20).every((x) => x.kind === 'club')).toBe(true);
     expect(filterCommittees(all, 'gdg.atria').map((r) => r.committee.id)).toEqual(['club-gdg']);
+  });
+});
+
+describe('matching directory people to accounts', () => {
+  it('tries the .edu.in account for truncated @atria.edu addresses', () => {
+    expect(emailCandidates(' Principal@Atria.edu ')).toEqual(['principal@atria.edu', 'principal@atria.edu.in']);
+    expect(emailCandidates('cse_hod@atria.edu.in')).toEqual(['cse_hod@atria.edu.in']);
+    expect(emailCandidates('someone@gmail.com')).toEqual(['someone@gmail.com']);
+    expect(emailCandidates(undefined)).toEqual([]);
   });
 });

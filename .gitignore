@@ -11,3 +11,6 @@ agy.exe
 resq-paws-*.html
 
 .claude/
+
+# Manual one-off SQL (may contain credentials) — run in Supabase, never commit
+supabase/manual/
